@@ -1,0 +1,110 @@
+---
+export interface Props {
+  variant?: 'primary' | 'secondary';
+  size?: 'small' | 'medium' | 'large';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  class?: string;
+}
+
+const { 
+  variant = 'primary', 
+  size = 'medium', 
+  href, 
+  type = 'button', 
+  disabled = false, 
+  class: className = '' 
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const baseClasses = 'btn';
+const variantClass = `btn--${variant}`;
+const sizeClass = `btn--${size}`;
+const classes = [baseClasses, variantClass, sizeClass, className].filter(Boolean).join(' ');
+---
+
+<Tag 
+  class={classes}
+  href={href}
+  type={!href ? type : undefined}
+  disabled={!href ? disabled : undefined}
+  {...disabled && href ? { 'aria-disabled': 'true' } : {}}
+>
+  <slot />
+</Tag>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: var(--button-text);
+    font-weight: 700; /* Bold Averia Serif */
+    transition: all 0.2s ease-in-out;
+    white-space: nowrap;
+  }
+
+  .btn:disabled,
+  .btn[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Variants */
+  .btn--primary {
+    background-color: var(--button-bg-light);
+    color: var(--button-font-color);
+    box-shadow:
+      0 4px 4px rgba(0, 0, 0, 0.05),
+      0 16px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn--primary:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: color-mix(in srgb, var(--button-bg-light) 85%, black);
+    transform: translateY(-1px);
+    box-shadow:
+      0 6px 6px rgba(0, 0, 0, 0.08),
+      0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn--secondary {
+    background-color: transparent;
+    color: var(--button-bg-light);
+    border: 2px solid var(--button-bg-light);
+  }
+
+  .btn--secondary:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: var(--button-bg-light);
+    color: var(--button-font-color);
+    transform: translateY(-1px);
+  }
+
+  /* Sizes */
+  .btn--small {
+    padding: 8px 16px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .btn--medium {
+    padding: 12px 24px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .btn--large {
+    padding: 16px 32px;
+    font-size: 18px;
+    line-height: 1.6;
+  }
+
+  /* Focus styles */
+  .btn:focus-visible {
+    outline: 2px solid var(--button-bg-light);
+    outline-offset: 2px;
+  }
+</style>

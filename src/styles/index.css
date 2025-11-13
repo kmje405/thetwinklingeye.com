@@ -1,0 +1,273 @@
+/* Font Face Declarations */
+
+/* Malibu Sunday Serif - Header 1 & 2 */
+@font-face {
+  font-family: "Malibu Sunday Serif";
+  src: url("../assets/fonts/malibu-sunday-an-elegant-stylish-font-combination-2025-03-13-20-53-08-utc/transfonter.org-20251028-204302/MalibuSunday-Serif.woff2")
+      format("woff2"),
+    url("../assets/fonts/malibu-sunday-an-elegant-stylish-font-combination-2025-03-13-20-53-08-utc/transfonter.org-20251028-204302/MalibuSunday-Serif.woff")
+      format("woff"),
+    url("../assets/fonts/malibu-sunday-an-elegant-stylish-font-combination-2025-03-13-20-53-08-utc/Malibu Sunday Serif.otf")
+      format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Averia Serif - Headers 3, Body, Caption */
+@font-face {
+  font-family: "Averia Serif";
+  src: url("../assets/fonts/Averia Serif/AveriaSerifLibre-Light.ttf")
+    format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Averia Serif";
+  src: url("../assets/fonts/Averia Serif/AveriaSerifLibre-LightItalic.ttf")
+    format("truetype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Averia Serif";
+  src: url("../assets/fonts/Averia Serif/AveriaSerifLibre-Regular.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Averia Serif";
+  src: url("../assets/fonts/Averia Serif/AveriaSerifLibre-Italic.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Averia Serif";
+  src: url("../assets/fonts/Averia Serif/AveriaSerifLibre-Bold.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Averia Serif";
+  src: url("../assets/fonts/Averia Serif/AveriaSerifLibre-BoldItalic.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Michigan Signature - Callout */
+@font-face {
+  font-family: "Michigan Signature";
+  src: url("../assets/fonts/michigan-signature-2023-11-27-05-18-19-utc/Michigan Signature.woff")
+      format("woff"),
+    url("../assets/fonts/michigan-signature-2023-11-27-05-18-19-utc/Michigan Signature.otf")
+      format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* CSS Custom Properties for Typography */
+:root {
+  /* Font Families */
+  --font-header-primary: "Malibu Sunday Serif", serif;
+  --font-header-secondary: "Averia Serif", serif;
+  --font-body: "Averia Serif", serif;
+  --font-caption: "Averia Serif", serif;
+  --font-callout: "Michigan Signature", cursive;
+
+  /* Button Styling */
+  --button-text: "Averia Serif", serif;
+  --button-bg-light: #461121;
+  --button-font-color: #ffffff;
+
+  /* Responsive Font Sizes using clamp() */
+  /* clamp(min, preferred, max) - scales fluidly between viewport widths */
+  --font-size-h1: clamp(1.75rem, 4vw + 0.5rem, 2.125rem); /* 28px - 34px */
+  --font-size-h2: clamp(1.25rem, 2.5vw + 0.5rem, 1.5rem); /* 20px - 24px */
+  --font-size-h3: clamp(1rem, 1.5vw + 0.25rem, 1.0625rem); /* 16px - 17px */
+  --font-size-body: clamp(
+    0.9375rem,
+    1.5vw + 0.25rem,
+    1.0625rem
+  ); /* 15px - 17px */
+  --font-size-caption: clamp(
+    0.75rem,
+    1vw + 0.125rem,
+    0.875rem
+  ); /* 12px - 14px */
+  --font-size-callout: clamp(1.75rem, 4vw + 0.5rem, 2.125rem); /* 28px - 34px */
+
+  /* Responsive Line Heights */
+  --line-height-h1: clamp(1.1, 0.05vw + 1.15, 1.2);
+  --line-height-h2: clamp(1.2, 0.05vw + 1.25, 1.3);
+  --line-height-h3: clamp(1.3, 0.05vw + 1.35, 1.4);
+  --line-height-body: clamp(1.4, 0.05vw + 1.45, 1.5);
+  --line-height-caption: clamp(1.3, 0.05vw + 1.35, 1.4);
+  --line-height-callout: clamp(1.1, 0.05vw + 1.15, 1.2);
+
+  /* Responsive Spacing */
+  --spacing-h1: clamp(0.75rem, 2vw, 1rem);
+  --spacing-h2: clamp(0.625rem, 1.5vw, 0.875rem);
+  --spacing-h3: clamp(0.5rem, 1vw, 0.75rem);
+  --spacing-body: clamp(0.75rem, 2vw, 1rem);
+  --spacing-caption: clamp(0.375rem, 1vw, 0.5rem);
+  --spacing-callout: clamp(0.75rem, 2vw, 1rem);
+
+  /* Font Weights */
+  --font-weight-h1: normal;
+  --font-weight-h2: normal;
+  --font-weight-h3: 700; /* bold */
+  --font-weight-body: 400; /* regular */
+  --font-weight-caption: 300; /* light */
+  --font-weight-callout: normal;
+
+  /* Text Transforms */
+  --text-transform-h2: uppercase;
+  --text-transform-h3: uppercase;
+
+  /* Font Styles */
+  --font-style-caption: italic;
+}
+
+/* Typography Styles */
+
+/* Header 1 - Malibu Sunday Serif (responsive 28px - 34px) */
+h1,
+.h1 {
+  font-family: var(--font-header-primary);
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-h1);
+  line-height: var(--line-height-h1);
+  margin: 0 0 var(--spacing-h1) 0;
+}
+
+/* Header 2 - Malibu Sunday Serif All Caps (responsive 20px - 24px) */
+h2,
+.h2 {
+  font-family: var(--font-header-primary);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-h2);
+  text-transform: var(--text-transform-h2);
+  line-height: var(--line-height-h2);
+  margin: 0 0 var(--spacing-h2) 0;
+}
+
+/* Header 3 - Averia Serif Bold All Caps (responsive 16px - 17px) */
+h3,
+.h3 {
+  font-family: var(--font-header-secondary);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-h3);
+  text-transform: var(--text-transform-h3);
+  line-height: var(--line-height-h3);
+  margin: 0 0 var(--spacing-h3) 0;
+}
+
+/* Body - Averia Serif Regular (responsive 15px - 17px) */
+body,
+p,
+.body-text {
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-body);
+  line-height: var(--line-height-body);
+  margin: 0 0 var(--spacing-body) 0;
+}
+
+/* Caption - Averia Serif Light Italic (responsive 12px - 14px) */
+.caption,
+figcaption,
+small {
+  font-family: var(--font-caption);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-caption);
+  font-style: var(--font-style-caption);
+  line-height: var(--line-height-caption);
+  margin: 0 0 var(--spacing-caption) 0;
+}
+
+/* Callout - Michigan Signature (responsive 28px - 34px) */
+.callout {
+  font-family: var(--font-callout);
+  font-size: var(--font-size-callout);
+  font-weight: var(--font-weight-callout);
+  line-height: var(--line-height-callout);
+  margin: 0 0 var(--spacing-callout) 0;
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: #333;
+  background-color: #fff;
+}
+
+/* Utility Classes */
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.text-italic {
+  font-style: italic;
+}
+
+.font-light {
+  font-weight: 300;
+}
+
+.font-regular {
+  font-weight: 400;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+/* Additional Responsive Utilities */
+@media (max-width: 768px) {
+  /* Adjust container padding for better mobile experience */
+  .container {
+    padding-left: clamp(1rem, 4vw, 2rem);
+    padding-right: clamp(1rem, 4vw, 2rem);
+  }
+}
+
+/* Fluid container for responsive design */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: clamp(1rem, 4vw, 3rem);
+  padding-right: clamp(1rem, 4vw, 3rem);
+}
+
+/* Responsive section spacing */
+.section {
+  padding-top: clamp(2rem, 8vw, 4rem);
+  padding-bottom: clamp(2rem, 8vw, 4rem);
+}

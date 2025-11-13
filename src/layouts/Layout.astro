@@ -1,22 +1,21 @@
+---
+import '../styles/index.css';
+import { siteConfig } from '../config/site';
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta charset={siteConfig.charset} />
+		<meta name="viewport" content={siteConfig.viewport} />
+		<meta name="format-detection" content={siteConfig.formatDetection} />
+		<link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" media="(prefers-color-scheme: light)" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" media="(prefers-color-scheme: dark)" />
+		<link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>{siteConfig.title}</title>
 	</head>
 	<body>
 		<slot />
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
