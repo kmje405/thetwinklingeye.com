@@ -6,7 +6,7 @@ export const siteConfig = {
 
   // Contact information
   phone: "",
-  email: "",
+  email: "drallison20@gmail.com",
 
   // Content strings
   comingSoonMessage: "Website Coming Soon!",
