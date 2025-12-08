@@ -1,0 +1,36 @@
+---
+import Button from "./Button.astro";
+---
+
+<article class="blog__feed--card">
+  <h2>Cras non metus. Donec laoreet sem at</h2>
+  <p>
+    Sed sed diam. Nam nunc. Class aptent taciti sociosqu ad litora torquent per
+    conubia nostra, per inceptos hymenaeos. Aenean risus est, porttitor vel,
+    placerat sit amet, vestibulum sit amet, nibh. Ut faucibus
+  </p>
+  <Button variant="primary" size="small" type="button">read more</Button>
+</article>
+
+<style is:global>
+  .blog__feed--card {
+    background-color: #f8f0e5;
+    max-width: 560px;
+    min-height: max-content;
+    padding: 0.5rem;
+    margin-block: 1rem;
+    font-family: var(--font-header-primary);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .blog__feed--card h2,
+  .blog__feed--card p {
+    align-self: flex-start;
+    text-align: left;
+  }
+
+  .blog__feed--card .btn {
+    align-self: center;
+  }
+</style>

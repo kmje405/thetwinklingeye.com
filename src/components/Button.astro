@@ -1,51 +1,54 @@
 ---
 export interface Props {
-  variant?: 'primary' | 'secondary';
-  size?: 'small' | 'medium' | 'large';
+  variant?: "primary" | "secondary";
+  size?: "small" | "medium" | "large";
   href?: string;
-  type?: 'button' | 'submit' | 'reset';
+  type?: "button" | "submit" | "reset";
   disabled?: boolean;
   class?: string;
 }
 
-const { 
-  variant = 'primary', 
-  size = 'medium', 
-  href, 
-  type = 'button', 
-  disabled = false, 
-  class: className = '' 
+const {
+  variant = "primary",
+  size = "medium",
+  href,
+  type = "button",
+  disabled = false,
+  class: className = "",
 } = Astro.props;
 
-const Tag = href ? 'a' : 'button';
-const baseClasses = 'btn';
+const Tag = href ? "a" : "button";
+const baseClasses = "btn";
 const variantClass = `btn--${variant}`;
 const sizeClass = `btn--${size}`;
-const classes = [baseClasses, variantClass, sizeClass, className].filter(Boolean).join(' ');
+const classes = [baseClasses, variantClass, sizeClass, className]
+  .filter(Boolean)
+  .join(" ");
 ---
 
-<Tag 
+<Tag
   class={classes}
   href={href}
   type={!href ? type : undefined}
   disabled={!href ? disabled : undefined}
-  {...disabled && href ? { 'aria-disabled': 'true' } : {}}
+  {...disabled && href ? { "aria-disabled": "true" } : {}}
 >
   <slot />
 </Tag>
 
-<style>
+<style is:global>
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border: none;
-    cursor: pointer;
+    cursor: pointer !important;
     text-decoration: none;
     font-family: var(--button-text);
     font-weight: 700; /* Bold Averia Serif */
     transition: all 0.2s ease-in-out;
     white-space: nowrap;
+    text-transform: uppercase;
   }
 
   .btn:disabled,
@@ -62,9 +65,8 @@ const classes = [baseClasses, variantClass, sizeClass, className].filter(Boolean
       0 4px 4px rgba(0, 0, 0, 0.05),
       0 16px 32px rgba(0, 0, 0, 0.1);
   }
-
   .btn--primary:hover:not(:disabled):not([aria-disabled="true"]) {
-    background-color: color-mix(in srgb, var(--button-bg-light) 85%, black);
+    background-color: var(--button-bg-light-hover);
     transform: translateY(-1px);
     box-shadow:
       0 6px 6px rgba(0, 0, 0, 0.08),

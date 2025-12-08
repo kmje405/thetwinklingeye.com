@@ -93,6 +93,7 @@
   /* Button Styling */
   --button-text: "Averia Serif", serif;
   --button-bg-light: #461121;
+  --button-bg-light-hover: #a37351;
   --button-font-color: #ffffff;
 
   /* Responsive Font Sizes using clamp() */
@@ -137,7 +138,7 @@
   --font-weight-callout: normal;
 
   /* Text Transforms */
-  --text-transform-h2: uppercase;
+  --text-transform-h2: none;
   --text-transform-h3: uppercase;
 
   /* Font Styles */
@@ -162,7 +163,6 @@ h2,
   font-family: var(--font-header-primary);
   font-size: var(--font-size-h2);
   font-weight: var(--font-weight-h2);
-  text-transform: var(--text-transform-h2);
   line-height: var(--line-height-h2);
   margin: 0 0 var(--spacing-h2) 0;
 }
@@ -226,6 +226,8 @@ body {
   padding: 0;
   color: #333;
   background-color: #fff;
+  background-image: url("../assets/background.jpg");
+  background-size: 1440px 1440px;
 }
 
 /* Utility Classes */
