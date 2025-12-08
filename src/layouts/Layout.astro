@@ -1,21 +1,33 @@
 ---
-import '../styles/index.css';
-import { siteConfig } from '../config/site';
+import "../styles/index.css";
+import { siteConfig } from "../config/site";
+import Navbar from "../components/Navbar.astro";
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset={siteConfig.charset} />
-		<meta name="viewport" content={siteConfig.viewport} />
-		<meta name="format-detection" content={siteConfig.formatDetection} />
-		<link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" media="(prefers-color-scheme: light)" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" media="(prefers-color-scheme: dark)" />
-		<link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{siteConfig.title}</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset={siteConfig.charset} />
+    <meta name="viewport" content={siteConfig.viewport} />
+    <meta name="format-detection" content={siteConfig.formatDetection} />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/favicon-dark.svg"
+      media="(prefers-color-scheme: light)"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/favicon.svg"
+      media="(prefers-color-scheme: dark)"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{siteConfig.title}</title>
+  </head>
+  <body>
+    <Navbar />
+    <slot />
+  </body>
 </html>
