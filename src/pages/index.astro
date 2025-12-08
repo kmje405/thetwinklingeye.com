@@ -1,8 +1,19 @@
 ---
-import DevelopmentPlaceholderCard from '../components/DevelopmentPlaceholderCard.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import BlogFeed from "../components/BlogFeed.astro";
 ---
 
 <Layout>
-	<DevelopmentPlaceholderCard />
+  <Navbar />
+  <div class="blog__feed--wrapper">
+    <BlogFeed />
+  </div>
 </Layout>
+
+<style>
+  .blog__feed--wrapper {
+    display: flex;
+    justify-content: center;
+  }
+</style>
