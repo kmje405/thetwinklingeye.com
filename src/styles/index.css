@@ -154,7 +154,6 @@ h1,
   font-size: var(--font-size-h1);
   font-weight: var(--font-weight-h1);
   line-height: var(--line-height-h1);
-  margin: 0 0 var(--spacing-h1) 0;
 }
 
 /* Header 2 - Malibu Sunday Serif All Caps (responsive 20px - 24px) */
