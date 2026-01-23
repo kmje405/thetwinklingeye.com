@@ -1,0 +1,41 @@
+<section class="newsletter__cta">
+  <div class="cta__wrapper">
+    <h3>Let's keep up!</h3>
+    <form action="submit">
+      <label class="sr-only" for="email">Email:</label>
+      <input type="text" id="email" placeholder="example@email.com" />
+    </form>
+  </div>
+</section>
+
+<style is:global>
+  .newsletter__cta {
+    background-color: #461121;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    min-height: 272px;
+  }
+  .cta__wrapper {
+    border: yellow 2px solid;
+    align-items: center;
+  }
+  .sr-only:not(:focus):not(:active) {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  form {
+    align-content: center;
+  }
+  input[type="text"] {
+    background-color: #f8f0e5;
+    padding: 0.5rem 2rem;
+  }
+</style>

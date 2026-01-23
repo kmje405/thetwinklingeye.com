@@ -1,0 +1,189 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BlogFeedCard from "../../components/BlogFeedCard.astro";
+import { client, queries } from "../../lib/sanity";
+import type { BlogPostPreview } from "../../types/sanity";
+
+// Fetch blog posts from Sanity with fallback
+let blogPosts: BlogPostPreview[] = [];
+let error: string | null = null;
+
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    blogPosts = await client.fetch<BlogPostPreview[]>(queries.allBlogPosts);
+  } else {
+    console.warn("Sanity not configured, showing placeholder content");
+  }
+} catch (e) {
+  console.error("Error fetching blog posts:", e);
+  error = "Unable to load blog posts";
+}
+
+// Fallback data if no Sanity data available
+const fallbackPosts: BlogPostPreview[] = [
+  {
+    _id: "fallback-1",
+    title: "Welcome to The Twinkling Eye",
+    slug: { _type: "slug", current: "welcome" },
+    excerpt:
+      "This is a sample blog post. Connect Sanity to see your actual content.",
+    publishedAt: new Date().toISOString(),
+    featuredImage: undefined,
+    author: {
+      name: "Author Name",
+      image: undefined,
+    },
+    categories: [],
+  },
+];
+
+const postsToShow = blogPosts.length > 0 ? blogPosts : fallbackPosts;
+---
+
+<Layout>
+  <div class="blog-feed">
+    <header class="blog-feed__header">
+      <h1>Blog</h1>
+      <p>Thoughts, stories, and insights</p>
+    </header>
+
+    {
+      error && (
+        <div class="error-message">
+          <p>{error}</p>
+          <p>Please check your Sanity configuration.</p>
+        </div>
+      )
+    }
+
+    {
+      !import.meta.env.PUBLIC_SANITY_PROJECT_ID && (
+        <div class="setup-notice">
+          <h2>Sanity Setup Required</h2>
+          <p>To see your blog posts, please:</p>
+          <ol>
+            <li>
+              Create a Sanity project at{" "}
+              <a href="https://sanity.io" target="_blank">
+                sanity.io
+              </a>
+            </li>
+            <li>
+              Add your project ID to <code>PUBLIC_SANITY_PROJECT_ID</code> in
+              your environment variables
+            </li>
+            <li>Create blog post documents in your Sanity studio</li>
+          </ol>
+        </div>
+      )
+    }
+
+    <div class="blog-feed__grid">
+      {
+        postsToShow.map((post) => (
+          <BlogFeedCard
+            title={post.title}
+            excerpt={post.excerpt || ""}
+            publishedAt={post.publishedAt}
+            slug={post.slug.current}
+            featuredImage={post.featuredImage}
+            author={post.author}
+            categories={post.categories || []}
+          />
+        ))
+      }
+    </div>
+
+    {
+      postsToShow.length === 0 && !error && (
+        <div class="empty-state">
+          <h2>No blog posts yet</h2>
+          <p>Check back soon for new content!</p>
+        </div>
+      )
+    }
+  </div>
+</Layout>
+
+<style>
+  .blog-feed {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .blog-feed__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .blog-feed__header h1 {
+    font-family: var(--font-header-primary);
+    font-size: var(--font-size-h1);
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .blog-feed__header p {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    color: #666;
+  }
+
+  .blog-feed__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .error-message,
+  .setup-notice,
+  .empty-state {
+    background: #f8f0e5;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .error-message {
+    border-left: 4px solid #e74c3c;
+  }
+
+  .setup-notice {
+    border-left: 4px solid #f39c12;
+    text-align: left;
+  }
+
+  .setup-notice h2 {
+    margin-top: 0;
+    color: #f39c12;
+  }
+
+  .setup-notice ol {
+    margin: 1rem 0;
+  }
+
+  .setup-notice code {
+    background: #fff;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+
+  .empty-state {
+    border-left: 4px solid #3498db;
+  }
+
+  @media (max-width: 768px) {
+    .blog-feed {
+      padding: 1rem 0.5rem;
+    }
+
+    .blog-feed__grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>

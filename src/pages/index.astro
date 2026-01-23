@@ -1,17 +1,19 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import BlogFeed from "../components/BlogFeed.astro";
+import NewsletterCTA from "../components/NewsletterCTA.astro";
 ---
 
 <Layout>
   <div class="blog__feed--wrapper">
     <BlogFeed />
+    <NewsletterCTA />
   </div>
 </Layout>
 
 <style>
   .blog__feed--wrapper {
-    display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-self: center;
   }
 </style>

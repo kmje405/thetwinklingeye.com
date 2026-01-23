@@ -2,6 +2,7 @@
 import "../styles/index.css";
 import { siteConfig } from "../config/site";
 import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
 ---
 
 <!doctype html>
@@ -28,6 +29,15 @@ import Navbar from "../components/Navbar.astro";
   </head>
   <body>
     <Navbar />
-    <slot />
+    <main>
+      <slot />
+    </main>
+    <Footer />
   </body>
 </html>
+
+<style>
+  main {
+    min-height: 90vh;
+  }
+</style>
