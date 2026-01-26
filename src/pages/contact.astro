@@ -1,0 +1,460 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const { PUBLIC_TURNSTILE_SITE_KEY, DEV } = import.meta.env;
+const isDevelopment = DEV || import.meta.env.MODE === "development";
+
+// Use dummy sitekey for development testing
+const siteKey = isDevelopment
+  ? "1x00000000000000000000AA" // Always passes - for testing successful flows
+  : PUBLIC_TURNSTILE_SITE_KEY;
+---
+
+<Layout>
+  <div class="contact-page">
+    <div class="contact-container">
+      <div class="contact-header">
+        <h1>Get in Touch</h1>
+        <p>
+          Have a question, suggestion, or just want to say hello? We'd love to
+          hear from you!
+        </p>
+      </div>
+
+      <form
+        action="https://formspree.io/f/mqeqagwo"
+        method="POST"
+        class="contact-form"
+      >
+        <!-- Honeypot field for spam protection -->
+        <input
+          type="text"
+          name="_gotcha"
+          class="sr-only"
+          tabindex="-1"
+          autocomplete="off"
+        />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first-name">First Name *</label>
+            <input
+              type="text"
+              id="first-name"
+              name="first-name"
+              required
+              maxlength="40"
+              placeholder="Your first name"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="last-name">Last Name *</label>
+            <input
+              type="text"
+              id="last-name"
+              name="last-name"
+              required
+              maxlength="40"
+              placeholder="Your last name"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            placeholder="your@email.com"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="subject">Subject *</label>
+          <input
+            type="text"
+            id="subject"
+            name="subject"
+            required
+            maxlength="200"
+            placeholder="What's this about?"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message *</label>
+          <textarea
+            id="message"
+            name="message"
+            required
+            rows="6"
+            maxlength="2000"
+            placeholder="Tell us more about your inquiry..."></textarea>
+          <div class="character-count">
+            <span id="char-count">0</span>/2000 characters
+          </div>
+        </div>
+
+        <!-- Cloudflare Turnstile -->
+        <div class="form-group turnstile-group">
+          <div
+            class="cf-turnstile"
+            data-sitekey={siteKey}
+            data-theme="light"
+            data-size="normal"
+          >
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Send Message</button>
+      </form>
+
+      <div class="contact-info">
+        <div class="info-section">
+          <h3>Other Ways to Reach Us</h3>
+          <p>
+            Prefer a different method of communication? Here are some
+            alternatives:
+          </p>
+
+          <div class="info-grid">
+            <div class="info-item">
+              <h4>Response Time</h4>
+              <p>
+                We typically respond within 24-48 hours during business days.
+              </p>
+            </div>
+
+            <div class="info-item">
+              <h4>Newsletter</h4>
+              <p>
+                Stay updated with our latest content and insights by subscribing
+                to our newsletter.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<!-- Cloudflare Turnstile Script -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer
+></script>
+
+<script>
+  // Character counter for message textarea and form reset functionality
+  document.addEventListener("DOMContentLoaded", () => {
+    const messageTextarea = document.getElementById(
+      "message"
+    ) as HTMLTextAreaElement;
+    const charCount = document.getElementById("char-count");
+    const form = document.querySelector(".contact-form") as HTMLFormElement;
+
+    // Character counter functionality
+    if (messageTextarea && charCount) {
+      const updateCount = () => {
+        const count = messageTextarea.value.length;
+        charCount.textContent = count.toString();
+
+        // Change color when approaching limit
+        if (count > 1800) {
+          charCount.style.color = "#f44336";
+        } else if (count > 1500) {
+          charCount.style.color = "#ff9800";
+        } else {
+          charCount.style.color = "rgba(255, 255, 255, 0.7)";
+        }
+      };
+
+      messageTextarea.addEventListener("input", updateCount);
+      updateCount(); // Initial count
+    }
+
+    // Reset form when returning from Formspree
+    // Check if URL contains success parameter or if we're returning from submission
+    const urlParams = new URLSearchParams(window.location.search);
+    const isReturningFromFormspree =
+      urlParams.has("success") ||
+      document.referrer.includes("formspree.io") ||
+      sessionStorage.getItem("formSubmitted") === "true";
+
+    if (isReturningFromFormspree && form) {
+      // Reset the form
+      form.reset();
+
+      // Reset character counter
+      if (charCount) {
+        charCount.textContent = "0";
+        charCount.style.color = "rgba(255, 255, 255, 0.7)";
+      }
+
+      // Clear the session storage flag
+      sessionStorage.removeItem("formSubmitted");
+
+      // Show success message
+      showSuccessMessage();
+
+      // Clean up URL if it has success parameter
+      if (urlParams.has("success")) {
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+
+    // Set flag when form is submitted
+    if (form) {
+      form.addEventListener("submit", () => {
+        sessionStorage.setItem("formSubmitted", "true");
+      });
+    }
+
+    function showSuccessMessage() {
+      // Create and show success message
+      const successDiv = document.createElement("div");
+      successDiv.className = "success-message";
+      successDiv.innerHTML = `
+        <p>✅ Thank you! Your message has been sent successfully. We'll get back to you soon!</p>
+      `;
+
+      // Insert after the form
+      if (form && form.parentNode) {
+        form.parentNode.insertBefore(successDiv, form.nextSibling);
+
+        // Remove message after 5 seconds
+        setTimeout(() => {
+          if (successDiv.parentNode) {
+            successDiv.parentNode.removeChild(successDiv);
+          }
+        }, 5000);
+      }
+    }
+  });
+</script>
+
+<style>
+  .contact-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    min-height: 70vh;
+  }
+
+  .contact-container {
+    background-color: #461121;
+    color: white;
+    padding: 3rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .contact-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .contact-header h1 {
+    font-family: var(--font-header-primary);
+    font-size: 2.5rem;
+    color: white;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .contact-header p {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+  }
+
+  .contact-form {
+    margin-bottom: 3rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: #333;
+    background-color: #f8f0e5;
+    transition: outline 0.2s ease;
+    box-sizing: border-box;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    outline: 2px solid #a37351;
+    outline-offset: 2px;
+  }
+
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: #666;
+  }
+
+  .form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .character-count {
+    text-align: right;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 0.25rem;
+  }
+
+  .turnstile-group {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+  }
+
+  .submit-btn {
+    background-color: #a37351;
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .submit-btn:hover:not(:disabled) {
+    background-color: #8b5d42;
+  }
+
+  .submit-btn:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+  }
+
+  .message {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .message.success {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+  }
+
+  .message.error {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+  }
+
+  .contact-info {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 2rem;
+  }
+
+  .info-section h3 {
+    font-family: var(--font-header-primary);
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .info-section p {
+    font-family: var(--font-body);
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .info-item h4 {
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  .info-item p {
+    font-size: 0.95rem;
+    margin-bottom: 0;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .sr-only:not(:focus):not(:active) {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  @media (max-width: 768px) {
+    .contact-page {
+      padding: 1rem 0.5rem;
+    }
+
+    .contact-container {
+      padding: 2rem 1.5rem;
+    }
+
+    .contact-header h1 {
+      font-size: 2rem;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .submit-btn {
+      max-width: none;
+    }
+  }
+</style>

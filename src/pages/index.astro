@@ -1,19 +1,191 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import BlogFeed from "../components/BlogFeed.astro";
-import NewsletterCTA from "../components/NewsletterCTA.astro";
+import BlogFeedCard from "../components/BlogFeedCard.astro";
+import InterviewCard from "../components/InterviewCard.astro";
+import { client, queries } from "../lib/sanity";
+import type { BlogPostPreview, InterviewPreview } from "../types/sanity";
+
+// Fetch latest content from Sanity
+let latestInterview: InterviewPreview | null = null;
+let latestBlogPosts: BlogPostPreview[] = [];
+
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    // Fetch latest interview
+    const interviews = await client.fetch<InterviewPreview[]>(
+      queries.allInterviews
+    );
+    latestInterview = interviews[0] || null;
+
+    // Fetch latest 2 blog posts
+    const blogPosts = await client.fetch<BlogPostPreview[]>(
+      queries.allBlogPosts
+    );
+    latestBlogPosts = blogPosts.slice(0, 2);
+  }
+} catch (error) {
+  console.error("Error fetching content:", error);
+}
 ---
 
 <Layout>
-  <div class="blog__feed--wrapper">
-    <BlogFeed />
-    <NewsletterCTA />
+  <div class="home">
+    <header class="home__header">
+      <h1 class="home__headline">Welcome to The Twinkling Eye</h1>
+    </header>
+
+    <div class="home__grid">
+      <!-- Latest Interview Column -->
+      <div class="home__column">
+        <h2 class="home__section-title">Latest Interview</h2>
+        {
+          latestInterview ? (
+            <InterviewCard
+              title={latestInterview.title}
+              excerpt={latestInterview.excerpt}
+              publishedAt={latestInterview.publishedAt}
+              slug={latestInterview.slug.current}
+              youtubeUrl={latestInterview.youtubeUrl}
+              thumbnail={latestInterview.thumbnail}
+              guest={latestInterview.guest}
+              variant="full-image"
+              size="sm"
+            />
+          ) : (
+            <div class="blog__feed--card placeholder-card">
+              <p>No interviews available yet</p>
+            </div>
+          )
+        }
+      </div>
+
+      <!-- Latest Blog Posts Columns -->
+      {
+        latestBlogPosts.map((post, index) => (
+          <div class="home__column">
+            <h2 class="home__section-title">
+              Latest Blog Post {index === 1 ? "#2" : ""}
+            </h2>
+            <BlogFeedCard
+              title={post.title}
+              excerpt={post.excerpt || ""}
+              publishedAt={post.publishedAt}
+              slug={post.slug.current}
+              featuredImage={post.featuredImage}
+              author={post.author}
+              categories={post.categories || []}
+              variant="full-image"
+              size="sm"
+            />
+          </div>
+        ))
+      }
+
+      {/* Show placeholders if we don't have enough blog posts */}
+      {
+        Array.from({ length: Math.max(0, 2 - latestBlogPosts.length) }).map(
+          (_, index) => (
+            <div class="home__column">
+              <h2 class="home__section-title">
+                Latest Blog Post{" "}
+                {latestBlogPosts.length + index === 1 ? "#2" : ""}
+              </h2>
+              <div class="placeholder-card">
+                <p>No blog posts available yet</p>
+              </div>
+            </div>
+          )
+        )
+      }
+    </div>
   </div>
 </Layout>
 
 <style>
-  .blog__feed--wrapper {
+  .home {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    min-height: 70vh;
+  }
+
+  .home__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .home__headline {
+    font-family: var(--font-callout);
+    font-size: var(--font-size-callout);
+    font-weight: var(--font-weight-callout);
+    line-height: 1.1;
+    color: #461121;
+    margin: 0;
+  }
+
+  .home__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .home__column {
+    display: flex;
     flex-direction: column;
-    justify-self: center;
+  }
+
+  .home__section-title {
+    font-family: var(--font-header-primary);
+    font-size: 1.25rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  /* Placeholder Card */
+  .placeholder-card {
+    border: 2px dashed #ccc;
+    padding: 2rem;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .home {
+      padding: 1rem 0.5rem;
+    }
+
+    .home__header {
+      margin-bottom: 2rem;
+    }
+
+    .home__headline {
+      font-size: 2rem;
+    }
+
+    .home__grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .home__section-title {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  /* Tablet Responsive */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .home__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .home__column:first-child {
+      grid-column: 1 / -1;
+    }
   }
 </style>

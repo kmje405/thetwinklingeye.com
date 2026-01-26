@@ -17,6 +17,22 @@ export interface SanityImage {
   caption?: string;
 }
 
+export interface SanityImageWithMetadata {
+  _type: "image";
+  asset: {
+    _id: string;
+    url: string;
+    metadata?: {
+      dimensions?: {
+        width: number;
+        height: number;
+      };
+    };
+  };
+  alt?: string;
+  caption?: string;
+}
+
 export interface SanitySlug {
   _type: "slug";
   current: string;
@@ -69,7 +85,7 @@ export interface Person extends SanityDocument {
   name: string;
   slug: SanitySlug;
   bio?: PortableText;
-  image?: SanityImage;
+  image?: SanityImageWithMetadata;
   email?: string;
   website?: string;
   socialMedia?: {
@@ -104,7 +120,8 @@ export interface BlogPost extends SanityDocument {
   slug: SanitySlug;
   excerpt?: string;
   publishedAt: string;
-  featuredImage?: SanityImage;
+  cardVariant?: "editorial" | "full-image" | "text-only";
+  featuredImage?: SanityImageWithMetadata;
   body: PortableText;
   author: Person;
   categories?: Category[];
@@ -120,6 +137,7 @@ export interface Interview extends SanityDocument {
   slug: SanitySlug;
   excerpt?: string;
   publishedAt: string;
+  cardVariant?: "editorial" | "full-image" | "text-only";
   youtubeUrl: string;
   thumbnail?: SanityImage;
   description?: PortableText;
@@ -136,10 +154,11 @@ export interface BlogPostPreview {
   slug: SanitySlug;
   excerpt?: string;
   publishedAt: string;
-  featuredImage?: SanityImage;
+  cardVariant?: "editorial" | "full-image" | "text-only";
+  featuredImage?: SanityImageWithMetadata;
   author: {
     name: string;
-    image?: SanityImage;
+    image?: SanityImageWithMetadata;
   };
   categories?: {
     title: string;
@@ -153,6 +172,7 @@ export interface InterviewPreview {
   slug: SanitySlug;
   excerpt?: string;
   publishedAt: string;
+  cardVariant?: "editorial" | "full-image" | "text-only";
   youtubeUrl: string;
   thumbnail?: SanityImage;
   guest: {

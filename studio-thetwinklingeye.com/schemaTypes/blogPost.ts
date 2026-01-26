@@ -137,6 +137,21 @@ export default defineType({
       description: 'Mark as featured to highlight on homepage',
     }),
     defineField({
+      name: 'cardVariant',
+      title: 'Card Display Style',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Editorial (Default)', value: 'editorial'},
+          {title: 'Full Image', value: 'full-image'},
+          {title: 'Text Only', value: 'text-only'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'editorial',
+      description: 'Choose how this post appears in blog feeds and listings',
+    }),
+    defineField({
       name: 'seo',
       title: 'SEO',
       type: 'object',

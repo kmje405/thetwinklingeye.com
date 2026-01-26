@@ -3,6 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import { client, queries, urlFor } from "../../lib/sanity";
 import type { BlogPost } from "../../types/sanity";
 import { toHTML } from "@portabletext/to-html";
+import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
   try {
@@ -37,10 +38,18 @@ const formattedDate = new Date(post.publishedAt).toLocaleDateString("en-US", {
   day: "numeric",
 });
 
-// Get featured image URL if available
+// Get featured image URL and dimensions if available
 const imageUrl = post.featuredImage
-  ? urlFor(post.featuredImage).width(800).height(435).url()
+  ? urlFor(post.featuredImage).width(800).url()
   : null;
+
+const imageWidth = post.featuredImage?.asset?.metadata?.dimensions?.width || 800;
+const imageHeight = post.featuredImage?.asset?.metadata?.dimensions?.height || 435;
+
+// Calculate aspect ratio to maintain proportions while fitting in container
+const aspectRatio = imageWidth / imageHeight;
+const containerWidth = 800; // Max width for the container
+const calculatedHeight = Math.round(containerWidth / aspectRatio);
 
 // Render portable text to HTML
 const bodyHtml = post.body
@@ -48,8 +57,17 @@ const bodyHtml = post.body
       components: {
         types: {
           image: ({ value }) => {
-            const imageUrl = urlFor(value).width(800).url();
-            return `<img src="${imageUrl}" alt="${value.alt || ""}" />`;
+            // Check if image value exists and has required properties
+            if (!value || !value._ref) {
+              return `<div class="missing-image">Image not available</div>`;
+            }
+            try {
+              const imageUrl = urlFor(value).width(800).url();
+              return `<img src="${imageUrl}" alt="${value.alt || ""}" loading="lazy" style="width: 100%; height: auto;" />`;
+            } catch (error) {
+              console.warn('Error processing image:', error);
+              return `<div class="missing-image">Image not available</div>`;
+            }
           },
         },
         marks: {
@@ -73,15 +91,28 @@ const bodyHtml = post.body
     {
       imageUrl && (
         <figure class="post__hero">
-          <img src={imageUrl} alt={post.featuredImage?.alt || post.title} />
+          <Image
+            src={imageUrl}
+            alt={post.featuredImage?.alt || post.title}
+            width={containerWidth}
+            height={calculatedHeight}
+            loading="eager"
+            format="webp"
+          />
           {post.featuredImage?.caption && (
             <figcaption>{post.featuredImage.caption}</figcaption>
           )}
+          
+          <!-- Byline beneath photo and caption -->
+          <div class="post__byline">
+            <p>By {post.author?.name || 'Unknown Author'}</p>
+            <p>{formattedDate}</p>
+          </div>
         </figure>
       )
     }
 
-    <!-- Intro / Lead Paragraph in right column -->
+    <!-- Right column: Excerpt as pullquote, then byline with tags -->
     <section class="post__intro">
       <!-- Pull Quote / Aside - using excerpt as callout -->
       {
@@ -92,23 +123,19 @@ const bodyHtml = post.body
         )
       }
 
-      <!-- Post meta -->
-      <div class="post__meta">
-        <p>By {post.author?.name || "Unknown Author"}</p>
-        <p>{formattedDate}</p>
-        {
-          post.categories && post.categories.length > 0 && (
-            <div class="post__categories">
-              {post.categories.map((category, index) => (
-                <span class="post__category">
-                  {category.title}
-                  {index < (post.categories?.length || 0) - 1 ? ", " : ""}
-                </span>
-              ))}
-            </div>
-          )
-        }
-      </div>
+      <!-- Tags only -->
+      {
+        post.categories && post.categories.length > 0 && (
+          <div class="post__categories">
+            {post.categories.map((category, index) => (
+              <span class="post__category">
+                {category.title}
+                {index < (post.categories?.length || 0) - 1 ? ", " : ""}
+              </span>
+            ))}
+          </div>
+        )
+      }
     </section>
 
     <!-- Main Body spans both columns -->
@@ -152,12 +179,12 @@ const bodyHtml = post.body
       margin: 0;
     }
 
-    .post__hero img {
+    .post__hero img,
+    .post__hero :global(img) {
       width: 100%;
-      height: 27.1875rem;
+      height: auto;
       display: block;
       border-radius: 6px;
-      object-fit: cover;
     }
 
     .post__hero figcaption {
@@ -167,6 +194,17 @@ const bodyHtml = post.body
       line-height: var(--line-height-body);
       color: #333;
       margin-top: 0.5rem;
+    }
+
+    .post__byline {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 1rem;
+    }
+
+    .post__byline p {
+      margin: 0.25rem 0;
     }
 
     /* Intro in right column */
@@ -193,19 +231,10 @@ const bodyHtml = post.body
       color: #461121;
     }
 
-    .post__meta {
+    .post__categories {
       font-family: var(--font-body);
       font-size: 0.9rem;
-      color: #666;
-      margin-bottom: 1rem;
-    }
-
-    .post__meta p {
-      margin: 0.25rem 0;
-    }
-
-    .post__categories {
-      margin-top: 0.5rem;
+      margin-top: 1rem;
     }
 
     .post__category {
@@ -259,6 +288,19 @@ const bodyHtml = post.body
       margin: 1.5rem 0;
     }
 
+    /* Missing image placeholder styling */
+    .post__body :global(.missing-image) {
+      background-color: #f5f5f5;
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      margin: 1.5rem 0;
+      font-family: var(--font-body);
+    }
+
     /* Mobile collapse */
     @media (max-width: 768px) {
       .post {
@@ -278,7 +320,8 @@ const bodyHtml = post.body
         order: 2;
       }
 
-      .post__hero img {
+      .post__hero img,
+      .post__hero :global(img) {
         border-radius: 0;
       }
 
@@ -324,7 +367,8 @@ const bodyHtml = post.body
         order: 2;
       }
 
-      .post__hero img {
+      .post__hero img,
+      .post__hero :global(img) {
         border-radius: 0;
       }
 

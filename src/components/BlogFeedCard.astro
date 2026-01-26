@@ -1,22 +1,24 @@
 ---
 import Button from "./Button.astro";
 import { urlFor } from "../lib/sanity";
-import type { SanityImage } from "../types/sanity";
+import type { SanityImage, SanityImageWithMetadata } from "../types/sanity";
 
 export interface Props {
   title: string;
   excerpt: string;
   publishedAt: string;
   slug: string;
-  featuredImage?: SanityImage;
+  featuredImage?: SanityImageWithMetadata;
   author: {
     name: string;
-    image?: SanityImage;
+    image?: SanityImageWithMetadata;
   };
   categories?: {
     title: string;
     slug: { current: string };
   }[];
+  variant?: "editorial" | "full-image" | "text-only";
+  size?: "sm" | "md" | "lg";
 }
 
 const {
@@ -27,6 +29,8 @@ const {
   featuredImage,
   author,
   categories = [],
+  variant = "editorial",
+  size = "md",
 } = Astro.props;
 
 // Format date
@@ -37,49 +41,118 @@ const formattedDate = new Date(publishedAt).toLocaleDateString("en-US", {
 });
 
 // Get featured image URL if available
-const imageUrl = featuredImage
-  ? urlFor(featuredImage).width(400).height(250).url()
-  : null;
+const imageUrl =
+  featuredImage && featuredImage.asset
+    ? urlFor(featuredImage).width(400).height(250).url()
+    : null;
 ---
 
-<article class="blog__feed--card">
+<article
+  class={`blog__feed--card blog__feed--card--${variant} blog__feed--card--${size}`}
+>
   {
-    imageUrl && (
-      <div class="blog__feed--card__image">
-        <img src={imageUrl} alt={featuredImage?.alt || title} loading="lazy" />
-      </div>
+    variant === "editorial" && (
+      <>
+        <div class="blog__feed--card__container">
+          <div class="blog__feed--card__left">
+            <div class="blog__feed--card__meta">
+              <time class="blog__feed--card__date">{formattedDate}</time>
+              {categories.length > 0 && (
+                <div class="blog__feed--card__categories">
+                  {categories.map((category) => (
+                    <span class="blog__feed--card__category">
+                      {category.title}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <h2 class="blog__feed--card__title">{title}</h2>
+
+            <p class="blog__feed--card__excerpt">{excerpt}</p>
+          </div>
+
+          <div class="blog__feed--card__right">
+            {imageUrl && (
+              <div class="blog__feed--card__image">
+                <img
+                  src={imageUrl}
+                  alt={featuredImage?.alt || title}
+                  loading="lazy"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div class="blog__feed--card__footer">
+          <Button
+            variant="primary"
+            size="small"
+            type="button"
+            href={`/blog/${slug}`}
+          >
+            read more
+          </Button>
+        </div>
+      </>
     )
   }
 
-  <div class="blog__feed--card__content">
-    <div class="blog__feed--card__meta">
-      <time class="blog__feed--card__date">{formattedDate}</time>
-      {
-        categories.length > 0 && (
-          <div class="blog__feed--card__categories">
-            {categories.map((category, index) => (
-              <span class="blog__feed--card__category">
-                {category.title}
-                {index < categories.length - 1 ? ", " : ""}
-              </span>
-            ))}
+  {
+    variant === "full-image" && imageUrl && (
+      <a href={`/blog/${slug}`} class="blog__feed--card__full-image-link">
+        <div class="blog__feed--card__full-image">
+          <img
+            src={imageUrl}
+            alt={featuredImage?.alt || title}
+            loading="lazy"
+          />
+          <div class="blog__feed--card__overlay">
+            <div class="blog__feed--card__overlay-content">
+              <h2 class="blog__feed--card__title">{title}</h2>
+            </div>
           </div>
-        )
-      }
-    </div>
+        </div>
+      </a>
+    )
+  }
 
-    <h2 class="blog__feed--card__title">{title}</h2>
+  {
+    variant === "text-only" && (
+      <div class="blog__feed--card__text-only">
+        <div class="blog__feed--card__row">
+          <h2 class="blog__feed--card__title">{title}</h2>
+          {categories.length > 0 && (
+            <div class="blog__feed--card__categories">
+              {categories.map((category) => (
+                <span class="blog__feed--card__category">{category.title}</span>
+              ))}
+            </div>
+          )}
+        </div>
 
-    <p class="blog__feed--card__excerpt">{excerpt}</p>
+        <div class="blog__feed--card__row">
+          <p class="blog__feed--card__excerpt">{excerpt}</p>
+          <div class="blog__feed--card__meta">
+            <time class="blog__feed--card__date">{formattedDate}</time>
+          </div>
+        </div>
 
-    <div class="blog__feed--card__author">
-      <span>by {author?.name || "Unknown Author"}</span>
-    </div>
-
-    <Button variant="primary" size="small" type="button" href={`/blog/${slug}`}>
-      read more
-    </Button>
-  </div>
+        <div class="blog__feed--card__row">
+          <Button
+            variant="primary"
+            size="small"
+            type="button"
+            href={`/blog/${slug}`}
+          >
+            read more
+          </Button>
+        </div>
+      </div>
+    )
+  }
 </article>
 
 <style is:global>
@@ -90,8 +163,8 @@ const imageUrl = featuredImage
     margin-block: 1rem;
     display: flex;
     flex-direction: column;
-    border-radius: 8px;
     overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transition:
       transform 0.2s ease,
       box-shadow 0.2s ease;
@@ -99,12 +172,35 @@ const imageUrl = featuredImage
 
   .blog__feed--card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .blog__feed--card__container {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    flex-grow: 1;
+    min-height: 275px;
+  }
+
+  .blog__feed--card__left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 275px;
+    max-height: 275px;
+  }
+
+  .blog__feed--card__right {
+    flex-shrink: 0;
+    width: 275px;
+    min-height: 275px;
+    max-height: 275px;
   }
 
   .blog__feed--card__image {
     width: 100%;
-    aspect-ratio: 16 / 10;
+    height: 100%;
     overflow: hidden;
   }
 
@@ -117,13 +213,6 @@ const imageUrl = featuredImage
 
   .blog__feed--card:hover .blog__feed--card__image img {
     transform: scale(1.05);
-  }
-
-  .blog__feed--card__content {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
   }
 
   .blog__feed--card__meta {
@@ -141,11 +230,19 @@ const imageUrl = featuredImage
 
   .blog__feed--card__categories {
     font-family: var(--font-body);
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
   }
 
   .blog__feed--card__category {
-    color: #a37351;
+    color: #666;
     font-weight: 500;
+    font-size: 0.85rem;
+  }
+
+  .blog__feed--card__category:not(:last-child)::after {
+    content: ", ";
   }
 
   .blog__feed--card__title {
@@ -170,15 +267,115 @@ const imageUrl = featuredImage
     overflow: hidden;
   }
 
-  .blog__feed--card__author {
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 1.5rem;
+  .blog__feed--card__footer {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    display: flex;
+    justify-content: center;
   }
 
-  .blog__feed--card .btn {
-    align-self: flex-start;
+  .blog__feed--card__footer .btn {
+    align-self: center;
+  }
+
+  /* Full Image Variant */
+  .blog__feed--card--full-image {
+    max-width: 560px;
+    min-height: 315px;
+  }
+
+  .blog__feed--card__full-image-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+
+  .blog__feed--card__full-image {
+    position: relative;
+    height: 315px;
+    overflow: hidden;
+  }
+
+  .blog__feed--card__full-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+  }
+
+  .blog__feed--card--full-image:hover .blog__feed--card__full-image img {
+    transform: scale(1.05);
+  }
+
+  .blog__feed--card__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
+  }
+
+  .blog__feed--card__overlay-content .blog__feed--card__title {
+    color: white;
+    margin-bottom: 0;
+    font-size: 1.1rem;
+  }
+
+  /* Text Only Variant */
+  .blog__feed--card--text-only {
+    max-width: 560px;
+    min-height: auto;
+  }
+
+  .blog__feed--card__text-only {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .blog__feed--card__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .blog__feed--card--text-only .blog__feed--card__title {
+    flex: 1;
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .blog__feed--card--text-only .blog__feed--card__categories {
+    flex-shrink: 0;
+  }
+
+  .blog__feed--card--text-only .blog__feed--card__excerpt {
+    flex: 1;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  .blog__feed--card--text-only .blog__feed--card__meta {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    margin-bottom: 0;
+  }
+
+  .blog__feed--card--text-only .blog__feed--card__author {
+    margin-bottom: 0;
+    font-size: 0.8rem;
+  }
+
+  .blog__feed--card__row:last-child {
+    justify-content: center;
   }
 
   @media (max-width: 768px) {
@@ -186,8 +383,130 @@ const imageUrl = featuredImage
       max-width: 100%;
     }
 
-    .blog__feed--card__content {
+    .blog__feed--card__container {
+      flex-direction: column;
       padding: 1rem;
+      gap: 1rem;
+    }
+
+    .blog__feed--card__right {
+      width: 100%;
+    }
+
+    .blog__feed--card__image {
+      aspect-ratio: 16 / 10;
+    }
+
+    .blog__feed--card__footer {
+      padding: 0 1rem 1rem 1rem;
+    }
+
+    /* Mobile adjustments for text-only variant */
+    .blog__feed--card__row {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .blog__feed--card--text-only .blog__feed--card__meta {
+      align-items: flex-start;
+    }
+
+    .blog__feed--card__row:last-child {
+      justify-content: flex-start;
+    }
+  }
+
+  /* Size Variants */
+
+  /* Small (sm) - Homepage cards */
+  .blog__feed--card--sm {
+    max-width: 350px;
+  }
+
+  .blog__feed--card--sm.blog__feed--card--full-image {
+    min-height: auto;
+  }
+
+  .blog__feed--card--sm .blog__feed--card__full-image {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .blog__feed--card--sm .blog__feed--card__title {
+    font-size: 1rem;
+  }
+
+  .blog__feed--card--sm .blog__feed--card__excerpt {
+    font-size: 0.85rem;
+  }
+
+  .blog__feed--card--sm.blog__feed--card--editorial
+    .blog__feed--card__container {
+    min-height: 200px;
+    padding: 1rem;
+  }
+
+  .blog__feed--card--sm.blog__feed--card--editorial .blog__feed--card__right {
+    width: 180px;
+    min-height: 180px;
+    max-height: 180px;
+  }
+
+  .blog__feed--card--sm.blog__feed--card--text-only
+    .blog__feed--card__text-only {
+    padding: 1rem;
+  }
+
+  /* Medium (md) - Default size */
+  .blog__feed--card--md {
+    max-width: 560px;
+  }
+
+  /* Large (lg) - Featured cards */
+  .blog__feed--card--lg {
+    max-width: 720px;
+  }
+
+  .blog__feed--card--lg.blog__feed--card--full-image {
+    min-height: auto;
+  }
+
+  .blog__feed--card--lg .blog__feed--card__full-image {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .blog__feed--card--lg .blog__feed--card__title {
+    font-size: 1.4rem;
+  }
+
+  .blog__feed--card--lg .blog__feed--card__excerpt {
+    font-size: 1.1rem;
+  }
+
+  .blog__feed--card--lg.blog__feed--card--editorial
+    .blog__feed--card__container {
+    min-height: 350px;
+    padding: 2rem;
+  }
+
+  .blog__feed--card--lg.blog__feed--card--editorial .blog__feed--card__right {
+    width: 350px;
+    min-height: 350px;
+    max-height: 350px;
+  }
+
+  .blog__feed--card--lg.blog__feed--card--text-only
+    .blog__feed--card__text-only {
+    padding: 2rem;
+  }
+
+  /* Mobile responsive for all sizes */
+  @media (max-width: 768px) {
+    .blog__feed--card--sm,
+    .blog__feed--card--md,
+    .blog__feed--card--lg {
+      max-width: 100%;
     }
   }
 </style>

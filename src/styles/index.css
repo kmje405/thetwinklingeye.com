@@ -3,7 +3,8 @@
 /* Malibu Sunday Serif - Header 1 & 2 */
 @font-face {
   font-family: "Malibu Sunday Serif";
-  src: url("../assets/fonts/malibu-sunday-an-elegant-stylish-font-combination-2025-03-13-20-53-08-utc/transfonter.org-20251028-204302/MalibuSunday-Serif.woff2")
+  src:
+    url("../assets/fonts/malibu-sunday-an-elegant-stylish-font-combination-2025-03-13-20-53-08-utc/transfonter.org-20251028-204302/MalibuSunday-Serif.woff2")
       format("woff2"),
     url("../assets/fonts/malibu-sunday-an-elegant-stylish-font-combination-2025-03-13-20-53-08-utc/transfonter.org-20251028-204302/MalibuSunday-Serif.woff")
       format("woff"),
@@ -72,7 +73,8 @@
 /* Michigan Signature - Callout */
 @font-face {
   font-family: "Michigan Signature";
-  src: url("../assets/fonts/michigan-signature-2023-11-27-05-18-19-utc/Michigan Signature.woff")
+  src:
+    url("../assets/fonts/michigan-signature-2023-11-27-05-18-19-utc/Michigan Signature.woff")
       format("woff"),
     url("../assets/fonts/michigan-signature-2023-11-27-05-18-19-utc/Michigan Signature.otf")
       format("opentype");
@@ -95,6 +97,36 @@
   --button-bg-light: #461121;
   --button-bg-light-hover: #a37351;
   --button-font-color: #ffffff;
+
+  /* Color Palette - Organized by Spectrum */
+
+  /* Reds & Burgundies */
+  --color-burgundy-deep: #461121;
+  --color-burgundy-brown: #3d2b1e;
+  --color-red-coral: #e15a61;
+  --color-pink-dusty: #d54d75;
+  --color-pink-rose: #ec87a5;
+  --color-pink-light: #f8d3de;
+
+  /* Oranges & Yellows */
+  --color-yellow-bright: #fbc200;
+  --color-yellow-golden: #e8d461;
+  --color-orange-warm: #c18f47;
+  --color-cream-peach: #fce3cd;
+
+  /* Greens */
+  --color-green-olive: #485d16;
+  --color-green-sage: #707b57;
+  --color-green-lime: #beda33;
+
+  /* Blues & Purples */
+  --color-blue-lavender: #a7b7db;
+  --color-blue-light: #dbe2f0;
+  --color-gray-purple: #746677;
+
+  /* Browns & Neutrals */
+  --color-brown-warm: #a37351;
+  --color-cream-warm: #f8f0e5;
 
   /* Responsive Font Sizes using clamp() */
   /* clamp(min, preferred, max) - scales fluidly between viewport widths */
@@ -221,12 +253,8 @@ html {
 }
 
 body {
-  margin: 0;
-  padding: 0;
   color: #333;
   background-color: #fff;
-  background-image: url("../assets/background.jpg");
-  background-size: 1440px 1440px;
 }
 
 /* Utility Classes */

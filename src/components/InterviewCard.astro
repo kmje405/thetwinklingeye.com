@@ -1,0 +1,521 @@
+---
+import Button from "./Button.astro";
+import type { SanityImage } from "../types/sanity";
+
+export interface Props {
+  title: string;
+  excerpt?: string;
+  publishedAt: string;
+  slug: string;
+  youtubeUrl: string;
+  thumbnail?: SanityImage;
+  guest: {
+    name: string;
+    image?: SanityImage;
+  };
+  variant?: "editorial" | "full-image" | "text-only";
+  size?: "sm" | "md" | "lg";
+}
+
+const {
+  title,
+  excerpt,
+  publishedAt,
+  slug,
+  youtubeUrl,
+  thumbnail,
+  guest,
+  variant = "full-image",
+  size = "md",
+} = Astro.props;
+
+// Format date
+const formattedDate = new Date(publishedAt).toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+// Helper function to get YouTube thumbnail
+function getYouTubeThumbnail(url: string): string {
+  const videoId = url.match(
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/
+  )?.[1];
+  return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "";
+}
+
+const imageUrl = getYouTubeThumbnail(youtubeUrl);
+const linkPath = `/interviews/${slug}`;
+---
+
+<article
+  class={`interview-card interview-card--${variant} interview-card--${size}`}
+>
+  {
+    variant === "editorial" && (
+      <>
+        <div class="interview-card__container">
+          <div class="interview-card__left">
+            <div class="interview-card__meta">
+              <time class="interview-card__date">{formattedDate}</time>
+              <div class="interview-card__guest">
+                <span class="interview-card__guest-label">
+                  with {guest.name}
+                </span>
+              </div>
+            </div>
+
+            <h2 class="interview-card__title">{title}</h2>
+
+            {excerpt && <p class="interview-card__excerpt">{excerpt}</p>}
+          </div>
+
+          <div class="interview-card__right">
+            {imageUrl && (
+              <div class="interview-card__thumbnail">
+                <img src={imageUrl} alt={title} loading="lazy" />
+                <div class="interview-card__play-button">▶</div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div class="interview-card__footer">
+          <Button variant="primary" size="small" type="button" href={linkPath}>
+            watch interview
+          </Button>
+        </div>
+      </>
+    )
+  }
+
+  {
+    variant === "full-image" && imageUrl && (
+      <a href={linkPath} class="interview-card__full-image-link">
+        <div class="interview-card__full-image">
+          <img src={imageUrl} alt={title} loading="lazy" />
+          <div class="interview-card__play-button-large">▶</div>
+          <div class="interview-card__overlay">
+            <div class="interview-card__overlay-content">
+              <h2 class="interview-card__title">{title}</h2>
+              <p class="interview-card__guest-overlay">with {guest.name}</p>
+            </div>
+          </div>
+        </div>
+      </a>
+    )
+  }
+
+  {
+    variant === "text-only" && (
+      <div class="interview-card__text-only">
+        <div class="interview-card__row">
+          <h2 class="interview-card__title">{title}</h2>
+          <div class="interview-card__guest">
+            <span class="interview-card__guest-label">with {guest.name}</span>
+          </div>
+        </div>
+
+        <div class="interview-card__row">
+          {excerpt && <p class="interview-card__excerpt">{excerpt}</p>}
+          <div class="interview-card__meta">
+            <time class="interview-card__date">{formattedDate}</time>
+          </div>
+        </div>
+
+        <div class="interview-card__row">
+          <Button variant="primary" size="small" type="button" href={linkPath}>
+            watch interview
+          </Button>
+        </div>
+      </div>
+    )
+  }
+</article>
+
+<style is:global>
+  /* Interview Card Base Styles */
+  .interview-card {
+    background-color: var(--color-cream-warm);
+    margin-block: 1rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .interview-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Size Variants */
+  .interview-card--sm {
+    max-width: 350px;
+  }
+
+  .interview-card--md {
+    max-width: 560px;
+  }
+
+  .interview-card--lg {
+    max-width: 720px;
+  }
+
+  /* Editorial Variant */
+  .interview-card--editorial .interview-card__container {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    flex-grow: 1;
+  }
+
+  .interview-card--sm.interview-card--editorial .interview-card__container {
+    min-height: 200px;
+    padding: 1rem;
+  }
+
+  .interview-card--md.interview-card--editorial .interview-card__container {
+    min-height: 275px;
+  }
+
+  .interview-card--lg.interview-card--editorial .interview-card__container {
+    min-height: 350px;
+    padding: 2rem;
+  }
+
+  .interview-card__left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .interview-card__right {
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .interview-card--sm .interview-card__right {
+    width: 180px;
+    height: 180px;
+  }
+
+  .interview-card--md .interview-card__right {
+    width: 275px;
+    height: 275px;
+  }
+
+  .interview-card--lg .interview-card__right {
+    width: 350px;
+    height: 350px;
+  }
+
+  .interview-card__thumbnail {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .interview-card__thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+  }
+
+  .interview-card:hover .interview-card__thumbnail img {
+    transform: scale(1.05);
+  }
+
+  /* Full Image Variant */
+  .interview-card--full-image {
+    min-height: auto;
+  }
+
+  .interview-card__full-image-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+
+  .interview-card__full-image {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  .interview-card__full-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+  }
+
+  .interview-card--full-image:hover .interview-card__full-image img {
+    transform: scale(1.05);
+  }
+
+  .interview-card__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
+  }
+
+  .interview-card__overlay-content .interview-card__title {
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  .interview-card__guest-overlay {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-style: italic;
+    margin: 0;
+  }
+
+  /* Text Only Variant */
+  .interview-card--text-only {
+    min-height: auto;
+  }
+
+  .interview-card__text-only {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .interview-card--sm .interview-card__text-only {
+    padding: 1rem;
+  }
+
+  .interview-card--lg .interview-card__text-only {
+    padding: 2rem;
+  }
+
+  .interview-card__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .interview-card__row:last-child {
+    justify-content: center;
+  }
+
+  /* Typography */
+  .interview-card__title {
+    font-family: var(--font-header-primary);
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-h2);
+    color: #333;
+    margin: 0 0 1rem 0;
+    line-height: 1.3;
+  }
+
+  .interview-card--sm .interview-card__title {
+    font-size: 1rem;
+  }
+
+  .interview-card--lg .interview-card__title {
+    font-size: 1.4rem;
+  }
+
+  .interview-card--text-only .interview-card__title {
+    flex: 1;
+    margin: 0;
+  }
+
+  .interview-card__excerpt {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    color: #555;
+    line-height: 1.5;
+    margin: 0 0 1rem 0;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .interview-card--sm .interview-card__excerpt {
+    font-size: 0.85rem;
+  }
+
+  .interview-card--lg .interview-card__excerpt {
+    font-size: 1.1rem;
+  }
+
+  .interview-card--text-only .interview-card__excerpt {
+    flex: 1;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  .interview-card__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .interview-card--text-only .interview-card__meta {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    margin-bottom: 0;
+  }
+
+  .interview-card__date {
+    font-family: var(--font-body);
+  }
+
+  .interview-card__guest {
+    display: flex;
+    align-items: center;
+  }
+
+  .interview-card__guest-label {
+    color: var(--color-burgundy-deep);
+    font-weight: 500;
+    font-size: 0.85rem;
+  }
+
+  .interview-card--text-only .interview-card__guest {
+    flex-shrink: 0;
+  }
+
+  .interview-card__footer {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Play Buttons */
+  .interview-card__play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: background-color 0.2s ease;
+  }
+
+  .interview-card:hover .interview-card__play-button {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  .interview-card__play-button-large {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+    z-index: 2;
+  }
+
+  .interview-card--sm .interview-card__play-button-large {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  .interview-card--md .interview-card__play-button-large {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+  }
+
+  .interview-card--lg .interview-card__play-button-large {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+  }
+
+  .interview-card:hover .interview-card__play-button-large {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .interview-card--sm,
+    .interview-card--md,
+    .interview-card--lg {
+      max-width: 100%;
+    }
+
+    .interview-card--editorial .interview-card__container {
+      flex-direction: column;
+      padding: 1rem;
+      gap: 1rem;
+    }
+
+    .interview-card__right {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    .interview-card__thumbnail {
+      aspect-ratio: 16 / 10;
+    }
+
+    .interview-card__footer {
+      padding: 0 1rem 1rem 1rem;
+    }
+
+    .interview-card__row {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .interview-card--text-only .interview-card__meta {
+      align-items: flex-start;
+    }
+
+    .interview-card__row:last-child {
+      justify-content: flex-start;
+    }
+
+    .interview-card__play-button {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .interview-card__play-button-large {
+      width: 60px !important;
+      height: 60px !important;
+      font-size: 1.5rem !important;
+    }
+  }
+</style>

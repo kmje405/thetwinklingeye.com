@@ -3,6 +3,8 @@ import "../styles/index.css";
 import { siteConfig } from "../config/site";
 import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
+import { Image } from "astro:assets";
+import backgroundImage from "../assets/background.jpg";
 ---
 
 <!doctype html>
@@ -28,15 +30,47 @@ import Footer from "../components/Footer.astro";
     <title>{siteConfig.title}</title>
   </head>
   <body>
-    <Navbar />
-    <main>
-      <slot />
-    </main>
-    <Footer />
+    <Image
+      src={backgroundImage}
+      alt=""
+      class="background-image"
+      width={1440}
+      height={1440}
+      format="webp"
+      quality={85}
+    />
+    <div class="content-wrapper">
+      <Navbar />
+      <main>
+        <slot />
+      </main>
+      <Footer />
+    </div>
   </body>
 </html>
 
 <style>
+  body {
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+
+  .background-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+  }
+
+  .content-wrapper {
+    position: relative;
+    z-index: 1;
+  }
+
   main {
     min-height: 90vh;
   }

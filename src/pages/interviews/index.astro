@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import InterviewCard from "../../components/InterviewCard.astro";
 import { client, queries } from "../../lib/sanity";
-import { urlFor } from "../../lib/sanity";
 import type { InterviewPreview } from "../../types/sanity";
 
 // Fetch interviews from Sanity with fallback
@@ -19,22 +19,6 @@ try {
   error = "Unable to load interviews";
 }
 
-// Function to extract YouTube video ID from URL
-function getYouTubeVideoId(url: string): string | null {
-  const regex =
-    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
-}
-
-// Function to get YouTube thumbnail URL
-function getYouTubeThumbnail(url: string): string {
-  const videoId = getYouTubeVideoId(url);
-  return videoId
-    ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
-    : "";
-}
-
 // Fallback data if no Sanity data available
 const fallbackInterviews: InterviewPreview[] = [
   {
@@ -44,6 +28,7 @@ const fallbackInterviews: InterviewPreview[] = [
     excerpt:
       "This is a sample interview. Connect Sanity to see your actual content.",
     publishedAt: new Date().toISOString(),
+    cardVariant: "full-image",
     youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     thumbnail: undefined,
     guest: {
@@ -59,8 +44,8 @@ const interviewsToShow =
 ---
 
 <Layout>
-  <div class="interviews-feed">
-    <header class="interviews-feed__header">
+  <div class="interview-feed">
+    <header class="interview-feed__header">
       <h1>Interviews</h1>
       <p>Conversations with inspiring people</p>
     </header>
@@ -96,64 +81,21 @@ const interviewsToShow =
       )
     }
 
-    <div class="interviews-feed__grid">
+    <div class="interview-feed__cards">
       {
-        interviewsToShow.map((interview) => {
-          const thumbnailUrl = interview.thumbnail
-            ? urlFor(interview.thumbnail).width(400).height(225).url()
-            : getYouTubeThumbnail(interview.youtubeUrl);
-
-          return (
-            <article class="interview-card">
-              <a
-                href={`/interviews/${interview.slug.current}`}
-                class="interview-card__link"
-              >
-                <div class="interview-card__thumbnail">
-                  <img
-                    src={thumbnailUrl}
-                    alt={interview.title}
-                    loading="lazy"
-                  />
-                  <div class="interview-card__play-button">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M8 5V19L19 12L8 5Z" fill="currentColor" />
-                    </svg>
-                  </div>
-                </div>
-
-                <div class="interview-card__content">
-                  <h2 class="interview-card__title">{interview.title}</h2>
-
-                  <div class="interview-card__guest">
-                    <span>with {interview.guest.name}</span>
-                  </div>
-
-                  {interview.excerpt && (
-                    <p class="interview-card__excerpt">{interview.excerpt}</p>
-                  )}
-
-                  <time class="interview-card__date">
-                    {new Date(interview.publishedAt).toLocaleDateString(
-                      "en-US",
-                      {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      }
-                    )}
-                  </time>
-                </div>
-              </a>
-            </article>
-          );
-        })
+        interviewsToShow.map((interview) => (
+          <InterviewCard
+            title={interview.title}
+            excerpt={interview.excerpt}
+            publishedAt={interview.publishedAt}
+            slug={interview.slug.current}
+            youtubeUrl={interview.youtubeUrl}
+            thumbnail={interview.thumbnail}
+            guest={interview.guest}
+            variant={interview.cardVariant || "full-image"}
+            size="md"
+          />
+        ))
       }
     </div>
 
@@ -169,130 +111,34 @@ const interviewsToShow =
 </Layout>
 
 <style>
-  .interviews-feed {
+  .interview-feed {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 1rem;
   }
 
-  .interviews-feed__header {
+  .interview-feed__header {
     text-align: center;
     margin-bottom: 3rem;
   }
 
-  .interviews-feed__header h1 {
+  .interview-feed__header h1 {
     font-family: var(--font-header-primary);
-    font-size: var(--font-size-h1);
+    font-size: 1.25rem;
     color: #333;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
   }
 
-  .interviews-feed__header p {
+  .interview-feed__header p {
     font-family: var(--font-body);
     font-size: 1.1rem;
     color: #666;
   }
 
-  .interviews-feed__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  .interview-card {
-    background: #f8f0e5;
-    border-radius: 8px;
-    overflow: hidden;
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
-  }
-
-  .interview-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  }
-
-  .interview-card__link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-  }
-
-  .interview-card__thumbnail {
-    position: relative;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-  }
-
-  .interview-card__thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.2s ease;
-  }
-
-  .interview-card:hover .interview-card__thumbnail img {
-    transform: scale(1.05);
-  }
-
-  .interview-card__play-button {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60px;
-    height: 60px;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    transition: background-color 0.2s ease;
-  }
-
-  .interview-card:hover .interview-card__play-button {
-    background: rgba(0, 0, 0, 0.9);
-  }
-
-  .interview-card__content {
-    padding: 1.5rem;
-  }
-
-  .interview-card__title {
-    font-family: var(--font-header-primary);
-    font-size: 1.25rem;
-    font-weight: var(--font-weight-h2);
-    color: #333;
-    margin: 0 0 0.5rem 0;
-    line-height: 1.3;
-  }
-
-  .interview-card__guest {
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 1rem;
-  }
-
-  .interview-card__excerpt {
-    font-family: var(--font-body);
-    font-size: var(--font-size-body);
-    color: #555;
-    line-height: 1.5;
-    margin: 0 0 1rem 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .interview-card__date {
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    color: #888;
+  .interview-feed__cards {
+    margin: 0 auto;
+    max-width: 600px;
+    padding: 0 1rem;
   }
 
   .error-message,
@@ -335,17 +181,12 @@ const interviewsToShow =
   }
 
   @media (max-width: 768px) {
-    .interviews-feed {
+    .interview-feed {
       padding: 1rem 0.5rem;
     }
 
-    .interviews-feed__grid {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-
-    .interview-card__content {
-      padding: 1rem;
+    .interview-feed__cards {
+      margin: 0 0.5rem;
     }
   }
 </style>

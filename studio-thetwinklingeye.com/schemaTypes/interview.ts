@@ -35,6 +35,21 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'cardVariant',
+      title: 'Card Display Style',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Editorial (Two Column)', value: 'editorial'},
+          {title: 'Full Image (Large Image)', value: 'full-image'},
+          {title: 'Text Only (No Image)', value: 'text-only'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'full-image',
+      description: 'How this interview should be displayed in lists',
+    }),
+    defineField({
       name: 'youtubeUrl',
       title: 'YouTube URL',
       type: 'url',

@@ -1,12 +1,90 @@
+---
+const { PUBLIC_TURNSTILE_SITE_KEY, DEV } = import.meta.env;
+const isDevelopment = DEV || import.meta.env.MODE === "development";
+
+// Use dummy sitekey for development testing
+const siteKey = isDevelopment
+  ? "1x00000000000000000000AA" // Always passes - for testing successful flows
+  : PUBLIC_TURNSTILE_SITE_KEY;
+---
+
 <section class="newsletter__cta">
   <div class="cta__wrapper">
     <h3>Let's keep up!</h3>
-    <form action="submit">
-      <label class="sr-only" for="email">Email:</label>
-      <input type="text" id="email" placeholder="example@email.com" />
+    <p>Subscribe to our newsletter for the latest updates and insights.</p>
+
+    <form id="newsletter-form" class="newsletter-form">
+      <!-- Honeypot field for spam protection -->
+      <input
+        type="text"
+        name="hp"
+        class="sr-only"
+        tabindex="-1"
+        autocomplete="off"
+      />
+
+      <div class="form-group">
+        <label class="sr-only" for="email">Email Address:</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="your@email.com"
+          required
+          aria-describedby="email-error"
+        />
+      </div>
+      <div class="form-group">
+        <label class="sr-only" for="name">Name (optional):</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Your name (optional)"
+          maxlength="80"
+        />
+      </div>
+
+      <div class="form-group consent-group">
+        <label class="consent-label">
+          <input
+            type="checkbox"
+            id="consent"
+            name="consent"
+            required
+            class="consent-checkbox"
+          />
+          <span class="consent-text">
+            I consent to receiving newsletters and promotional emails. You can
+            unsubscribe at any time.
+          </span>
+        </label>
+      </div>
+
+      <!-- Cloudflare Turnstile -->
+      <div class="form-group turnstile-group">
+        <div
+          class="cf-turnstile"
+          data-sitekey={siteKey}
+          data-theme="light"
+          data-size="normal"
+        >
+        </div>
+      </div>
+
+      <button type="submit" class="subscribe-btn"> Subscribe </button>
+      <div class="message" style="display: none;" role="alert"></div>
     </form>
   </div>
 </section>
+
+<!-- Cloudflare Turnstile Script -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer
+></script>
+
+<script>
+  import "../scripts/newsletter.ts";
+</script>
 
 <style is:global>
   .newsletter__cta {
@@ -14,13 +92,168 @@
     color: white;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: center;
     min-height: 272px;
+    padding: 2rem 1rem;
   }
+
   .cta__wrapper {
-    border: yellow 2px solid;
+    max-width: 500px;
+    width: 100%;
+  }
+
+  .newsletter__cta h3 {
+    font-family: var(--font-header-primary);
+    font-size: var(--font-size-h2);
+    margin-bottom: 0.5rem;
+    color: white;
+  }
+
+  .newsletter__cta p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    margin-bottom: 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     align-items: center;
   }
+
+  .form-group {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .consent-group {
+    text-align: left;
+  }
+
+  .turnstile-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .cf-turnstile {
+    margin: 0 auto;
+  }
+
+  .dev-turnstile-placeholder {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    padding: 1rem;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .dev-turnstile-placeholder p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .dev-turnstile-placeholder small {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+  }
+
+  .consent-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .consent-checkbox {
+    margin: 0;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 0.1rem;
+  }
+
+  .consent-text {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .newsletter-form input[type="email"],
+  .newsletter-form input[type="text"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #f8f0e5;
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    color: #333;
+    box-sizing: border-box;
+  }
+
+  .newsletter-form input[type="email"]:focus,
+  .newsletter-form input[type="text"]:focus {
+    outline: 2px solid #a37351;
+    outline-offset: 2px;
+  }
+
+  .newsletter-form input::placeholder {
+    color: #666;
+  }
+
+  .subscribe-btn {
+    background-color: #a37351;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    min-width: 120px;
+  }
+
+  .subscribe-btn:hover:not(:disabled) {
+    background-color: #8b5d42;
+  }
+
+  .subscribe-btn:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+  }
+
+  .message {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    text-align: center;
+    max-width: 350px;
+  }
+
+  .message.success {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+  }
+
+  .message.error {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+  }
+
   .sr-only:not(:focus):not(:active) {
     clip: rect(0 0 0 0);
     clip-path: inset(50%);
@@ -31,11 +264,28 @@
     width: 1px;
   }
 
-  form {
-    align-content: center;
-  }
-  input[type="text"] {
-    background-color: #f8f0e5;
-    padding: 0.5rem 2rem;
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .newsletter__cta {
+      padding: 1.5rem 0.5rem;
+      min-height: auto;
+    }
+
+    .newsletter-form {
+      gap: 0.75rem;
+    }
+
+    .form-group {
+      max-width: 100%;
+    }
+
+    .newsletter-form input[type="email"],
+    .newsletter-form input[type="text"] {
+      padding: 0.6rem 0.8rem;
+    }
+
+    .subscribe-btn {
+      padding: 0.6rem 1.5rem;
+    }
   }
 </style>

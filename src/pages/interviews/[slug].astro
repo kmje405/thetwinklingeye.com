@@ -1,0 +1,333 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { client, queries, urlFor } from "../../lib/sanity";
+
+// Define the interview type for this page
+interface InterviewData {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  excerpt?: string;
+  publishedAt: string;
+  youtubeUrl: string;
+  thumbnail?: any;
+  description?: any[];
+  guest: {
+    name: string;
+    bio?: string;
+    image?: any;
+  };
+  seo?: any;
+}
+
+export async function getStaticPaths() {
+  if (!import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    return [];
+  }
+
+  try {
+    const interviews =
+      await client.fetch(`*[_type == "interview" && defined(slug.current)]{
+      slug
+    }`);
+
+    return interviews.map((interview: any) => ({
+      params: { slug: interview.slug.current },
+    }));
+  } catch (error) {
+    console.error("Error fetching interview slugs:", error);
+    return [];
+  }
+}
+
+const { slug } = Astro.params;
+
+let interview: InterviewData | null = null;
+let error: string | null = null;
+
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID && slug) {
+    interview = await client.fetch<InterviewData>(queries.interview, { slug });
+  }
+} catch (e) {
+  console.error("Error fetching interview:", e);
+  error = "Unable to load interview";
+}
+
+// Function to extract YouTube video ID from URL
+function getYouTubeVideoId(url: string): string | null {
+  const regex =
+    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}
+
+// Function to get YouTube embed URL
+function getYouTubeEmbedUrl(url: string): string {
+  const videoId = getYouTubeVideoId(url);
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
+}
+
+if (!interview && !error) {
+  return Astro.redirect("/interviews");
+}
+---
+
+<Layout>
+  {
+    error && (
+      <div class="error-container">
+        <h1>Error</h1>
+        <p>{error}</p>
+        <a href="/interviews">← Back to Interviews</a>
+      </div>
+    )
+  }
+
+  {
+    interview && (
+      <div class="interview-page">
+        <div class="interview-header">
+          <a href="/interviews" class="back-link">
+            ← Back to Interviews
+          </a>
+          <h1>{interview.title}</h1>
+          <div class="interview-meta">
+            <span class="guest">with {interview.guest.name}</span>
+            <time class="date">
+              {new Date(interview.publishedAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </time>
+          </div>
+        </div>
+
+        <div class="video-container">
+          <iframe
+            src={getYouTubeEmbedUrl(interview.youtubeUrl)}
+            title={interview.title}
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          />
+        </div>
+
+        {interview.description && (
+          <div class="interview-description">
+            <h2>About this interview</h2>
+            <div class="description-content">
+              {interview.description.map((block: any) => {
+                if (block._type === "block") {
+                  const text =
+                    block.children?.map((child: any) => child.text).join("") ||
+                    "";
+                  if (block.style === "h2") {
+                    return <h3>{text}</h3>;
+                  } else if (block.style === "h3") {
+                    return <h4>{text}</h4>;
+                  } else if (block.style === "blockquote") {
+                    return <blockquote>{text}</blockquote>;
+                  } else {
+                    return <p>{text}</p>;
+                  }
+                }
+                return null;
+              })}
+            </div>
+          </div>
+        )}
+
+        {interview.guest.bio && (
+          <div class="guest-info">
+            <h2>About {interview.guest.name}</h2>
+            <div class="guest-content">
+              {interview.guest.image && (
+                <div class="guest-image">
+                  <img
+                    src={urlFor(interview.guest.image)
+                      .width(200)
+                      .height(200)
+                      .url()}
+                    alt={interview.guest.name}
+                  />
+                </div>
+              )}
+              <div class="guest-bio">
+                <p>{interview.guest.bio}</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+</Layout>
+
+<style>
+  .error-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .interview-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .interview-header {
+    margin-bottom: 2rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    color: #666;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .back-link:hover {
+    color: #333;
+  }
+
+  .interview-header h1 {
+    font-family: var(--font-header-primary);
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .interview-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    color: #666;
+    font-size: 1rem;
+  }
+
+  .guest {
+    font-weight: 500;
+  }
+
+  .date {
+    font-size: 0.9rem;
+  }
+
+  .video-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    margin-bottom: 3rem;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .interview-description,
+  .guest-info {
+    margin-bottom: 3rem;
+  }
+
+  .interview-description h2,
+  .guest-info h2 {
+    font-family: var(--font-header-primary);
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+  }
+
+  .description-content {
+    font-family: var(--font-body);
+    line-height: 1.6;
+    color: #555;
+  }
+
+  .description-content p {
+    margin-bottom: 1rem;
+  }
+
+  .description-content h3 {
+    font-size: 1.4rem;
+    color: #333;
+    margin: 2rem 0 1rem 0;
+  }
+
+  .description-content h4 {
+    font-size: 1.2rem;
+    color: #333;
+    margin: 1.5rem 0 0.5rem 0;
+  }
+
+  .description-content blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 1.5rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #666;
+  }
+
+  .guest-content {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+
+  .guest-image {
+    flex-shrink: 0;
+  }
+
+  .guest-image img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .guest-bio {
+    flex: 1;
+    font-family: var(--font-body);
+    line-height: 1.6;
+    color: #555;
+  }
+
+  @media (max-width: 768px) {
+    .interview-page {
+      padding: 1rem 0.5rem;
+    }
+
+    .interview-header h1 {
+      font-size: 2rem;
+    }
+
+    .interview-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .guest-content {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .guest-image img {
+      width: 120px;
+      height: 120px;
+    }
+  }
+</style>

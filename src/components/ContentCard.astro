@@ -1,0 +1,460 @@
+---
+import Button from "./Button.astro";
+import { urlFor } from "../lib/sanity";
+import type { SanityImage, SanityImageWithMetadata } from "../types/sanity";
+
+// Base content interface
+interface BaseContent {
+  title: string;
+  excerpt?: string;
+  publishedAt: string;
+  slug: string;
+  variant?: "editorial" | "full-image" | "text-only";
+  size?: "sm" | "md" | "lg";
+}
+
+// Blog-specific content
+interface BlogContent extends BaseContent {
+  type: "blog";
+  featuredImage?: SanityImageWithMetadata;
+  author: {
+    name: string;
+    image?: SanityImageWithMetadata;
+  };
+  categories?: {
+    title: string;
+    slug: { current: string };
+  }[];
+}
+
+// Interview-specific content
+interface InterviewContent extends BaseContent {
+  type: "interview";
+  youtubeUrl: string;
+  thumbnail?: SanityImage;
+  guest: {
+    name: string;
+    image?: SanityImage;
+  };
+}
+
+export type Props = BlogContent | InterviewContent;
+
+const props = Astro.props;
+const {
+  title,
+  excerpt,
+  publishedAt,
+  slug,
+  variant = "editorial",
+  size = "md",
+  type,
+} = props;
+
+// Format date
+const formattedDate = new Date(publishedAt).toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+// Helper function to get YouTube thumbnail
+function getYouTubeThumbnail(url: string): string {
+  const videoId = url.match(
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/
+  )?.[1];
+  return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "";
+}
+
+// Get image URL based on content type
+let imageUrl: string | null = null;
+let imageAlt: string = title;
+
+if (type === "blog" && props.featuredImage && props.featuredImage.asset) {
+  imageUrl = urlFor(props.featuredImage).width(400).height(250).url();
+  imageAlt = props.featuredImage.alt || title;
+} else if (type === "interview") {
+  imageUrl = getYouTubeThumbnail(props.youtubeUrl);
+}
+
+// Get link and button text based on content type
+const linkPath = type === "blog" ? `/blog/${slug}` : `/interviews/${slug}`;
+const buttonText = type === "blog" ? "read more" : "watch interview";
+---
+
+<article
+  class={`blog__feed--card blog__feed--card--${variant} blog__feed--card--${size} content-card content-card--${type} content-card--${size}`}
+>
+  {
+    variant === "editorial" && (
+      <>
+        <div class="blog__feed--card__container">
+          <div class="blog__feed--card__left">
+            <div class="blog__feed--card__meta">
+              <time class="blog__feed--card__date">{formattedDate}</time>
+              {type === "blog" &&
+                props.categories &&
+                props.categories.length > 0 && (
+                  <div class="blog__feed--card__categories">
+                    {props.categories.map((category) => (
+                      <span class="blog__feed--card__category">
+                        {category.title}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              {type === "interview" && (
+                <div class="interview-guest">
+                  <span class="blog__feed--card__category">
+                    with {props.guest.name}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <h2 class="blog__feed--card__title">{title}</h2>
+
+            {excerpt && <p class="blog__feed--card__excerpt">{excerpt}</p>}
+          </div>
+
+          <div class="blog__feed--card__right">
+            {imageUrl && (
+              <div
+                class={`blog__feed--card__image ${type === "interview" ? "interview-thumbnail" : ""}`}
+              >
+                <img src={imageUrl} alt={imageAlt} loading="lazy" />
+                {type === "interview" && (
+                  <div class="interview-play-button">▶</div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div class="blog__feed--card__footer">
+          <Button variant="primary" size="small" type="button" href={linkPath}>
+            {buttonText}
+          </Button>
+        </div>
+      </>
+    )
+  }
+
+  {
+    variant === "full-image" && imageUrl && (
+      <a href={linkPath} class="blog__feed--card__full-image-link">
+        <div
+          class={`blog__feed--card__full-image ${type === "interview" ? "interview-full-image" : ""}`}
+        >
+          <img src={imageUrl} alt={imageAlt} loading="lazy" />
+          {type === "interview" && (
+            <div class="interview-play-button-large">▶</div>
+          )}
+          <div class="blog__feed--card__overlay">
+            <div class="blog__feed--card__overlay-content">
+              <h2 class="blog__feed--card__title">{title}</h2>
+              {type === "interview" && (
+                <p class="interview-guest-overlay">with {props.guest.name}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </a>
+    )
+  }
+
+  {
+    variant === "text-only" && (
+      <div class="blog__feed--card__text-only">
+        <div class="blog__feed--card__row">
+          <h2 class="blog__feed--card__title">{title}</h2>
+          {type === "blog" &&
+            props.categories &&
+            props.categories.length > 0 && (
+              <div class="blog__feed--card__categories">
+                {props.categories.map((category) => (
+                  <span class="blog__feed--card__category">
+                    {category.title}
+                  </span>
+                ))}
+              </div>
+            )}
+          {type === "interview" && (
+            <div class="interview-guest">
+              <span class="blog__feed--card__category">
+                with {props.guest.name}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div class="blog__feed--card__row">
+          {excerpt && <p class="blog__feed--card__excerpt">{excerpt}</p>}
+          <div class="blog__feed--card__meta">
+            <time class="blog__feed--card__date">{formattedDate}</time>
+          </div>
+        </div>
+
+        <div class="blog__feed--card__row">
+          <Button variant="primary" size="small" type="button" href={linkPath}>
+            {buttonText}
+          </Button>
+        </div>
+      </div>
+    )
+  }
+</article>
+
+<style is:global>
+  /* Ensure ContentCard inherits the same size constraints as BlogFeedCard */
+  .blog__feed--card.content-card {
+    max-width: 560px !important;
+  }
+
+  .blog__feed--card--full-image.content-card {
+    max-width: 560px !important;
+    min-height: 315px !important;
+  }
+
+  .blog__feed--card--full-image.content-card .blog__feed--card__full-image {
+    height: 315px !important;
+  }
+
+  /* Interview-specific aspect ratio adjustments */
+  .blog__feed--card--full-image.content-card--interview {
+    min-height: auto !important;
+  }
+
+  .blog__feed--card--full-image.content-card--interview
+    .blog__feed--card__full-image {
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    width: 100%;
+  }
+
+  .blog__feed--card--full-image.content-card--interview
+    .blog__feed--card__full-image
+    img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .blog__feed--card--editorial.content-card {
+    max-width: 560px !important;
+  }
+
+  .blog__feed--card--text-only.content-card {
+    max-width: 560px !important;
+  }
+
+  /* Interview-specific styling that extends blog card styles */
+  .content-card--interview .interview-thumbnail {
+    position: relative;
+  }
+
+  .interview-play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: background-color 0.2s ease;
+  }
+
+  .content-card--interview:hover .interview-play-button {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  .interview-full-image {
+    position: relative;
+  }
+
+  .interview-play-button-large {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    transition: background-color 0.2s ease;
+    z-index: 2;
+  }
+
+  .content-card--interview:hover .interview-play-button-large {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  .interview-guest-overlay {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-style: italic;
+    margin: 0;
+  }
+
+  /* Ensure overlay styles work for interview cards */
+  .content-card--interview .blog__feed--card__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
+  }
+
+  .content-card--interview
+    .blog__feed--card__overlay-content
+    .blog__feed--card__title {
+    color: white;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .interview-guest {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Size Variants */
+
+  /* Small (sm) - Homepage cards */
+  .content-card--sm {
+    max-width: 350px !important;
+  }
+
+  .content-card--sm.blog__feed--card--full-image {
+    min-height: auto !important;
+  }
+
+  .content-card--sm .blog__feed--card__full-image {
+    height: auto !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+
+  .content-card--sm .blog__feed--card__title {
+    font-size: 1rem !important;
+  }
+
+  .content-card--sm .blog__feed--card__excerpt {
+    font-size: 0.85rem !important;
+  }
+
+  .content-card--sm .interview-play-button-large {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  /* Medium (md) - Default size */
+  .content-card--md {
+    max-width: 560px !important;
+  }
+
+  .content-card--md .interview-play-button-large {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+  }
+
+  /* Large (lg) - Featured cards */
+  .content-card--lg {
+    max-width: 720px !important;
+  }
+
+  .content-card--lg.blog__feed--card--full-image {
+    min-height: auto !important;
+  }
+
+  .content-card--lg .blog__feed--card__full-image {
+    height: auto !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+
+  .content-card--lg .blog__feed--card__title {
+    font-size: 1.4rem !important;
+  }
+
+  .content-card--lg .blog__feed--card__excerpt {
+    font-size: 1.1rem !important;
+  }
+
+  .content-card--lg .interview-play-button-large {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+  }
+
+  /* Editorial variant size adjustments */
+  .content-card--sm.blog__feed--card--editorial .blog__feed--card__container {
+    min-height: 200px;
+    padding: 1rem;
+  }
+
+  .content-card--sm.blog__feed--card--editorial .blog__feed--card__right {
+    width: 180px;
+    min-height: 180px;
+    max-height: 180px;
+  }
+
+  .content-card--lg.blog__feed--card--editorial .blog__feed--card__container {
+    min-height: 350px;
+    padding: 2rem;
+  }
+
+  .content-card--lg.blog__feed--card--editorial .blog__feed--card__right {
+    width: 350px;
+    min-height: 350px;
+    max-height: 350px;
+  }
+
+  /* Text-only variant size adjustments */
+  .content-card--sm.blog__feed--card--text-only {
+    min-height: auto;
+  }
+
+  .content-card--sm.blog__feed--card--text-only .blog__feed--card__text-only {
+    padding: 1rem;
+  }
+
+  .content-card--lg.blog__feed--card--text-only .blog__feed--card__text-only {
+    padding: 2rem;
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 768px) {
+    .interview-play-button {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .interview-play-button-large {
+      width: 60px;
+      height: 60px;
+      font-size: 1.5rem;
+    }
+
+    /* All sizes become responsive on mobile */
+    .content-card--sm,
+    .content-card--md,
+    .content-card--lg {
+      max-width: 100% !important;
+    }
+  }
+</style>

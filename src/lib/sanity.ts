@@ -31,16 +31,35 @@ export const queries = {
   }`,
 
   // All blog posts
-  allBlogPosts: `*[_type == "blogPost"] | order(publishedAt desc){
+  allBlogPosts: `*[_type == "blogPost" && defined(slug.current)] | order(publishedAt desc){
     _id,
     title,
     slug,
     excerpt,
     publishedAt,
-    featuredImage,
+    cardVariant,
+    featuredImage {
+      asset->{
+        _id,
+        url,
+        metadata {
+          dimensions {
+            width,
+            height
+          }
+        }
+      },
+      alt,
+      caption
+    },
     author->{
       name,
-      image
+      image {
+        asset->{
+          _id,
+          url
+        }
+      }
     },
     categories[]->{
       title,
@@ -55,12 +74,30 @@ export const queries = {
     slug,
     excerpt,
     publishedAt,
-    featuredImage,
+    featuredImage {
+      asset->{
+        _id,
+        url,
+        metadata {
+          dimensions {
+            width,
+            height
+          }
+        }
+      },
+      alt,
+      caption
+    },
     body,
     author->{
       name,
       bio,
-      image
+      image {
+        asset->{
+          _id,
+          url
+        }
+      }
     },
     categories[]->{
       title,
