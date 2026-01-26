@@ -53,23 +53,12 @@ const faviconUrl = dynamicSiteConfig.sanityData?.favicon
     <!-- Hyvor Talk Script - Global -->
     <script async src="https://talk.hyvor.com/embed/embed.js" type="module"
     ></script>
+    <!-- Content loading script -->
+    <script>
+      import "../scripts/contentLoader.ts";
+    </script>
   </head>
   <body>
-    <script>
-      // Add content-loaded class when page is ready
-      document.addEventListener("DOMContentLoaded", () => {
-        document.body.classList.add("content-loaded");
-      });
-
-      // Also add it immediately if DOM is already loaded
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", () => {
-          document.body.classList.add("content-loaded");
-        });
-      } else {
-        document.body.classList.add("content-loaded");
-      }
-    </script>
     <Image
       src={backgroundImage}
       alt=""
