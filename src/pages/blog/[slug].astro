@@ -336,7 +336,7 @@ const bodyHtml = post.body
         margin: 2rem;
       }
 
-      /* Stack content in proper order: title, hero (image + caption), intro, body */
+      /* Stack content in proper order: title, hero (image + caption), intro, body, comments */
       .post__title {
         grid-column: 1;
         order: 1;
@@ -360,6 +360,11 @@ const bodyHtml = post.body
       .post__body {
         grid-column: 1;
         order: 4;
+      }
+
+      .post__comments {
+        grid-column: 1;
+        order: 5;
       }
 
       .post__pullquote blockquote {
@@ -383,7 +388,7 @@ const bodyHtml = post.body
         margin: 2rem;
       }
 
-      /* Stack content in proper order for tablet: title, hero (image + caption), intro, body */
+      /* Stack content in proper order for tablet: title, hero (image + caption), intro, body, comments */
       .post__title {
         grid-column: 1;
         order: 1;
@@ -407,6 +412,11 @@ const bodyHtml = post.body
       .post__body {
         grid-column: 1;
         order: 4;
+      }
+
+      .post__comments {
+        grid-column: 1;
+        order: 5;
       }
 
       .post__body :global(blockquote) {
