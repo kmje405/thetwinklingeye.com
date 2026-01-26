@@ -174,10 +174,10 @@ export interface InterviewPreview {
   publishedAt: string;
   cardVariant?: "editorial" | "full-image" | "text-only";
   youtubeUrl: string;
-  thumbnail?: SanityImage;
+  thumbnail?: SanityImageWithMetadata;
   guest: {
     name: string;
     bio?: PortableText;
-    image?: SanityImage;
+    image?: SanityImageWithMetadata;
   };
 }

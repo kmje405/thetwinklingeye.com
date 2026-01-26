@@ -1,11 +1,348 @@
 ---
+import footerAccentIcon from "../assets/footerAccentIcon.png";
+import ejcLogo from "../assets/ejcLogo.png";
 
+const navItems = [
+  { name: "Home", href: "/" },
+  { name: "Blog", href: "/blog" },
+  { name: "Interviews", href: "/interviews" },
+  { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
+];
+
+const { PUBLIC_TURNSTILE_SITE_KEY, DEV } = import.meta.env;
+const isDevelopment = DEV || import.meta.env.MODE === "development";
+
+// Use dummy sitekey for development testing
+const siteKey = isDevelopment
+  ? "1x00000000000000000000AA" // Always passes - for testing successful flows
+  : PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
-<footer>hello</footer>
+<footer class="footer">
+  <div class="footer__content">
+    <!-- Newsletter Section -->
+    <div class="footer__newsletter">
+      <h3 class="footer__title">Let's keep up!</h3>
+
+      <form class="newsletter-form" id="newsletter-form">
+        <div class="form-group">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="example@email.com"
+            required
+            class="email-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="consent" name="consent" required />
+            <span class="checkmark"></span>
+            I agree to receive newsletters and promotional emails
+          </label>
+        </div>
+
+        <!-- Cloudflare Turnstile -->
+        {
+          siteKey && (
+            <div class="form-group turnstile-group">
+              <div
+                class="cf-turnstile"
+                data-sitekey={siteKey}
+                data-theme="light"
+                data-size="normal"
+              />
+            </div>
+          )
+        }
+
+        <div class="submit-container">
+          <img
+            src={footerAccentIcon.src}
+            alt="Footer accent icon"
+            class="footer-accent-icon"
+            width="40"
+            height="40"
+          />
+          <button type="submit" class="submit-btn"> SUBSCRIBE </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="footer__nav">
+      <ul class="footer__nav-list">
+        {
+          navItems.map((item) => (
+            <li class="footer__nav-item">
+              <a href={item.href} class="footer__nav-link">
+                {item.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Developer Promo Banner -->
+  <div class="footer__promo">
+    <p>
+      <img
+        src={ejcLogo.src}
+        alt="EJC Logo"
+        class="ejc-logo"
+        width="20"
+        height="20"
+      />
+      designed by
+      <a
+        rel="stylesheet"
+        href="https://www.eastlandjones.com"
+        class="promo-link"
+      >
+        eastland jones creative
+      </a>
+    </p>
+  </div>
+</footer>
+
+<!-- Cloudflare Turnstile Script -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer
+></script>
+
+<script>
+  import "../scripts/newsletter.ts";
+</script>
+
 <style>
-  footer {
+  .footer {
     background-color: #461121;
-    min-height: 118px;
+    color: white;
+    padding: 3rem 0 0 0;
+  }
+
+  .footer__content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem 2rem 2rem;
+  }
+
+  .footer__newsletter {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .footer__title {
+    font-family: var(--font-callout);
+    font-size: var(--font-size-callout);
+    font-weight: var(--font-weight-callout);
+    margin-bottom: 2rem;
+    color: white;
+    text-transform: none;
+  }
+
+  .newsletter-form {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .turnstile-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .cf-turnstile {
+    margin: 0 auto;
+  }
+
+  .email-input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0;
+    background: #f8f0e5;
+    color: var(--color-brown-warm);
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+
+  .email-input::placeholder {
+    color: #666;
+  }
+
+  .email-input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.5);
+    background: #f8f0e5;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    display: none;
+  }
+
+  .checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .checkbox-label input[type="checkbox"]:checked + .checkmark {
+    background: white;
+    border-color: white;
+  }
+
+  .checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+    content: "✓";
+    color: #461121;
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .submit-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .footer-accent-icon {
+    width: 40px;
+    height: 40px;
+    color: white;
+  }
+
+  .submit-btn {
+    padding: 1rem 2rem;
+    background: var(--color-green-sage);
+    color: white;
+    border: none;
+    border-radius: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .submit-btn:hover {
+    background: var(--color-green-olive);
+    transform: translateY(-2px);
+  }
+
+  .footer__nav {
+    padding-top: 2rem;
+  }
+
+  .footer__nav-list {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+
+  .footer__nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+  }
+
+  .footer__nav-link:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .footer__promo {
+    background: #3d2b1e;
+    padding: 1rem 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .ejc-logo {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .promo-link {
+    color: white;
+    text-decoration: underline;
+    font-weight: 500;
+  }
+
+  .promo-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .footer__content {
+      padding: 0 1rem 2rem 1rem;
+    }
+
+    .footer__title {
+      font-size: 1.5rem;
+    }
+
+    .newsletter-form {
+      max-width: 100%;
+    }
+
+    .footer__nav-list {
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .checkbox-label {
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    .submit-btn {
+      width: 100%;
+      max-width: 200px;
+    }
   }
 </style>

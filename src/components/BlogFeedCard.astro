@@ -69,8 +69,6 @@ const imageUrl =
             </div>
 
             <h2 class="blog__feed--card__title">{title}</h2>
-
-            {excerpt && <p class="blog__feed--card__excerpt">{excerpt}</p>}
           </div>
 
           <div class="blog__feed--card__right">
@@ -178,24 +176,23 @@ const imageUrl =
   .blog__feed--card__container {
     display: flex;
     gap: 1.5rem;
-    padding: 1.5rem;
+    padding: 1.5rem 1.5rem 1.5rem 1.5rem;
     flex-grow: 1;
-    min-height: 275px;
   }
 
   .blog__feed--card__left {
     flex: 1;
     display: flex;
     flex-direction: column;
-    min-height: 275px;
-    max-height: 275px;
+    justify-content: flex-start;
   }
 
   .blog__feed--card__right {
     flex-shrink: 0;
-    width: 275px;
+    width: 260px;
     min-height: 275px;
     max-height: 275px;
+    margin-right: 15px;
   }
 
   .blog__feed--card__image {
@@ -250,7 +247,7 @@ const imageUrl =
     font-size: 1.25rem;
     font-weight: var(--font-weight-h2);
     color: #333;
-    margin: 0 0 1rem 0;
+    margin: 0 0 0.5rem 0;
     line-height: 1.3;
   }
 
@@ -268,7 +265,7 @@ const imageUrl =
   }
 
   .blog__feed--card__footer {
-    padding: 0 1.5rem 1.5rem 1.5rem;
+    padding: 0.5rem 1.5rem 1.5rem 1.5rem;
     display: flex;
     justify-content: center;
   }

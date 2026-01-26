@@ -114,11 +114,25 @@ export const queries = {
     excerpt,
     publishedAt,
     youtubeUrl,
-    thumbnail,
+    thumbnail {
+      asset->{
+        _id,
+        url
+      },
+      alt,
+      caption
+    },
     guest->{
       name,
       bio,
-      image
+      image {
+        asset->{
+          _id,
+          url
+        },
+        alt,
+        caption
+      }
     }
   }`,
 
@@ -130,12 +144,26 @@ export const queries = {
     excerpt,
     publishedAt,
     youtubeUrl,
-    thumbnail,
+    thumbnail {
+      asset->{
+        _id,
+        url
+      },
+      alt,
+      caption
+    },
     description,
     guest->{
       name,
       bio,
-      image
+      image {
+        asset->{
+          _id,
+          url
+        },
+        alt,
+        caption
+      }
     },
     seo
   }`,

@@ -1,6 +1,6 @@
 ---
 import Button from "./Button.astro";
-import type { SanityImage } from "../types/sanity";
+import type { SanityImageWithMetadata } from "../types/sanity";
 
 export interface Props {
   title: string;
@@ -8,10 +8,10 @@ export interface Props {
   publishedAt: string;
   slug: string;
   youtubeUrl: string;
-  thumbnail?: SanityImage;
+  thumbnail?: SanityImageWithMetadata;
   guest: {
     name: string;
-    image?: SanityImage;
+    image?: SanityImageWithMetadata;
   };
   variant?: "editorial" | "full-image" | "text-only";
   size?: "sm" | "md" | "lg";
@@ -44,7 +44,8 @@ function getYouTubeThumbnail(url: string): string {
   return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "";
 }
 
-const imageUrl = getYouTubeThumbnail(youtubeUrl);
+// Use custom thumbnail if available, otherwise fall back to YouTube thumbnail
+const imageUrl = thumbnail?.asset?.url || getYouTubeThumbnail(youtubeUrl);
 const linkPath = `/interviews/${slug}`;
 ---
 
