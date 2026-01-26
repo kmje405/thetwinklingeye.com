@@ -70,7 +70,7 @@ const imageUrl =
 
             <h2 class="blog__feed--card__title">{title}</h2>
 
-            <p class="blog__feed--card__excerpt">{excerpt}</p>
+            {excerpt && <p class="blog__feed--card__excerpt">{excerpt}</p>}
           </div>
 
           <div class="blog__feed--card__right">
@@ -134,7 +134,7 @@ const imageUrl =
         </div>
 
         <div class="blog__feed--card__row">
-          <p class="blog__feed--card__excerpt">{excerpt}</p>
+          {excerpt && <p class="blog__feed--card__excerpt">{excerpt}</p>}
           <div class="blog__feed--card__meta">
             <time class="blog__feed--card__date">{formattedDate}</time>
           </div>
@@ -384,17 +384,46 @@ const imageUrl =
     }
 
     .blog__feed--card__container {
-      flex-direction: column;
+      flex-direction: row;
       padding: 1rem;
       gap: 1rem;
+      margin-bottom: 0;
+    }
+
+    .blog__feed--card__left {
+      flex: 1;
+      min-width: 0;
+      min-height: auto;
+      max-height: none;
     }
 
     .blog__feed--card__right {
-      width: 100%;
+      flex: 1;
+      min-width: 0;
+      width: auto !important;
+      min-height: auto !important;
+      max-height: none !important;
     }
 
     .blog__feed--card__image {
-      aspect-ratio: 16 / 10;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      height: auto;
+    }
+
+    .blog__feed--card__excerpt {
+      display: none;
+    }
+
+    .blog__feed--card--editorial
+      .blog__feed--card__left
+      .blog__feed--card__title {
+      margin-bottom: 0;
+    }
+
+    .blog__feed--card__image img {
+      object-position: center center;
+      object-fit: cover;
     }
 
     .blog__feed--card__footer {

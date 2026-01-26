@@ -13,6 +13,23 @@ import backgroundImage from "../assets/background.jpg";
     <meta charset={siteConfig.charset} />
     <meta name="viewport" content={siteConfig.viewport} />
     <meta name="format-detection" content={siteConfig.formatDetection} />
+    <style>
+      /* Prevent flash of white background */
+      html {
+        background-color: var(--color-cream-warm, #f8f0e5);
+      }
+      body {
+        background-color: transparent;
+      }
+      /* Hide content until background image loads */
+      .content-wrapper {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .content-loaded .content-wrapper {
+        opacity: 1;
+      }
+    </style>
     <link
       rel="icon"
       type="image/svg+xml"
@@ -30,6 +47,21 @@ import backgroundImage from "../assets/background.jpg";
     <title>{siteConfig.title}</title>
   </head>
   <body>
+    <script>
+      // Add content-loaded class when page is ready
+      document.addEventListener("DOMContentLoaded", () => {
+        document.body.classList.add("content-loaded");
+      });
+
+      // Also add it immediately if DOM is already loaded
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => {
+          document.body.classList.add("content-loaded");
+        });
+      } else {
+        document.body.classList.add("content-loaded");
+      }
+    </script>
     <Image
       src={backgroundImage}
       alt=""

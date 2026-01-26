@@ -116,12 +116,21 @@ const linkPath = `/interviews/${slug}`;
           </div>
         </div>
 
-        <div class="interview-card__row">
-          {excerpt && <p class="interview-card__excerpt">{excerpt}</p>}
-          <div class="interview-card__meta">
-            <time class="interview-card__date">{formattedDate}</time>
+        {excerpt && (
+          <div class="interview-card__row">
+            <p class="interview-card__excerpt">{excerpt}</p>
+            <div class="interview-card__meta">
+              <time class="interview-card__date">{formattedDate}</time>
+            </div>
           </div>
-        </div>
+        )}
+        {!excerpt && (
+          <div class="interview-card__row">
+            <div class="interview-card__meta">
+              <time class="interview-card__date">{formattedDate}</time>
+            </div>
+          </div>
+        )}
 
         <div class="interview-card__row">
           <Button variant="primary" size="small" type="button" href={linkPath}>
@@ -475,18 +484,40 @@ const linkPath = `/interviews/${slug}`;
     }
 
     .interview-card--editorial .interview-card__container {
-      flex-direction: column;
+      flex-direction: row;
       padding: 1rem;
       gap: 1rem;
     }
 
+    .interview-card__left {
+      flex: 1;
+      min-width: 0;
+    }
+
     .interview-card__right {
-      width: 100% !important;
+      flex: 1 !important;
+      width: auto !important;
       height: auto !important;
+      min-width: 0;
     }
 
     .interview-card__thumbnail {
-      aspect-ratio: 16 / 10;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      height: auto;
+    }
+
+    .interview-card__excerpt {
+      display: none;
+    }
+
+    .interview-card--editorial .interview-card__left .interview-card__title {
+      margin-bottom: 0;
+    }
+
+    .interview-card__thumbnail img {
+      object-position: center center;
+      object-fit: cover;
     }
 
     .interview-card__footer {

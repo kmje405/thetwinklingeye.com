@@ -61,4 +61,10 @@ const blogPosts = await client.fetch<BlogPost[]>(`
   .blog__feed {
     margin: 0 1rem;
   }
+
+  @media (max-width: 768px) {
+    .blog__feed {
+      margin: 0 0.5rem;
+    }
+  }
 </style>
