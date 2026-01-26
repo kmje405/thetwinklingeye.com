@@ -113,6 +113,12 @@ async function verifyTurnstileToken(
     }
 
     const result = await response.json();
+    console.log("Turnstile verification result:", result);
+
+    if (!result.success) {
+      console.error("Turnstile verification failed:", result["error-codes"]);
+    }
+
     return result.success === true;
   } catch (error) {
     console.error("Turnstile verification error:", error);

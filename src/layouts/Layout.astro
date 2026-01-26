@@ -51,12 +51,9 @@ const faviconUrl = dynamicSiteConfig.sanityData?.favicon
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <!-- Hyvor Talk Script - Global -->
-    <script async src="https://talk.hyvor.com/embed/embed.js" type="module"
-    ></script>
+    <script async src="https://talk.hyvor.com/embed/embed.js"></script>
     <!-- Content loading script -->
-    <script>
-      import "../scripts/contentLoader.ts";
-    </script>
+    <script src="/scripts/content-loader.js" is:inline></script>
   </head>
   <body>
     <Image
