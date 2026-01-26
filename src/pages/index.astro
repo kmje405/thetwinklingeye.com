@@ -34,61 +34,71 @@ try {
       <h1 class="home__headline">Welcome to The Twinkling Eye</h1>
     </header>
 
-    <div class="home__grid">
-      <!-- Latest Interview -->
-      <div class="home__item">
+    <div class="home__content">
+      <div class="home__section-titles">
+        <h2 class="home__section-title">Latest Interview</h2>
+        <h2 class="home__section-title">Latest Blog Posts</h2>
+        <h2 class="home__section-title home__section-title--hidden">
+          Latest Blog Posts
+        </h2>
+      </div>
+
+      <div class="home__grid">
+        <!-- Latest Interview -->
+        <div class="home__item">
+          {
+            latestInterview ? (
+              <InterviewCard
+                title={latestInterview.title}
+                excerpt={latestInterview.excerpt}
+                publishedAt={latestInterview.publishedAt}
+                slug={latestInterview.slug.current}
+                youtubeUrl={latestInterview.youtubeUrl}
+                thumbnail={latestInterview.thumbnail}
+                guest={latestInterview.guest}
+                variant="full-image"
+                size="sm"
+              />
+            ) : (
+              <div class="placeholder-card">
+                <p>No interviews available yet</p>
+              </div>
+            )
+          }
+        </div>
+
+        <!-- Latest Blog Posts -->
         {
-          latestInterview ? (
-            <InterviewCard
-              title={latestInterview.title}
-              excerpt={latestInterview.excerpt}
-              publishedAt={latestInterview.publishedAt}
-              slug={latestInterview.slug.current}
-              youtubeUrl={latestInterview.youtubeUrl}
-              thumbnail={latestInterview.thumbnail}
-              guest={latestInterview.guest}
-              variant="full-image"
-              size="sm"
-            />
-          ) : (
-            <div class="placeholder-card">
-              <p>No interviews available yet</p>
+          latestBlogPosts.map((post) => (
+            <div class="home__item">
+              <BlogFeedCard
+                title={post.title}
+                excerpt={post.excerpt || ""}
+                publishedAt={post.publishedAt}
+                slug={post.slug.current}
+                featuredImage={post.featuredImage}
+                author={post.author}
+                categories={post.categories || []}
+                variant={post.cardVariant || "editorial"}
+                size="sm"
+              />
             </div>
+          ))
+        }
+
+        {/* Show placeholders if we don't have enough blog posts */}
+        {
+          Array.from({ length: Math.max(0, 2 - latestBlogPosts.length) }).map(
+            () => (
+              <div class="home__item">
+                <div class="placeholder-card">
+                  <p>No blog posts available yet</p>
+                </div>
+              </div>
+            )
           )
         }
       </div>
-
-      <!-- Latest Blog Posts -->
-      {
-        latestBlogPosts.map((post) => (
-          <div class="home__item">
-            <BlogFeedCard
-              title={post.title}
-              excerpt={post.excerpt || ""}
-              publishedAt={post.publishedAt}
-              slug={post.slug.current}
-              featuredImage={post.featuredImage}
-              author={post.author}
-              categories={post.categories || []}
-              variant={post.cardVariant || "editorial"}
-              size="sm"
-            />
-          </div>
-        ))
-      }
-
-      {/* Show placeholders if we don't have enough blog posts */}
-      {
-        Array.from({ length: Math.max(0, 2 - latestBlogPosts.length) }).map(
-          () => (
-            <div class="home__item">
-              <div class="placeholder-card">
-                <p>No blog posts available yet</p>
-              </div>
-            </div>
-          )
-        )
-      }
     </div>
   </div>
 </Layout>
@@ -113,6 +123,30 @@ try {
     line-height: 1.1;
     color: #461121;
     margin: 0;
+  }
+
+  .home__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .home__section-titles {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .home__section-title {
+    flex: 1;
+    font-family: var(--font-header-primary);
+    font-size: 1.25rem;
+    color: #333;
+    margin: 0;
+    text-align: center;
+  }
+
+  .home__section-title--hidden {
+    visibility: hidden;
   }
 
   .home__grid {
