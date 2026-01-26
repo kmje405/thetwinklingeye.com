@@ -22,11 +22,26 @@ export const queries = {
   siteSettings: `*[_type == "siteSettings"][0]{
     title,
     description,
-    charset,
-    viewport,
-    formatDetection,
-    favicon,
-    logo,
+    favicon {
+      asset->{
+        _id,
+        url
+      },
+      alt
+    },
+    logo {
+      asset->{
+        _id,
+        url,
+        metadata {
+          dimensions {
+            width,
+            height
+          }
+        }
+      },
+      alt
+    },
     socialMedia,
     siteOwner {
       name,

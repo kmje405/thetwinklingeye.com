@@ -32,6 +32,9 @@ const defaultSiteConfig = {
     facebook: "",
     linkedin: "",
   },
+
+  // Sanity data (null by default)
+  sanityData: null as SiteSettings | null,
 };
 
 // Function to get site settings from Sanity with fallbacks
@@ -57,10 +60,6 @@ export async function getSiteConfig() {
       ...defaultSiteConfig,
       title: sanitySettings.title || defaultSiteConfig.title,
       description: sanitySettings.description || defaultSiteConfig.description,
-      charset: sanitySettings.charset || defaultSiteConfig.charset,
-      viewport: sanitySettings.viewport || defaultSiteConfig.viewport,
-      formatDetection:
-        sanitySettings.formatDetection || defaultSiteConfig.formatDetection,
       socialMedia: {
         twitter: sanitySettings.socialMedia?.twitter || "",
         instagram: sanitySettings.socialMedia?.instagram || "",

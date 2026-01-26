@@ -1,11 +1,19 @@
 ---
 import "../styles/index.css";
 import { siteConfig } from "../config/site";
+import { getSiteConfig } from "../lib/siteConfig";
+import { urlFor } from "../lib/sanity";
 import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
 import { Image } from "astro:assets";
 import backgroundImage from "../assets/background.jpg";
 import plantDecor from "../assets/plantDecor.png";
+
+// Get site configuration from Sanity
+const dynamicSiteConfig = await getSiteConfig();
+const faviconUrl = dynamicSiteConfig.sanityData?.favicon
+  ? urlFor(dynamicSiteConfig.sanityData.favicon).url()
+  : "/favicon.svg";
 ---
 
 <!doctype html>
@@ -31,25 +39,12 @@ import plantDecor from "../assets/plantDecor.png";
         opacity: 1;
       }
     </style>
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="/favicon-dark.svg"
-      media="(prefers-color-scheme: light)"
-    />
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="/favicon.svg"
-      media="(prefers-color-scheme: dark)"
-    />
-    <link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" />
+    <link rel="icon" href={faviconUrl} type="image/svg+xml" />
+    <link rel="alternate icon" href={faviconUrl} />
+    <link rel="mask-icon" href={faviconUrl} color="#ec87a5" />
     <meta name="generator" content={Astro.generator} />
-    <meta
-      name="description"
-      content="The Twinkling Eye - A thoughtful collection of interviews, essays, and reflections on life, creativity, and human connection."
-    />
-    <title>{siteConfig.title}</title>
+    <meta name="description" content={dynamicSiteConfig.description} />
+    <title>{dynamicSiteConfig.title}</title>
     <!-- Hyvor Talk Script - Global -->
     <script async src="https://talk.hyvor.com/embed/embed.js" type="module"
     ></script>

@@ -19,24 +19,6 @@ export default defineType({
       validation: (Rule) => Rule.required().max(160),
     }),
     defineField({
-      name: 'charset',
-      title: 'Character Set',
-      type: 'string',
-      initialValue: 'UTF-8',
-    }),
-    defineField({
-      name: 'viewport',
-      title: 'Viewport',
-      type: 'string',
-      initialValue: 'width=device-width, initial-scale=1',
-    }),
-    defineField({
-      name: 'formatDetection',
-      title: 'Format Detection',
-      type: 'string',
-      initialValue: 'telephone=no',
-    }),
-    defineField({
       name: 'favicon',
       title: 'Favicon',
       type: 'image',

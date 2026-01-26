@@ -66,9 +66,6 @@ export interface SiteSettings extends SanityDocument {
   _type: "siteSettings";
   title: string;
   description: string;
-  charset: string;
-  viewport: string;
-  formatDetection: string;
   favicon?: SanityImage;
   logo?: SanityImage;
   socialMedia?: {
