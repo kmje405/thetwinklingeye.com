@@ -123,14 +123,14 @@ const currentPath = Astro.url.pathname;
 
 <style>
   .mobile-nav-container {
-    display: block;
+    display: none;
     position: relative;
   }
 
-  /* Show hamburger button on all devices for testing */
-  .hamburger-btn {
-    position: relative;
-    z-index: 1001;
+  @media (max-width: 768px) {
+    .mobile-nav-container {
+      display: block;
+    }
   }
 
   /* Hamburger Button */

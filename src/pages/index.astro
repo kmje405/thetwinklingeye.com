@@ -59,44 +59,38 @@ try {
         }
       </div>
 
-      <!-- Latest Blog Posts Columns -->
-      {
-        latestBlogPosts.map((post, index) => (
-          <div class="home__column">
-            <h2 class="home__section-title">
-              Latest Blog Post {index === 1 ? "#2" : ""}
-            </h2>
-            <BlogFeedCard
-              title={post.title}
-              excerpt={post.excerpt || ""}
-              publishedAt={post.publishedAt}
-              slug={post.slug.current}
-              featuredImage={post.featuredImage}
-              author={post.author}
-              categories={post.categories || []}
-              variant="full-image"
-              size="sm"
-            />
-          </div>
-        ))
-      }
+      <!-- Latest Blog Posts Section -->
+      <div class="home__blog-section">
+        <h2 class="home__section-title">Latest Blog Posts</h2>
+        <div class="home__blog-grid">
+          {
+            latestBlogPosts.map((post) => (
+              <BlogFeedCard
+                title={post.title}
+                excerpt={post.excerpt || ""}
+                publishedAt={post.publishedAt}
+                slug={post.slug.current}
+                featuredImage={post.featuredImage}
+                author={post.author}
+                categories={post.categories || []}
+                variant="full-image"
+                size="sm"
+              />
+            ))
+          }
 
-      {/* Show placeholders if we don't have enough blog posts */}
-      {
-        Array.from({ length: Math.max(0, 2 - latestBlogPosts.length) }).map(
-          (_, index) => (
-            <div class="home__column">
-              <h2 class="home__section-title">
-                Latest Blog Post{" "}
-                {latestBlogPosts.length + index === 1 ? "#2" : ""}
-              </h2>
-              <div class="placeholder-card">
-                <p>No blog posts available yet</p>
-              </div>
-            </div>
-          )
-        )
-      }
+          {/* Show placeholders if we don't have enough blog posts */}
+          {
+            Array.from({ length: Math.max(0, 2 - latestBlogPosts.length) }).map(
+              () => (
+                <div class="placeholder-card">
+                  <p>No blog posts available yet</p>
+                </div>
+              )
+            )
+          }
+        </div>
+      </div>
     </div>
   </div>
 </Layout>
@@ -125,9 +119,20 @@ try {
 
   .home__grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 2fr;
     gap: 2rem;
     align-items: start;
+  }
+
+  .home__blog-section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .home__blog-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 
   .home__column {
@@ -171,6 +176,11 @@ try {
       gap: 2rem;
     }
 
+    .home__blog-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
     .home__section-title {
       font-size: 1.1rem;
       margin-bottom: 1rem;
@@ -180,12 +190,13 @@ try {
   /* Tablet Responsive */
   @media (min-width: 769px) and (max-width: 1024px) {
     .home__grid {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 1.5rem;
     }
 
-    .home__column:first-child {
-      grid-column: 1 / -1;
+    .home__blog-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
     }
   }
 </style>
