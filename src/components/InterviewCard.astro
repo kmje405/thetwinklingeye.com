@@ -82,6 +82,9 @@ const linkPath = `/interviews/${slug}`;
         </div>
 
         <div class="interview-card__footer">
+          <div class="interview-card__meta-footer">
+            <hyvor-talk-comment-count page-id={slug} />
+          </div>
           <Button variant="primary" size="small" type="button" href={linkPath}>
             watch interview
           </Button>
@@ -414,7 +417,14 @@ const linkPath = `/interviews/${slug}`;
   .interview-card__footer {
     padding: 0 1.5rem 1.5rem 1.5rem;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .interview-card__meta-footer {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: #666;
   }
 
   /* Play Buttons */

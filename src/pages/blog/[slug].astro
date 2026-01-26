@@ -142,7 +142,19 @@ const bodyHtml = post.body
     <section class="post__body">
       <Fragment set:html={bodyHtml} />
     </section>
+
+    <!-- Comments Section -->
+    <section class="post__comments">
+      <h3>Comments</h3>
+      <hyvor-talk-comments
+        website-id="14933"
+        page-id={post.slug.current}
+      ></hyvor-talk-comments>
+    </section>
   </main>
+
+  <!-- Hyvor Talk Script -->
+  <script async src="https://talk.hyvor.com/embed/embed.js" type="module"></script>
 
   <style>
     /* Editorial grid layout */
@@ -299,6 +311,23 @@ const bodyHtml = post.body
       font-style: italic;
       margin: 1.5rem 0;
       font-family: var(--font-body);
+    }
+
+    /* Comments Section */
+    .post__comments {
+      grid-column: 1 / -1;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid #ddd;
+    }
+
+    .post__comments h3 {
+      font-family: var(--font-header-primary);
+      font-size: var(--font-size-h3);
+      font-weight: var(--font-weight-h3);
+      color: #333;
+      margin-bottom: 1.5rem;
+      text-align: center;
     }
 
     /* Mobile collapse */

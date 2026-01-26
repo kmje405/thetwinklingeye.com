@@ -160,10 +160,22 @@ if (!interview && !error) {
             </div>
           </div>
         )}
+
+        <!-- Comments Section -->
+        <div class="interview-comments">
+          <h2>Comments</h2>
+          <hyvor-talk-comments
+            website-id="14933"
+            page-id={interview.slug.current}
+          ></hyvor-talk-comments>
+        </div>
       </div>
     )
   }
 </Layout>
+
+<!-- Hyvor Talk Script -->
+<script async src="https://talk.hyvor.com/embed/embed.js" type="module"></script>
 
 <style>
   .error-container {
@@ -303,6 +315,22 @@ if (!interview && !error) {
     font-family: var(--font-body);
     line-height: 1.6;
     color: #555;
+  }
+
+  .interview-comments {
+    margin-top: 3rem;
+    background-color: var(--color-cream-warm);
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .interview-comments h2 {
+    font-family: var(--font-header-primary);
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    margin-top: 0;
   }
 
   @media (max-width: 768px) {

@@ -85,6 +85,9 @@ const imageUrl =
         </div>
 
         <div class="blog__feed--card__footer">
+          <div class="blog__feed--card__meta-footer">
+            <hyvor-talk-comment-count page-id={slug} />
+          </div>
           <Button
             variant="primary"
             size="small"
@@ -269,7 +272,14 @@ const imageUrl =
   .blog__feed--card__footer {
     padding: 0.5rem 1.5rem 1.5rem 1.5rem;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .blog__feed--card__meta-footer {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: #666;
   }
 
   .blog__feed--card__footer .btn {
