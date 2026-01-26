@@ -1,5 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { Image } from "astro:assets";
+import footerAccentIcon from "../assets/footerAccentIcon.png";
 
 const { PUBLIC_TURNSTILE_SITE_KEY, DEV } = import.meta.env;
 const isDevelopment = DEV || import.meta.env.MODE === "development";
@@ -14,7 +16,18 @@ const siteKey = isDevelopment
   <div class="contact-page">
     <div class="contact-container">
       <div class="contact-header">
-        <h1>Get in Touch</h1>
+        <div class="header-with-icon">
+          <Image
+            src={footerAccentIcon}
+            alt=""
+            class="header-accent-icon"
+            width={60}
+            height={60}
+            format="webp"
+            quality={85}
+          />
+          <h1>Get in Touch</h1>
+        </div>
         <p>
           Have a question, suggestion, or just want to say hello? We'd love to
           hear from you!
@@ -256,11 +269,23 @@ const siteKey = isDevelopment
     margin-bottom: 2.5rem;
   }
 
+  .header-with-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .header-accent-icon {
+    flex-shrink: 0;
+  }
+
   .contact-header h1 {
     font-family: var(--font-header-primary);
     font-size: 2.5rem;
     color: white;
-    margin-bottom: 1rem;
+    margin: 0;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
@@ -442,6 +467,16 @@ const siteKey = isDevelopment
 
     .contact-header h1 {
       font-size: 2rem;
+    }
+
+    .header-with-icon {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .header-accent-icon {
+      width: 50px;
+      height: 50px;
     }
 
     .form-row {
