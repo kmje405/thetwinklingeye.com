@@ -30,7 +30,7 @@
       # Content Security Policy
       Content-Security-Policy = '''
         default-src 'self';
-        script-src 'self' https://talk.hyvor.com https://challenges.cloudflare.com https://cdnjs.cloudflare.com https://www.youtube.com https://s.ytimg.com;
+        script-src 'self' 'sha256-MWfa2DMsAYOZmuYMBcTIoN92OshhUKlk29gSTU+z7Rs=' 'sha256-fHN/crechXUUYDkrfG6LTjbZLdhNk9uzSpalf/gFKt8=' 'sha256-3DlQ1zLvUvcd/EfrivQvjgulpVRXd+S23h2IjeGmw+c=' https://talk.hyvor.com https://challenges.cloudflare.com https://cdnjs.cloudflare.com https://www.youtube.com https://s.ytimg.com;
         style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
         img-src 'self' data: https: blob:;
         font-src 'self' https://cdnjs.cloudflare.com;
