@@ -35,7 +35,8 @@ try {
     </header>
 
     <div class="home__content">
-      <div class="home__section-titles">
+      <!-- Desktop Section Titles -->
+      <div class="home__section-titles home__section-titles--desktop">
         <h2 class="home__section-title">Latest Interview</h2>
         <h2 class="home__section-title">Latest Blog Posts</h2>
         <h2 class="home__section-title home__section-title--hidden">
@@ -46,6 +47,9 @@ try {
       <div class="home__grid">
         <!-- Latest Interview -->
         <div class="home__item">
+          <h2 class="home__section-title home__section-title--mobile">
+            Latest Interview
+          </h2>
           {
             latestInterview ? (
               <InterviewCard
@@ -69,8 +73,13 @@ try {
 
         <!-- Latest Blog Posts -->
         {
-          latestBlogPosts.map((post) => (
+          latestBlogPosts.map((post, index) => (
             <div class="home__item">
+              {index === 0 && (
+                <h2 class="home__section-title home__section-title--mobile">
+                  Latest Blog Posts
+                </h2>
+              )}
               <BlogFeedCard
                 title={post.title}
                 excerpt={post.excerpt || ""}
@@ -89,8 +98,13 @@ try {
         {/* Show placeholders if we don't have enough blog posts */}
         {
           Array.from({ length: Math.max(0, 2 - latestBlogPosts.length) }).map(
-            () => (
+            (_, index) => (
               <div class="home__item">
+                {index === 0 && latestBlogPosts.length === 0 && (
+                  <h2 class="home__section-title home__section-title--mobile">
+                    Latest Blog Posts
+                  </h2>
+                )}
                 <div class="placeholder-card">
                   <p>No blog posts available yet</p>
                 </div>
@@ -131,7 +145,7 @@ try {
     gap: 1rem;
   }
 
-  .home__section-titles {
+  .home__section-titles--desktop {
     display: flex;
     gap: 1rem;
   }
@@ -147,6 +161,11 @@ try {
 
   .home__section-title--hidden {
     visibility: hidden;
+  }
+
+  .home__section-title--mobile {
+    display: none;
+    margin-bottom: 1rem;
   }
 
   .home__grid {
@@ -206,13 +225,12 @@ try {
       gap: 2rem;
     }
 
-    .home__section-titles {
-      flex-direction: column;
-      gap: 0;
+    .home__section-titles--desktop {
+      display: none;
     }
 
-    .home__section-title--hidden {
-      display: none;
+    .home__section-title--mobile {
+      display: block;
     }
 
     .home__item {
@@ -239,18 +257,14 @@ try {
       gap: 1.5rem;
     }
 
-    .home__section-titles {
-      flex-direction: column;
-      gap: 0;
+    .home__section-titles--desktop {
+      display: none;
     }
 
-    .home__section-title {
+    .home__section-title--mobile {
+      display: block;
       font-size: 1.1rem;
       margin-bottom: 1rem;
-    }
-
-    .home__section-title--hidden {
-      display: none;
     }
 
     .home__item {
