@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
 import { Image } from "astro:assets";
 import backgroundImage from "../assets/background.jpg";
+import plantDecor from "../assets/plantDecor.png";
 ---
 
 <!doctype html>
@@ -44,6 +45,10 @@ import backgroundImage from "../assets/background.jpg";
     />
     <link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" />
     <meta name="generator" content={Astro.generator} />
+    <meta
+      name="description"
+      content="The Twinkling Eye - A thoughtful collection of interviews, essays, and reflections on life, creativity, and human connection."
+    />
     <title>{siteConfig.title}</title>
   </head>
   <body>
@@ -75,6 +80,15 @@ import backgroundImage from "../assets/background.jpg";
       <Navbar />
       <main>
         <slot />
+        <Image
+          src={plantDecor}
+          alt="Plant decoration"
+          class="plant-decor"
+          width={450}
+          height={450}
+          format="webp"
+          quality={80}
+        />
       </main>
       <Footer />
     </div>
@@ -105,5 +119,42 @@ import backgroundImage from "../assets/background.jpg";
 
   main {
     min-height: 90vh;
+    position: relative;
+    z-index: 2;
+  }
+
+  .plant-decor {
+    position: absolute;
+    bottom: 100px;
+    right: 2rem;
+    z-index: -1;
+    opacity: 0.8;
+  }
+
+  /* Tablet responsive */
+  @media (max-width: 1024px) {
+    .plant-decor {
+      width: 360px;
+      right: 1.5rem;
+      bottom: 80px;
+    }
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .plant-decor {
+      width: 300px;
+      right: 1rem;
+      bottom: 60px;
+    }
+  }
+
+  /* Small mobile */
+  @media (max-width: 480px) {
+    .plant-decor {
+      width: 240px;
+      right: 0.5rem;
+      bottom: 50px;
+    }
   }
 </style>

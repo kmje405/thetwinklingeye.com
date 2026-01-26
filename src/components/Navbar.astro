@@ -14,9 +14,13 @@ const navItems = [
 ---
 
 <nav>
-  <a href="/" class="logo-link">
-    <Image src={logo} alt="" class="logo desktop-logo" />
-    <Image src={mobileLogo} alt="" class="logo mobile-logo" />
+  <a href="/" class="logo-link" aria-label="The Twinkling Eye - Home">
+    <Image src={logo} alt="The Twinkling Eye logo" class="logo desktop-logo" />
+    <Image
+      src={mobileLogo}
+      alt="The Twinkling Eye logo"
+      class="logo mobile-logo"
+    />
   </a>
   <ul class="nav-links">
     {

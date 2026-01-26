@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import footerAccentIcon from "../assets/footerAccentIcon.png";
 import ejcLogo from "../assets/ejcLogo.png";
 
@@ -60,12 +61,14 @@ const siteKey = isDevelopment
         }
 
         <div class="submit-container">
-          <img
-            src={footerAccentIcon.src}
+          <Image
+            src={footerAccentIcon}
             alt="Footer accent icon"
             class="footer-accent-icon"
-            width="40"
-            height="40"
+            width={80}
+            height={80}
+            format="webp"
+            quality={85}
           />
           <button type="submit" class="submit-btn"> SUBSCRIBE </button>
         </div>
@@ -91,12 +94,14 @@ const siteKey = isDevelopment
   <!-- Developer Promo Banner -->
   <div class="footer__promo">
     <p>
-      <img
-        src={ejcLogo.src}
+      <Image
+        src={ejcLogo}
         alt="EJC Logo"
         class="ejc-logo"
-        width="20"
-        height="20"
+        width={40}
+        height={40}
+        format="webp"
+        quality={85}
       />
       designed by
       <a
@@ -128,12 +133,11 @@ const siteKey = isDevelopment
   .footer__content {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 2rem 2rem 2rem;
+    padding-bottom: 2rem;
   }
 
   .footer__newsletter {
     text-align: center;
-    margin-bottom: 3rem;
   }
 
   .footer__title {
@@ -141,7 +145,7 @@ const siteKey = isDevelopment
     font-size: var(--font-size-callout);
     font-weight: var(--font-weight-callout);
     margin-bottom: 2rem;
-    color: white;
+    color: var(--color-cream-peach);
     text-transform: none;
   }
 
@@ -171,8 +175,8 @@ const siteKey = isDevelopment
 
   .email-input {
     width: 100%;
-    padding: 1rem;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem;
+    border: none;
     border-radius: 0;
     background: #f8f0e5;
     color: var(--color-brown-warm);
@@ -237,9 +241,11 @@ const siteKey = isDevelopment
   }
 
   .footer-accent-icon {
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: auto;
     color: white;
+    transform: translateX(-20px);
+    object-fit: contain;
   }
 
   .submit-btn {
@@ -253,6 +259,7 @@ const siteKey = isDevelopment
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    transform: translateX(-20px);
   }
 
   .submit-btn:hover {
@@ -275,7 +282,7 @@ const siteKey = isDevelopment
   }
 
   .footer__nav-link {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--color-cream-peach);
     text-decoration: none;
     font-size: 1.1rem;
     font-weight: 500;
@@ -291,16 +298,28 @@ const siteKey = isDevelopment
   }
 
   .footer__promo {
+    display: flex;
     background: #3d2b1e;
-    padding: 1rem 0;
+    padding: 0;
+    min-height: 60px;
     text-align: center;
+    align-items: center;
+    justify-content: center;
     font-size: 0.9rem;
     color: rgba(255, 255, 255, 0.7);
   }
 
+  .footer__promo p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
   .ejc-logo {
-    width: 20px;
-    height: 20px;
+    width: 40px;
+    height: 40px;
     margin-right: 0.5rem;
     vertical-align: middle;
   }

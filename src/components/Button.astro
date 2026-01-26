@@ -6,6 +6,7 @@ export interface Props {
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   class?: string;
+  "aria-label"?: string;
 }
 
 const {
@@ -15,6 +16,7 @@ const {
   type = "button",
   disabled = false,
   class: className = "",
+  "aria-label": ariaLabel,
 } = Astro.props;
 
 const Tag = href ? "a" : "button";
@@ -31,6 +33,7 @@ const classes = [baseClasses, variantClass, sizeClass, className]
   href={href}
   type={!href ? type : undefined}
   disabled={!href ? disabled : undefined}
+  aria-label={ariaLabel}
   {...disabled && href ? { "aria-disabled": "true" } : {}}
 >
   <slot />
