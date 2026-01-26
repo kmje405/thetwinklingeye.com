@@ -77,6 +77,12 @@ export interface SiteSettings extends SanityDocument {
     facebook?: string;
     linkedin?: string;
   };
+  siteOwner?: {
+    name: string;
+    callout?: string;
+    bio?: PortableText;
+    image?: SanityImageWithMetadata;
+  };
 }
 
 // Author/Person

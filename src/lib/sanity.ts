@@ -27,7 +27,25 @@ export const queries = {
     formatDetection,
     favicon,
     logo,
-    socialMedia
+    socialMedia,
+    siteOwner {
+      name,
+      callout,
+      bio,
+      image {
+        asset->{
+          _id,
+          url,
+          metadata {
+            dimensions {
+              width,
+              height
+            }
+          }
+        },
+        alt
+      }
+    }
   }`,
 
   // All blog posts

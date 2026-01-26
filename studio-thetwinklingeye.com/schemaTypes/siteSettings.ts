@@ -79,6 +79,71 @@ export default defineType({
         },
       ],
     }),
+    defineField({
+      name: 'siteOwner',
+      title: 'Site Owner',
+      type: 'object',
+      fields: [
+        {
+          name: 'name',
+          title: 'Name',
+          type: 'string',
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: 'callout',
+          title: 'Callout',
+          type: 'string',
+          description: 'A short tagline or professional title',
+        },
+        {
+          name: 'bio',
+          title: 'Bio',
+          type: 'array',
+          of: [
+            {
+              type: 'block',
+              styles: [{title: 'Normal', value: 'normal'}],
+              marks: {
+                decorators: [
+                  {title: 'Strong', value: 'strong'},
+                  {title: 'Emphasis', value: 'em'},
+                ],
+                annotations: [
+                  {
+                    title: 'URL',
+                    name: 'link',
+                    type: 'object',
+                    fields: [
+                      {
+                        title: 'URL',
+                        name: 'href',
+                        type: 'url',
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        {
+          name: 'image',
+          title: 'Profile Image',
+          type: 'image',
+          options: {
+            hotspot: true,
+          },
+          fields: [
+            {
+              name: 'alt',
+              title: 'Alt Text',
+              type: 'string',
+            },
+          ],
+        },
+      ],
+    }),
   ],
   preview: {
     select: {

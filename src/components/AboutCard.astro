@@ -1,0 +1,226 @@
+---
+import { urlFor } from "../lib/sanity";
+import type { SanityImageWithMetadata, PortableText } from "../types/sanity";
+
+export interface Props {
+  name: string;
+  callout?: string;
+  bio?: PortableText;
+  image?: SanityImageWithMetadata;
+}
+
+const { name, callout, bio, image } = Astro.props;
+
+// Get avatar image URL - fallback to local avatar.png if no image provided
+const avatarUrl =
+  image && image.asset
+    ? urlFor(image).width(300).height(300).url()
+    : "/src/assets/avatar.png";
+
+// Convert bio portable text to plain text for display
+const bioText =
+  bio && Array.isArray(bio)
+    ? bio
+        .filter((block: any) => block._type === "block")
+        .map(
+          (block: any) =>
+            block.children
+              ?.filter((child: any) => child._type === "span")
+              ?.map((child: any) => child.text)
+              ?.join("") || ""
+        )
+        .join(" ")
+    : "";
+---
+
+<article class="about__card">
+  <div class="about__card__container">
+    <div class="about__card__left">
+      <div class="about__card__avatar">
+        <img
+          src={avatarUrl}
+          alt={image?.alt || `${name} profile photo`}
+          loading="lazy"
+        />
+      </div>
+    </div>
+
+    <div class="about__card__right">
+      <div class="about__card__row about__card__row--name">
+        <h1 class="about__card__name">{name}</h1>
+      </div>
+
+      {
+        callout && (
+          <div class="about__card__row about__card__row--callout">
+            <p class="about__card__callout">{callout}</p>
+          </div>
+        )
+      }
+
+      {
+        bioText && (
+          <div class="about__card__row about__card__row--bio">
+            <p class="about__card__bio">{bioText}</p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</article>
+
+<style is:global>
+  .about__card {
+    background-color: #f8f0e5;
+    max-width: 800px;
+    margin: 2rem auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .about__card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .about__card__container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    padding: 2rem;
+    min-height: 400px;
+  }
+
+  .about__card__left {
+    display: flex;
+    align-items: stretch;
+  }
+
+  .about__card__avatar {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .about__card__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+  }
+
+  .about__card:hover .about__card__avatar img {
+    transform: scale(1.05);
+  }
+
+  .about__card__right {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: 1.5rem;
+    align-content: start;
+  }
+
+  .about__card__row {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .about__card__name {
+    font-family: var(--font-header-primary);
+    font-size: 2.5rem;
+    font-weight: var(--font-weight-h1);
+    color: #333;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .about__card__callout {
+    font-family: var(--font-callout);
+    font-size: var(--font-size-callout);
+    font-weight: var(--font-weight-callout);
+    line-height: var(--line-height-callout);
+    color: #666;
+    margin: 0;
+  }
+
+  .about__card__bio {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .about__card {
+      max-width: 100%;
+      margin: 1rem;
+    }
+
+    .about__card__container {
+      grid-template-columns: 1fr;
+      grid-template-rows: 250px auto;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      min-height: auto;
+    }
+
+    .about__card__left {
+      justify-content: center;
+    }
+
+    .about__card__avatar {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      margin: 0 auto;
+    }
+
+    .about__card__right {
+      text-align: center;
+      gap: 1rem;
+    }
+
+    .about__card__name {
+      font-size: 2rem;
+    }
+
+    .about__card__callout {
+      font-size: 1.25rem;
+    }
+
+    .about__card__bio {
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .about__card__container {
+      padding: 1rem;
+    }
+
+    .about__card__avatar {
+      width: 150px;
+      height: 150px;
+    }
+
+    .about__card__name {
+      font-size: 1.75rem;
+    }
+
+    .about__card__callout {
+      font-size: 1.1rem;
+    }
+
+    .about__card__bio {
+      font-size: 0.95rem;
+    }
+  }
+</style>
