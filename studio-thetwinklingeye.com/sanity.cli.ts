@@ -5,9 +5,6 @@ export default defineCliConfig({
     projectId: 'vwv3aw0e',
     dataset: 'production',
   },
-  project: {
-    basePath: '/studio',
-  },
   deployment: {
     /**
      * Enable auto-updates for studios.

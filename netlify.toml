@@ -9,9 +9,9 @@
   directory = "netlify/functions"
 
 [[redirects]]
-  from = "/studio/*"
-  to = "/studio"
-  status = 200
+  from = "/studio"
+  to = "https://thetwinklingeye.sanity.studio"
+  status = 301
 
 [[redirects]]
   from = "/*"
