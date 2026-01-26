@@ -89,6 +89,15 @@ async function verifyTurnstileToken(
     return false;
   }
 
+  // Debug logging for secret key (safe - only shows length and format)
+  console.log("Turnstile debug info:", {
+    isDevelopment,
+    secretKeyLength: secretKey.length,
+    secretKeyPrefix: secretKey.substring(0, 4),
+    hasSecretKey: !!process.env.TURNSTILE_SECRET_KEY,
+    nodeEnv: process.env.NODE_ENV,
+  });
+
   try {
     const formData = new FormData();
     formData.append("secret", secretKey);
