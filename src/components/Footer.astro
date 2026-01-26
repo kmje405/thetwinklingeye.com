@@ -2,6 +2,7 @@
 import { Image } from "astro:assets";
 import footerAccentIcon from "../assets/footerAccentIcon.png";
 import ejcLogo from "../assets/ejcLogo.png";
+import { getSiteConfig } from "../lib/siteConfig";
 
 const navItems = [
   { name: "Home", href: "/" },
@@ -18,6 +19,38 @@ const isDevelopment = DEV || import.meta.env.MODE === "development";
 const siteKey = isDevelopment
   ? "1x00000000000000000000AA" // Always passes - for testing successful flows
   : PUBLIC_TURNSTILE_SITE_KEY;
+
+// Get site configuration for social media links
+const siteConfig = await getSiteConfig();
+const socialMedia = siteConfig.socialMedia;
+
+// Define social media platforms with their Font Awesome icons
+const socialPlatforms = [
+  {
+    name: "Twitter",
+    url: socialMedia?.twitter,
+    icon: "fab fa-x-twitter", // X/Twitter icon
+    label: "Follow us on X (Twitter)",
+  },
+  {
+    name: "Instagram",
+    url: socialMedia?.instagram,
+    icon: "fab fa-instagram", // Instagram icon
+    label: "Follow us on Instagram",
+  },
+  {
+    name: "Facebook",
+    url: socialMedia?.facebook,
+    icon: "fab fa-facebook-f", // Facebook icon
+    label: "Follow us on Facebook",
+  },
+  {
+    name: "LinkedIn",
+    url: socialMedia?.linkedin,
+    icon: "fab fa-linkedin-in", // LinkedIn icon
+    label: "Connect with us on LinkedIn",
+  },
+].filter((platform) => platform.url && platform.url.trim() !== "");
 ---
 
 <footer class="footer">
@@ -89,6 +122,28 @@ const siteKey = isDevelopment
         }
       </ul>
     </nav>
+
+    <!-- Social Media Links -->
+    {
+      socialPlatforms.length > 0 && (
+        <div class="footer__social">
+          <div class="social-links">
+            {socialPlatforms.map((platform) => (
+              <a
+                href={platform.url}
+                class="social-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={platform.label}
+              >
+                <i class={`social-icon ${platform.icon}`} />
+                <span class="social-name">{platform.name}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )
+    }
   </div>
 
   <!-- Developer Promo Banner -->
@@ -297,6 +352,49 @@ const siteKey = isDevelopment
     background-color: rgba(255, 255, 255, 0.1);
   }
 
+  .footer__social {
+    padding-top: 2rem;
+    text-align: center;
+  }
+
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .social-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-cream-peach);
+    text-decoration: none;
+    padding: 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    min-width: 80px;
+  }
+
+  .social-link:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .social-icon {
+    font-size: 1.5rem;
+    display: block;
+  }
+
+  .social-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
   .footer__promo {
     display: flex;
     background: #3d2b1e;
@@ -362,6 +460,23 @@ const siteKey = isDevelopment
     .submit-btn {
       width: 100%;
       max-width: 200px;
+    }
+
+    .social-links {
+      gap: 1rem;
+    }
+
+    .social-link {
+      min-width: 60px;
+      padding: 0.75rem;
+    }
+
+    .social-icon {
+      font-size: 1.25rem;
+    }
+
+    .social-name {
+      font-size: 0.8rem;
     }
   }
 </style>

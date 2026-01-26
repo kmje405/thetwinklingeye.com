@@ -14,8 +14,8 @@ const { name, callout, bio, image } = Astro.props;
 // Get avatar image URL - fallback to local avatar.png if no image provided
 const avatarUrl =
   image && image.asset
-    ? urlFor(image).width(300).height(300).url()
-    : "/src/assets/avatar.png";
+    ? urlFor(image).url()
+    : new URL("../assets/avatar.png", import.meta.url).href;
 
 // Convert bio portable text to plain text for display
 const bioText =
@@ -90,7 +90,7 @@ const bioText =
 
   .about__card__container {
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: auto 1fr;
     gap: 2rem;
     padding: 2rem;
     min-height: 400px;
@@ -98,20 +98,20 @@ const bioText =
 
   .about__card__left {
     display: flex;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .about__card__avatar {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
     border-radius: 8px;
+    overflow: hidden;
+    max-width: 400px;
   }
 
   .about__card__avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    display: block;
     transition: transform 0.2s ease;
   }
 
