@@ -81,6 +81,31 @@ const bodyHtml = post.body
 ---
 
 <Layout>
+  <!-- Blog Post Structured Data -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "description": post.excerpt || post.title,
+    "image": imageUrl ? [imageUrl] : undefined,
+    "author": {
+      "@type": "Person",
+      "name": post.author?.name || "The Twinkling Eye"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "The Twinkling Eye",
+      "url": "https://thetwinklingeye.com"
+    },
+    "datePublished": post.publishedAt,
+    "dateModified": post._updatedAt || post.publishedAt,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://thetwinklingeye.com/blog/${post.slug.current}`
+    },
+    "articleSection": post.categories?.map(cat => cat.title).join(", ") || "Blog",
+    "keywords": post.categories?.map(cat => cat.title).join(", ") || undefined
+  })}></script>
   <main class="post">
     <!-- Title spans full width -->
     <header class="post__title">

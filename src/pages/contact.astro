@@ -13,6 +13,44 @@ const siteKey = isDevelopment
 ---
 
 <Layout>
+  <!-- Contact Page Structured Data -->
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ContactPage",
+      name: "Contact - The Twinkling Eye",
+      description: "Get in touch with The Twinkling Eye",
+      url: "https://thetwinklingeye.com/contact",
+      mainEntity: {
+        "@type": "Organization",
+        name: "The Twinkling Eye",
+        url: "https://thetwinklingeye.com",
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "customer service",
+          availableLanguage: "English",
+        },
+      },
+      breadcrumb: {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://thetwinklingeye.com",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Contact",
+            item: "https://thetwinklingeye.com/contact",
+          },
+        ],
+      },
+    })}
+  />
   <div class="contact-page">
     <div class="contact-container">
       <div class="contact-header">
@@ -154,12 +192,6 @@ const siteKey = isDevelopment
     </div>
   </div>
 </Layout>
-
-<!-- Cloudflare Turnstile Script -->
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer
-></script>
-
-<script src="/scripts/contact-form.js" is:inline></script>
 
 <style>
   .contact-page {

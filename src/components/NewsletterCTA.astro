@@ -1,11 +1,5 @@
 ---
-const { PUBLIC_TURNSTILE_SITE_KEY, DEV } = import.meta.env;
-const isDevelopment = DEV || import.meta.env.MODE === "development";
-
-// Use dummy sitekey for development testing
-const siteKey = isDevelopment
-  ? "1x00000000000000000000AA" // Always passes - for testing successful flows
-  : PUBLIC_TURNSTILE_SITE_KEY;
+// No environment variables needed
 ---
 
 <section class="newsletter__cta">
@@ -61,28 +55,99 @@ const siteKey = isDevelopment
         </label>
       </div>
 
-      <!-- Cloudflare Turnstile -->
-      <div class="form-group turnstile-group">
-        <div
-          class="cf-turnstile"
-          data-sitekey={siteKey}
-          data-theme="light"
-          data-size="normal"
-        >
-        </div>
-      </div>
-
       <button type="submit" class="subscribe-btn"> Subscribe </button>
       <div class="message" style="display: none;" role="alert"></div>
     </form>
   </div>
 </section>
 
-<!-- Cloudflare Turnstile Script -->
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer
-></script>
+<!-- Newsletter Form Handler -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    console.log("Newsletter script loaded");
 
-<script src="/scripts/newsletter.js" is:inline></script>
+    const form = document.getElementById("newsletter-form") as HTMLFormElement;
+    if (!form) {
+      console.log("Newsletter form not found");
+      return;
+    }
+
+    console.log("Newsletter form found, adding event listener");
+
+    form.addEventListener("submit", async function (e: Event) {
+      e.preventDefault();
+      console.log("Form submission intercepted");
+
+      const submitBtn = form.querySelector(
+        ".subscribe-btn"
+      ) as HTMLButtonElement;
+      const messageDiv = form.querySelector(".message") as HTMLDivElement;
+      const originalText = submitBtn?.textContent || "Subscribe";
+
+      if (!submitBtn || !messageDiv) return;
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Subscribing...";
+
+        // Hide any existing messages
+        messageDiv.style.display = "none";
+        messageDiv.className = "message";
+
+        // Check consent
+        const consentCheckbox = form.querySelector(
+          "#consent"
+        ) as HTMLInputElement;
+        if (!consentCheckbox || !consentCheckbox.checked) {
+          throw new Error("Please consent to receiving newsletters");
+        }
+
+        // Prepare form data
+        const formData = new FormData(form);
+        const data = {
+          email: formData.get("email"),
+          name: formData.get("name"),
+          hp: formData.get("hp") || "",
+        };
+
+        console.log("Sending data:", data);
+
+        // Submit to Netlify function
+        const response = await fetch("/.netlify/functions/subscribe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (result.ok) {
+          messageDiv.textContent =
+            "✅ " +
+            (result.message || "Successfully subscribed to newsletter!");
+          messageDiv.className = "message success";
+          form.reset();
+        } else {
+          throw new Error(result.message || "Failed to subscribe");
+        }
+      } catch (error: unknown) {
+        console.error("Newsletter subscription error:", error);
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to subscribe. Please try again later.";
+        messageDiv.textContent = "❌ " + errorMessage;
+        messageDiv.className = "message error";
+      } finally {
+        messageDiv.style.display = "block";
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    });
+  });
+</script>
 
 <style is:global>
   .newsletter__cta {
@@ -130,36 +195,6 @@ const siteKey = isDevelopment
 
   .consent-group {
     text-align: left;
-  }
-
-  .turnstile-group {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .cf-turnstile {
-    margin: 0 auto;
-  }
-
-  .dev-turnstile-placeholder {
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 2px dashed rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-    padding: 1rem;
-    text-align: center;
-    margin: 0 auto;
-  }
-
-  .dev-turnstile-placeholder p {
-    margin: 0 0 0.5rem 0;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  .dev-turnstile-placeholder small {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.8rem;
   }
 
   .consent-label {

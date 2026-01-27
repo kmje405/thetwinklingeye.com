@@ -45,6 +45,23 @@ const faviconUrl = dynamicSiteConfig.sanityData?.favicon
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={dynamicSiteConfig.description} />
     <title>{dynamicSiteConfig.title}</title>
+
+    <!-- Structured Data -->
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: dynamicSiteConfig.title,
+        description: dynamicSiteConfig.description,
+        url: "https://thetwinklingeye.com",
+        publisher: {
+          "@type": "Organization",
+          name: "The Twinkling Eye",
+          url: "https://thetwinklingeye.com",
+        },
+      })}
+    />
     <!-- Font Awesome -->
     <link
       rel="stylesheet"
@@ -74,7 +91,7 @@ const faviconUrl = dynamicSiteConfig.sanityData?.favicon
           alt="Plant decoration"
           class="plant-decor"
           width={450}
-          height={450}
+          height={620}
           format="webp"
           quality={80}
         />

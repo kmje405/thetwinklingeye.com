@@ -74,6 +74,61 @@ if (!interview && !error) {
 ---
 
 <Layout>
+  {interview && (
+    <!-- Interview Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": interview.title,
+      "description": interview.excerpt || `Interview with ${interview.guest.name}`,
+      "thumbnailUrl": interview.thumbnail ? urlFor(interview.thumbnail).width(800).url() : undefined,
+      "uploadDate": interview.publishedAt,
+      "embedUrl": getYouTubeEmbedUrl(interview.youtubeUrl),
+      "contentUrl": interview.youtubeUrl,
+      "duration": "PT0M0S", // You can add actual duration if available
+      "publisher": {
+        "@type": "Organization",
+        "name": "The Twinkling Eye",
+        "url": "https://thetwinklingeye.com"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "The Twinkling Eye"
+      },
+      "interactionStatistic": {
+        "@type": "InteractionCounter",
+        "interactionType": "http://schema.org/WatchAction",
+        "userInteractionCount": 0
+      }
+    })}></script>
+    
+    <!-- Interview as Article -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": interview.title,
+      "description": interview.excerpt || `Interview with ${interview.guest.name}`,
+      "author": {
+        "@type": "Person",
+        "name": "The Twinkling Eye"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "The Twinkling Eye",
+        "url": "https://thetwinklingeye.com"
+      },
+      "datePublished": interview.publishedAt,
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `https://thetwinklingeye.com/interviews/${interview.slug.current}`
+      },
+      "about": {
+        "@type": "Person",
+        "name": interview.guest.name,
+        "description": interview.guest.bio
+      }
+    })}></script>
+  )}
   {
     error && (
       <div class="error-container">

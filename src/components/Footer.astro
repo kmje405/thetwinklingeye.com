@@ -12,14 +12,6 @@ const navItems = [
   { name: "Contact", href: "/contact" },
 ];
 
-const { PUBLIC_TURNSTILE_SITE_KEY, DEV } = import.meta.env;
-const isDevelopment = DEV || import.meta.env.MODE === "development";
-
-// Use dummy sitekey for development testing
-const siteKey = isDevelopment
-  ? "1x00000000000000000000AA" // Always passes - for testing successful flows
-  : PUBLIC_TURNSTILE_SITE_KEY;
-
 // Get site configuration for social media links
 const siteConfig = await getSiteConfig();
 const socialMedia = siteConfig.socialMedia;
@@ -59,39 +51,45 @@ const socialPlatforms = [
     <div class="footer__newsletter">
       <h3 class="footer__title">Let's keep up!</h3>
 
-      <form class="newsletter-form" id="newsletter-form">
+      <!-- Newsletter Form -->
+      <form id="footer-newsletter-form" class="newsletter-form">
+        <!-- Honeypot field for spam protection -->
+        <input
+          type="text"
+          name="hp"
+          aria-label="Leave this field empty"
+          style="position: absolute; left: -9999px; opacity: 0;"
+          tabindex="-1"
+          autocomplete="off"
+        />
+
         <div class="form-group">
+          <label for="footer-email" class="sr-only">Email Address</label>
           <input
             type="email"
-            id="email"
+            id="footer-email"
             name="email"
             placeholder="example@email.com"
             required
             class="email-input"
+            aria-describedby="footer-message"
           />
         </div>
 
-        <div class="form-group">
-          <label class="checkbox-label">
-            <input type="checkbox" id="consent" name="consent" required />
-            <span class="checkmark"></span>
-            I agree to receive newsletters and promotional emails
+        <div class="form-group consent-group">
+          <label class="consent-label">
+            <input
+              type="checkbox"
+              id="footer-consent"
+              name="consent"
+              required
+              class="consent-checkbox"
+            />
+            <span class="consent-text">
+              Opt in to receive news and updates.
+            </span>
           </label>
         </div>
-
-        <!-- Cloudflare Turnstile -->
-        {
-          siteKey && (
-            <div class="form-group turnstile-group">
-              <div
-                class="cf-turnstile"
-                data-sitekey={siteKey}
-                data-theme="light"
-                data-size="normal"
-              />
-            </div>
-          )
-        }
 
         <div class="submit-container">
           <Image
@@ -103,7 +101,16 @@ const socialPlatforms = [
             format="webp"
             quality={85}
           />
-          <button type="submit" class="submit-btn"> SUBSCRIBE </button>
+          <button type="submit" class="submit-btn">SUBSCRIBE</button>
+        </div>
+
+        <div
+          class="message"
+          id="footer-message"
+          style="display: none;"
+          role="alert"
+          aria-live="polite"
+        >
         </div>
       </form>
     </div>
@@ -170,13 +177,130 @@ const socialPlatforms = [
   </div>
 </footer>
 
-<!-- Cloudflare Turnstile Script -->
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer
-></script>
+<!-- Newsletter Script -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById(
+      "footer-newsletter-form"
+    ) as HTMLFormElement;
+    if (!form) return;
 
-<script src="/scripts/newsletter.js" is:inline></script>
+    const emailInput = form.querySelector(
+      'input[type="email"]'
+    ) as HTMLInputElement;
+    const consentInput = form.querySelector(
+      'input[name="consent"]'
+    ) as HTMLInputElement;
+    const submitBtn = form.querySelector(
+      'button[type="submit"]'
+    ) as HTMLButtonElement;
+    const messageDiv = form.querySelector(".message") as HTMLDivElement;
+
+    if (!emailInput || !consentInput || !submitBtn || !messageDiv) return;
+
+    form.addEventListener("submit", async function (e: Event) {
+      e.preventDefault();
+
+      const email = emailInput.value.trim();
+      const consent = consentInput.checked;
+      const honeypotInput = form.querySelector(
+        'input[name="hp"]'
+      ) as HTMLInputElement;
+      const honeypot = honeypotInput?.value;
+
+      // Check honeypot
+      if (honeypot) return;
+
+      // Basic validation
+      if (!email) {
+        showMessage("Please enter your email address.", "error");
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        showMessage("Please enter a valid email address.", "error");
+        return;
+      }
+
+      if (!consent) {
+        showMessage("Please agree to receive our newsletter.", "error");
+        return;
+      }
+
+      // Set loading state
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Subscribing...";
+
+      try {
+        const response = await fetch("/.netlify/functions/subscribe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            consent: true,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          showMessage("Successfully subscribed!", "success");
+          form.reset();
+        } else {
+          showMessage(
+            result.error || "Subscription failed. Please try again.",
+            "error"
+          );
+        }
+      } catch (error) {
+        showMessage("Network error. Please try again later.", "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "SUBSCRIBE";
+      }
+    });
+
+    function showMessage(message: string, type: string): void {
+      messageDiv.textContent = message;
+      messageDiv.className = `message ${type}`;
+      messageDiv.style.display = "block";
+
+      // Focus the message for screen readers
+      messageDiv.setAttribute("tabindex", "-1");
+      messageDiv.focus();
+
+      if (type === "success") {
+        setTimeout(() => {
+          messageDiv.style.display = "none";
+          messageDiv.removeAttribute("tabindex");
+        }, 5000);
+      }
+    }
+
+    function isValidEmail(email: string): boolean {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+  });
+</script>
 
 <style>
+  /* Screen reader only class */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Footer base styles */
   .footer {
     background-color: #461121;
     color: white;
@@ -202,54 +326,47 @@ const socialPlatforms = [
     text-transform: none;
   }
 
+  /* Newsletter form styles */
   .newsletter-form {
     max-width: 500px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
   }
 
   .form-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .turnstile-group {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .cf-turnstile {
-    margin: 0 auto;
+    margin-bottom: 1.5rem;
   }
 
   .email-input {
-    width: 100%;
-    padding: 0.5rem;
+    background-color: #f8f0e5;
+    color: var(--color-brown-warm);
     border: none;
     border-radius: 0;
-    background: #f8f0e5;
-    color: var(--color-brown-warm);
     font-family: var(--font-body);
     font-size: var(--font-size-body);
-    transition: all 0.3s ease;
+    padding: 0.5rem;
+    width: 100%;
+    box-sizing: border-box;
     text-align: center;
+    transition: all 0.3s ease;
   }
 
   .email-input::placeholder {
-    color: #666;
+    color: #444;
   }
 
   .email-input:focus {
-    outline: none;
-    border-color: rgba(255, 255, 255, 0.5);
+    outline: 2px solid #007acc;
+    outline-offset: 2px;
     background: #f8f0e5;
   }
 
-  .checkbox-label {
+  /* Consent checkbox styling */
+  .consent-group {
+    display: flex;
+    justify-content: center;
+  }
+
+  .consent-label {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -259,33 +376,59 @@ const socialPlatforms = [
     color: rgba(255, 255, 255, 0.9);
   }
 
-  .checkbox-label input[type="checkbox"] {
-    display: none;
+  .consent-checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    clip: rect(0, 0, 0, 0);
   }
 
-  .checkmark {
+  .consent-checkbox:focus + .consent-text::before {
+    outline: 2px solid #007acc;
+    outline-offset: 2px;
+  }
+
+  .consent-text {
+    position: relative;
+    padding-left: 2rem;
+  }
+
+  .consent-text::before {
+    content: "";
     width: 20px;
     height: 20px;
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
     transition: all 0.3s ease;
+    background-color: transparent;
   }
 
-  .checkbox-label input[type="checkbox"]:checked + .checkmark {
+  .consent-checkbox:checked + .consent-text::before {
     background: white;
     border-color: white;
   }
 
-  .checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+  .consent-checkbox:checked + .consent-text::after {
     content: "✓";
     color: #461121;
     font-weight: bold;
     font-size: 14px;
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
+  /* Submit button container and styling */
   .submit-container {
     display: flex;
     align-items: center;
@@ -313,11 +456,45 @@ const socialPlatforms = [
     cursor: pointer;
     transition: all 0.3s ease;
     transform: translateX(-20px);
+    height: auto;
+    box-sizing: border-box;
   }
 
   .submit-btn:hover {
     background: var(--color-green-olive);
-    transform: translateY(-2px);
+    transform: translateY(-2px) translateX(-20px);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .submit-btn:focus {
+    outline: 2px solid #007acc;
+    outline-offset: 2px;
+  }
+
+  /* Message styling */
+  .message {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .message.success {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+  }
+
+  .message.error {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border: 1px solid rgba(244, 67, 54, 0.3);
   }
 
   .footer__nav {
@@ -350,6 +527,11 @@ const socialPlatforms = [
     background-color: rgba(255, 255, 255, 0.1);
   }
 
+  .footer__nav-link:focus {
+    outline: 2px solid #007acc;
+    outline-offset: 2px;
+  }
+
   .footer__social {
     padding-top: 2rem;
     text-align: center;
@@ -379,6 +561,11 @@ const socialPlatforms = [
     color: white;
     background-color: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px);
+  }
+
+  .social-link:focus {
+    outline: 2px solid #007acc;
+    outline-offset: 2px;
   }
 
   .social-icon {
@@ -430,7 +617,12 @@ const socialPlatforms = [
     text-decoration: underline;
   }
 
-  /* Mobile Responsive */
+  .promo-link:focus {
+    outline: 2px solid #007acc;
+    outline-offset: 2px;
+  }
+
+  /* Mobile Responsive Styles */
   @media (max-width: 768px) {
     .footer__content {
       padding: 0 1rem 2rem 1rem;
@@ -440,26 +632,40 @@ const socialPlatforms = [
       font-size: 1.5rem;
     }
 
+    /* Newsletter form mobile styles */
     .newsletter-form {
       max-width: 100%;
     }
 
+    .consent-label {
+      font-size: 0.8rem;
+      text-align: center;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .submit-btn {
+      width: 100%;
+      max-width: 200px;
+      transform: none;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .footer-accent-icon {
+      transform: none;
+    }
+
+    /* Footer navigation mobile styles */
     .footer__nav-list {
       flex-direction: column;
       align-items: center;
       gap: 1rem;
     }
 
-    .checkbox-label {
-      font-size: 0.8rem;
-      text-align: center;
-    }
-
-    .submit-btn {
-      width: 100%;
-      max-width: 200px;
-    }
-
+    /* Social media mobile styles */
     .social-links {
       gap: 1rem;
     }

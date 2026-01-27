@@ -29,6 +29,66 @@ try {
 ---
 
 <Layout>
+  <!-- Homepage Structured Data -->
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: "The Twinkling Eye - Home",
+      description:
+        "Welcome to The Twinkling Eye - featuring the latest interviews and blog posts",
+      url: "https://thetwinklingeye.com",
+      mainEntity: {
+        "@type": "ItemList",
+        name: "Latest Content",
+        itemListElement: [
+          ...(latestInterview
+            ? [
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  item: {
+                    "@type": "VideoObject",
+                    name: latestInterview.title,
+                    description:
+                      latestInterview.excerpt ||
+                      `Interview with ${latestInterview.guest.name}`,
+                    url: `https://thetwinklingeye.com/interviews/${latestInterview.slug.current}`,
+                  },
+                },
+              ]
+            : []),
+          ...latestBlogPosts.map((post, index) => ({
+            "@type": "ListItem",
+            position: (latestInterview ? 2 : 1) + index,
+            item: {
+              "@type": "BlogPosting",
+              headline: post.title,
+              description: post.excerpt || post.title,
+              url: `https://thetwinklingeye.com/blog/${post.slug.current}`,
+              datePublished: post.publishedAt,
+              author: {
+                "@type": "Person",
+                name: post.author?.name || "The Twinkling Eye",
+              },
+            },
+          })),
+        ],
+      },
+      breadcrumb: {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://thetwinklingeye.com",
+          },
+        ],
+      },
+    })}
+  />
   <div class="home">
     <header class="home__header">
       <h1 class="home__headline">Welcome to The Twinkling Eye</h1>

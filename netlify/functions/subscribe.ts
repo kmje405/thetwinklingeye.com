@@ -22,7 +22,6 @@ interface SubscribePayload {
   email: string;
   name?: string;
   hp?: string; // honeypot
-  turnstileToken?: string; // Cloudflare Turnstile token
 }
 
 interface MailerLiteSubscriber {
@@ -80,60 +79,6 @@ function rateLimitCheck(
   return { ok: true };
 }
 
-async function verifyTurnstileToken(
-  token: string,
-  ip: string
-): Promise<boolean> {
-  // Use dummy secret key for development/testing
-  const isDevelopment = process.env.NODE_ENV !== "production";
-  const secretKey = isDevelopment
-    ? "1x0000000000000000000000000000000AA" // Always passes validation
-    : process.env.TURNSTILE_SECRET_KEY;
-
-  if (!secretKey) {
-    console.error("TURNSTILE_SECRET_KEY not configured");
-    return false;
-  }
-
-  try {
-    const response = await fetch(
-      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          secret: secretKey,
-          response: token,
-          remoteip: ip,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      console.error(
-        "Turnstile API error:",
-        response.status,
-        response.statusText
-      );
-      return false;
-    }
-
-    const result = await response.json();
-    console.log("Turnstile verification result:", result);
-
-    if (!result.success) {
-      console.error("Turnstile verification failed:", result["error-codes"]);
-    }
-
-    return result.success === true;
-  } catch (error) {
-    console.error("Turnstile verification error:", error);
-    return false;
-  }
-}
-
 function json(
   statusCode: number,
   body: any,
@@ -189,32 +134,14 @@ export const handler: Handler = async (
       .toLowerCase();
     const name = String(payload.name || "").trim();
     const hp = String(payload.hp || "").trim(); // honeypot
-    const turnstileToken = String(payload.turnstileToken || "").trim();
 
     // Honeypot: if filled, pretend success (don't teach bots)
     if (hp) {
       return json(200, { ok: true, message: "Successfully subscribed!" });
     }
 
-    // Get client IP (used for both Turnstile and rate limiting)
+    // Get client IP (used for rate limiting)
     const ip = getClientIp(event);
-
-    // Verify Turnstile token (only if secret key is configured)
-    const turnstileSecretKey = process.env.TURNSTILE_SECRET_KEY;
-    if (turnstileSecretKey) {
-      if (!turnstileToken) {
-        return json(400, { ok: false, error: "turnstile_missing" });
-      }
-
-      const turnstileValid = await verifyTurnstileToken(turnstileToken, ip);
-      if (!turnstileValid) {
-        return json(400, { ok: false, error: "turnstile_failed" });
-      }
-    } else {
-      console.warn(
-        "TURNSTILE_SECRET_KEY not configured - skipping Turnstile verification"
-      );
-    }
 
     // Validate
     if (!email || !EMAIL_RE.test(email)) {

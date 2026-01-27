@@ -16,7 +16,6 @@ interface ContactPayload {
   subject: string;
   message: string;
   hp?: string; // honeypot
-  turnstileToken?: string;
 }
 
 interface MailerLiteSubscriber {
@@ -73,68 +72,6 @@ function rateLimitCheck(
   entry.count += 1;
   rateBuckets.set(key, entry);
   return { ok: true };
-}
-
-async function verifyTurnstileToken(
-  token: string,
-  ip: string
-): Promise<boolean> {
-  const isDevelopment = process.env.NODE_ENV !== "production";
-  const secretKey = isDevelopment
-    ? "1x0000000000000000000000000000000AA"
-    : process.env.TURNSTILE_SECRET_KEY;
-
-  if (!secretKey) {
-    console.error("TURNSTILE_SECRET_KEY not configured");
-    return false;
-  }
-
-  // Debug logging for secret key (safe - only shows length and format)
-  console.log("Turnstile debug info:", {
-    isDevelopment,
-    secretKeyLength: secretKey.length,
-    secretKeyPrefix: secretKey.substring(0, 4),
-    hasSecretKey: !!process.env.TURNSTILE_SECRET_KEY,
-    nodeEnv: process.env.NODE_ENV,
-  });
-
-  try {
-    const response = await fetch(
-      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          secret: secretKey,
-          response: token,
-          remoteip: ip,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      console.error(
-        "Turnstile API error:",
-        response.status,
-        response.statusText
-      );
-      return false;
-    }
-
-    const result = await response.json();
-    console.log("Turnstile verification result:", result);
-
-    if (!result.success) {
-      console.error("Turnstile verification failed:", result["error-codes"]);
-    }
-
-    return result.success === true;
-  } catch (error) {
-    console.error("Turnstile verification error:", error);
-    return false;
-  }
 }
 
 function json(
@@ -194,7 +131,6 @@ export const handler: Handler = async (
     const subject = String(payload.subject || "").trim();
     const message = String(payload.message || "").trim();
     const hp = String(payload.hp || "").trim();
-    const turnstileToken = String(payload.turnstileToken || "").trim();
 
     // Honeypot check
     if (hp) {
@@ -203,19 +139,6 @@ export const handler: Handler = async (
 
     // Get client IP
     const ip = getClientIp(event);
-
-    // Verify Turnstile token
-    const turnstileSecretKey = process.env.TURNSTILE_SECRET_KEY;
-    if (turnstileSecretKey) {
-      if (!turnstileToken) {
-        return json(400, { ok: false, error: "turnstile_missing" });
-      }
-
-      const turnstileValid = await verifyTurnstileToken(turnstileToken, ip);
-      if (!turnstileValid) {
-        return json(400, { ok: false, error: "turnstile_failed" });
-      }
-    }
 
     // Validate required fields
     if (!email || !EMAIL_RE.test(email)) {
