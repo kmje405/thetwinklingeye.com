@@ -87,15 +87,7 @@ const faviconUrl = dynamicSiteConfig.sanityData?.favicon
       async
       defer></script>
     <!-- Hyvor Talk Script - Global -->
-    <script>
-      window.addEventListener("load", () => {
-        const s = document.createElement("script");
-        s.src = "https://talk.hyvor.com/embed.js";
-        s.async = true;
-        s.setAttribute("data-hyvor-talk-id", "14933");
-        document.body.appendChild(s);
-      });
-    </script>
+    <script src="/scripts/hyvor-talk.js" is:inline></script>
     <!-- Content loading script -->
     <script src="/scripts/content-loader.js" is:inline></script>
   </head>
