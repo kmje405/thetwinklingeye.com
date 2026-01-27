@@ -1,0 +1,259 @@
+/* =========================================================
+   astro-consent — FULL THEME + STRUCTURE
+   This file is NEVER overwritten.
+   ========================================================= */
+
+:root {
+  --cb-font: var(
+    --font-body,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif
+  );
+
+  --cb-bg: #f8f0e5;
+  --cb-border: rgba(163, 115, 81, 0.2);
+  --cb-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  --cb-text: #333;
+  --cb-muted: #666;
+  --cb-link: #a37351;
+
+  --cb-radius: 0px;
+  --cb-btn-radius: 0px;
+  --cb-btn-padding: 8px 16px;
+
+  --cb-accept-bg: var(--button-bg-light, #a37351);
+  --cb-accept-text: var(--button-font-color, #ffffff);
+
+  --cb-reject-bg: transparent;
+  --cb-reject-text: var(--cb-text);
+
+  --cb-manage-bg: transparent;
+  --cb-manage-text: var(--cb-text);
+  --cb-manage-border: var(--cb-border);
+
+  --cb-modal-bg: var(--cb-bg);
+  --cb-modal-backdrop: rgba(0, 0, 0, 0.5);
+  --cb-modal-radius: 0px;
+  --cb-modal-width: 480px;
+
+  --cb-toggle-off-bg: var(--cb-border);
+  --cb-toggle-on-bg: var(--button-bg-light, #a37351);
+  --cb-toggle-knob: #ffffff;
+}
+
+/* ===============================
+   Banner
+   =============================== */
+
+#astro-consent-banner {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9999;
+  font-family: var(--cb-font);
+}
+
+.cb-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  align-items: center;
+
+  background: var(--cb-bg);
+  border-radius: var(--cb-radius);
+  border: 1px solid var(--cb-border);
+  box-shadow: var(--cb-shadow);
+  color: var(--cb-text);
+}
+
+.cb-title {
+  font-family: var(--font-callout);
+  font-size: var(--font-size-callout, 18px);
+  font-weight: var(--font-weight-callout, 600);
+  line-height: 1.2;
+}
+
+.cb-desc {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--cb-muted);
+}
+
+.cb-desc a {
+  color: var(--cb-link);
+  text-decoration: none;
+}
+
+.cb-desc a:hover {
+  text-decoration: underline;
+}
+
+/* ===============================
+   Buttons
+   =============================== */
+
+.cb-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.cb-actions button {
+  padding: var(--cb-btn-padding);
+  border-radius: var(--cb-btn-radius);
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--button-text, var(--cb-font));
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.cb-accept {
+  background: var(--cb-accept-bg);
+  color: var(--cb-accept-text);
+  box-shadow:
+    0 4px 4px rgba(0, 0, 0, 0.05),
+    0 16px 32px rgba(0, 0, 0, 0.1);
+}
+
+.cb-accept:hover {
+  background: var(--button-bg-light-hover, #8b5d3f);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 6px rgba(0, 0, 0, 0.08),
+    0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.cb-reject {
+  background: var(--cb-reject-bg);
+  color: var(--cb-reject-text);
+  border: 1px solid var(--cb-border);
+}
+
+.cb-reject:hover {
+  background: rgba(163, 115, 81, 0.1);
+  transform: translateY(-1px);
+}
+
+.cb-manage {
+  background: var(--cb-manage-bg);
+  color: var(--cb-manage-text);
+  border: 1px solid var(--cb-manage-border);
+}
+
+.cb-manage:hover {
+  background: rgba(163, 115, 81, 0.1);
+  transform: translateY(-1px);
+}
+
+/* ===============================
+   Modal
+   =============================== */
+
+#astro-consent-modal {
+  position: fixed;
+  inset: 0;
+  background: var(--cb-modal-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.cb-modal {
+  width: 100%;
+  max-width: var(--cb-modal-width);
+  background: var(--cb-modal-bg);
+  border-radius: var(--cb-modal-radius);
+  padding: 28px;
+  color: var(--cb-text);
+  border: 1px solid var(--cb-border);
+}
+
+/* ===============================
+   Modal rows (SPACING FIXED)
+   =============================== */
+
+.cb-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--cb-border);
+}
+
+.cb-row:last-of-type {
+  border-bottom: 0;
+  padding-bottom: 32px;
+}
+
+/* ===============================
+   Modal actions
+   =============================== */
+
+.cb-modal .cb-actions {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--cb-border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ===============================
+   Toggles
+   =============================== */
+
+.cb-toggle {
+  width: 44px;
+  height: 24px;
+  background: var(--cb-toggle-off-bg);
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.cb-toggle span {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: var(--cb-toggle-knob);
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s ease;
+}
+
+.cb-toggle.active {
+  background: var(--cb-toggle-on-bg);
+}
+
+.cb-toggle.active span {
+  transform: translateX(20px);
+}
+
+/* ===============================
+   Mobile
+   =============================== */
+
+@media (max-width: 640px) {
+  .cb-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .cb-actions {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+}
