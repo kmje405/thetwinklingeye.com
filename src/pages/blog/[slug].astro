@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import BlogPagination from "../../components/BlogPagination.astro";
 import { client, queries, urlFor } from "../../lib/sanity";
 import type { BlogPost } from "../../types/sanity";
 import { toHTML } from "@portabletext/to-html";
@@ -30,6 +31,12 @@ const post = await client.fetch<BlogPost>(queries.blogPost, { slug });
 if (!post) {
   return Astro.redirect("/404");
 }
+
+// Fetch all posts to determine previous and next posts
+const allPosts = await client.fetch<BlogPost[]>(queries.allBlogPosts);
+const currentIndex = allPosts.findIndex(p => p.slug.current === slug);
+const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+const nextPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 
 // Format date
 const formattedDate = new Date(post.publishedAt).toLocaleDateString("en-US", {
@@ -166,6 +173,14 @@ const bodyHtml = post.body
     <!-- Main Body spans both columns -->
     <section class="post__body">
       <Fragment set:html={bodyHtml} />
+    </section>
+
+    <!-- Blog Pagination -->
+    <section class="post__pagination">
+      <BlogPagination
+        prevPost={prevPost || undefined}
+        nextPost={nextPost || undefined}
+      />
     </section>
 
     <!-- Comments Section -->
@@ -336,10 +351,16 @@ const bodyHtml = post.body
       font-family: var(--font-body);
     }
 
+    /* Pagination Section */
+    .post__pagination {
+      grid-column: 1 / -1;
+      margin-top: 2rem;
+    }
+
     /* Comments Section */
     .post__comments {
       grid-column: 1 / -1;
-      margin-top: 3rem;
+      margin-top: 1rem;
       padding-top: 2rem;
       border-top: 1px solid #ddd;
     }
@@ -387,9 +408,14 @@ const bodyHtml = post.body
         order: 4;
       }
 
-      .post__comments {
+      .post__pagination {
         grid-column: 1;
         order: 5;
+      }
+
+      .post__comments {
+        grid-column: 1;
+        order: 6;
       }
 
       .post__pullquote blockquote {
@@ -439,9 +465,14 @@ const bodyHtml = post.body
         order: 4;
       }
 
-      .post__comments {
+      .post__pagination {
         grid-column: 1;
         order: 5;
+      }
+
+      .post__comments {
+        grid-column: 1;
+        order: 6;
       }
 
       .post__body :global(blockquote) {

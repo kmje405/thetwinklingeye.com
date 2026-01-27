@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import InterviewPagination from "../../components/InterviewPagination.astro";
 import { client, queries, urlFor } from "../../lib/sanity";
 
 // Define the interview type for this page
@@ -52,6 +53,28 @@ try {
 } catch (e) {
   console.error("Error fetching interview:", e);
   error = "Unable to load interview";
+}
+
+// Fetch all interviews to determine previous and next interviews
+let allInterviews: InterviewData[] = [];
+let prevInterview: InterviewData | null = null;
+let nextInterview: InterviewData | null = null;
+
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID && interview) {
+    allInterviews = await client.fetch<InterviewData[]>(`*[_type == "interview" && defined(slug.current)] | order(publishedAt desc) {
+      _id,
+      title,
+      slug,
+      publishedAt
+    }`);
+    
+    const currentIndex = allInterviews.findIndex(i => i.slug.current === slug);
+    prevInterview = currentIndex > 0 ? allInterviews[currentIndex - 1] : null;
+    nextInterview = currentIndex < allInterviews.length - 1 ? allInterviews[currentIndex + 1] : null;
+  }
+} catch (e) {
+  console.error("Error fetching all interviews:", e);
 }
 
 // Function to extract YouTube video ID from URL
@@ -218,6 +241,14 @@ if (!interview && !error) {
 
         <!-- Comments Section -->
         <div class="interview-comments">
+          <!-- Interview Pagination -->
+          <div class="interview-pagination-section">
+            <InterviewPagination
+              prevInterview={prevInterview || undefined}
+              nextInterview={nextInterview || undefined}
+            />
+          </div>
+          
           <h2>Comments</h2>
           <hyvor-talk-comments
             website-id="14933"
@@ -368,6 +399,10 @@ if (!interview && !error) {
     font-family: var(--font-body);
     line-height: 1.6;
     color: #555;
+  }
+
+  .interview-pagination-section {
+    margin-bottom: 2rem;
   }
 
   .interview-comments {
