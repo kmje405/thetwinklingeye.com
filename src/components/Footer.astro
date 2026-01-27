@@ -146,36 +146,28 @@ const feedLinks = [
       </ul>
     </nav>
 
-    <!-- Social Media Links -->
-    {
-      socialPlatforms.length > 0 && (
-        <div class="footer__social">
-          <div class="social-links">
-            {socialPlatforms.map((platform) => (
-              <a
-                href={platform.url}
-                class="social-link"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={platform.label}
-              >
-                <i class={`social-icon ${platform.icon}`} />
-                <span class="social-name">{platform.name}</span>
-              </a>
-            ))}
-          </div>
-        </div>
-      )
-    }
-
-    <!-- RSS Feed and Sitemap Links -->
-    <div class="footer__feeds">
-      <div class="feed-links">
+    <!-- Social Media and Feed Links -->
+    <div class="footer__links">
+      <div class="all-links">
+        {
+          socialPlatforms.map((platform) => (
+            <a
+              href={platform.url}
+              class="footer-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={platform.label}
+            >
+              <i class={`link-icon ${platform.icon}`} />
+              <span class="link-name">{platform.name}</span>
+            </a>
+          ))
+        }
         {
           feedLinks.map((feed) => (
-            <a href={feed.url} class="feed-link" aria-label={feed.label}>
-              <i class={`feed-icon ${feed.icon}`} />
-              <span class="feed-name">{feed.name}</span>
+            <a href={feed.url} class="footer-link" aria-label={feed.label}>
+              <i class={`link-icon ${feed.icon}`} />
+              <span class="link-name">{feed.name}</span>
             </a>
           ))
         }
@@ -562,19 +554,19 @@ const feedLinks = [
     outline-offset: 2px;
   }
 
-  .footer__social {
+  .footer__links {
     padding-top: 2rem;
     text-align: center;
   }
 
-  .social-links {
+  .all-links {
     display: flex;
     justify-content: center;
     gap: 1.5rem;
     flex-wrap: wrap;
   }
 
-  .social-link {
+  .footer-link {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -582,78 +574,27 @@ const feedLinks = [
     color: var(--color-cream-peach);
     text-decoration: none;
     padding: 1rem;
-    border-radius: 8px;
     transition: all 0.3s ease;
     min-width: 80px;
   }
 
-  .social-link:hover {
+  .footer-link:hover {
     color: white;
     background-color: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px);
   }
 
-  .social-link:focus {
+  .footer-link:focus {
     outline: 2px solid #007acc;
     outline-offset: 2px;
   }
 
-  .social-icon {
+  .link-icon {
     font-size: 1.5rem;
     display: block;
   }
 
-  .social-name {
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .footer__feeds {
-    padding-top: 1.5rem;
-    text-align: center;
-  }
-
-  .feed-links {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-  }
-
-  .feed-link {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--color-cream-peach);
-    text-decoration: none;
-    padding: 1rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    min-width: 80px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .feed-link:hover {
-    color: white;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: translateY(-2px);
-  }
-
-  .feed-link:focus {
-    outline: 2px solid #007acc;
-    outline-offset: 2px;
-  }
-
-  .feed-icon {
-    font-size: 1.5rem;
-    display: block;
-  }
-
-  .feed-name {
+  .link-name {
     font-size: 0.9rem;
     font-weight: 500;
     text-transform: uppercase;
