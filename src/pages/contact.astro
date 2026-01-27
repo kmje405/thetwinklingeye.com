@@ -3,13 +3,13 @@ import Layout from "../layouts/Layout.astro";
 import { Image } from "astro:assets";
 import footerAccentIcon from "../assets/footerAccentIcon.png";
 
-const { PUBLIC_TURNSTILE_SITE_KEY, DEV } = import.meta.env;
+const { DEV } = import.meta.env;
 const isDevelopment = DEV || import.meta.env.MODE === "development";
 
-// Use dummy sitekey for development testing
+// Use your Cloudflare Turnstile site key
 const siteKey = isDevelopment
   ? "1x00000000000000000000AA" // Always passes - for testing successful flows
-  : PUBLIC_TURNSTILE_SITE_KEY;
+  : "0x4AAAAAACPXx2P_WYRbICER"; // Your production site key
 ---
 
 <Layout>
