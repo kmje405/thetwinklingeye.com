@@ -1,0 +1,8 @@
+# Robots.txt for The Twinkling Eye
+
+# Block all crawlers from development site
+User-agent: *
+Disallow: /
+
+# Allow crawling only on production domain
+# This will be overridden by production robots.txt

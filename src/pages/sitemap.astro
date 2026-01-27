@@ -1,0 +1,229 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { client, queries } from "../lib/sanity";
+import type { BlogPost, InterviewPreview } from "../types/sanity";
+
+// Fetch all content for the sitemap
+const [blogPosts, interviews] = await Promise.all([
+  client.fetch<BlogPost[]>(queries.allBlogPosts),
+  client.fetch<InterviewPreview[]>(queries.allInterviews),
+]);
+---
+
+<Layout>
+  <main style="min-height: 100vh; padding: 2rem 0;">
+    <div style="max-width: 800px; margin: 0 auto; padding: 0 2rem;">
+      <!-- Header -->
+      <header style="text-align: center; margin-bottom: 3rem;">
+        <h1
+          style="font-family: var(--font-header-primary); font-size: 3rem; color: var(--color-burgundy-deep); margin-bottom: 1rem;"
+        >
+          Sitemap
+        </h1>
+        <p
+          style="font-family: var(--font-body); color: var(--color-burgundy-brown); font-size: 1.1rem;"
+        >
+          Complete navigation of The Twinkling Eye
+        </p>
+      </header>
+
+      <!-- Main Pages -->
+      <section style="margin-bottom: 3rem;">
+        <h2
+          style="font-family: var(--font-header-primary); color: var(--color-burgundy-deep); font-size: 1.8rem; margin-bottom: 1rem; border-bottom: 2px solid var(--color-pink-rose); padding-bottom: 0.5rem;"
+        >
+          Main Pages
+        </h2>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 0.5rem;">
+            <a
+              href="/"
+              style="color: var(--color-burgundy-deep); text-decoration: none; font-family: var(--font-body); font-size: 1.1rem; font-weight: 600;"
+            >
+              🏠 Home
+            </a>
+            <span
+              style="color: var(--color-burgundy-brown); margin-left: 1rem; font-style: italic;"
+              >- Welcome page</span
+            >
+          </li>
+          <li style="margin-bottom: 0.5rem;">
+            <a
+              href="/about"
+              style="color: var(--color-burgundy-deep); text-decoration: none; font-family: var(--font-body); font-size: 1.1rem; font-weight: 600;"
+            >
+              👤 About
+            </a>
+            <span
+              style="color: var(--color-burgundy-brown); margin-left: 1rem; font-style: italic;"
+              >- Learn about our mission</span
+            >
+          </li>
+          <li style="margin-bottom: 0.5rem;">
+            <a
+              href="/contact"
+              style="color: var(--color-burgundy-deep); text-decoration: none; font-family: var(--font-body); font-size: 1.1rem; font-weight: 600;"
+            >
+              ✉️ Contact
+            </a>
+            <span
+              style="color: var(--color-burgundy-brown); margin-left: 1rem; font-style: italic;"
+              >- Get in touch</span
+            >
+          </li>
+        </ul>
+      </section>
+
+      <!-- Blog Section -->
+      <section style="margin-bottom: 3rem;">
+        <h2
+          style="font-family: var(--font-header-primary); color: var(--color-burgundy-deep); font-size: 1.8rem; margin-bottom: 1rem; border-bottom: 2px solid var(--color-pink-rose); padding-bottom: 0.5rem;"
+        >
+          Blog ({blogPosts.length} posts)
+        </h2>
+        <div style="margin-bottom: 1rem;">
+          <a
+            href="/blog"
+            style="color: var(--color-burgundy-deep); text-decoration: none; font-family: var(--font-body); font-size: 1.1rem; font-weight: 600;"
+          >
+            📝 Blog Index
+          </a>
+          <span
+            style="color: var(--color-burgundy-brown); margin-left: 1rem; font-style: italic;"
+            >- All blog posts</span
+          >
+        </div>
+        <ul style="list-style: none; padding: 0; margin: 0; margin-left: 2rem;">
+          {
+            blogPosts.map((post) => (
+              <li style="margin-bottom: 0.75rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.3); border-radius: 4px;">
+                <a
+                  href={`/blog/${post.slug.current}`}
+                  style="color: var(--color-burgundy-deep); text-decoration: none; font-family: var(--font-body); font-weight: 500;"
+                >
+                  📄 {post.title}
+                </a>
+                <div style="font-size: 0.9rem; color: var(--color-brown-warm); margin-top: 0.25rem;">
+                  {new Date(post.publishedAt).toLocaleDateString()}
+                  {post.categories && post.categories.length > 0 && (
+                    <span style="margin-left: 1rem;">
+                      {post.categories.map((cat, index) => (
+                        <span style="background: var(--color-yellow-golden); color: var(--color-burgundy-deep); padding: 0.1rem 0.4rem; border-radius: 8px; font-size: 0.8rem; margin-right: 0.25rem;">
+                          {cat.title}
+                        </span>
+                      ))}
+                    </span>
+                  )}
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <!-- Interviews Section -->
+      <section style="margin-bottom: 3rem;">
+        <h2
+          style="font-family: var(--font-header-primary); color: var(--color-burgundy-deep); font-size: 1.8rem; margin-bottom: 1rem; border-bottom: 2px solid var(--color-pink-rose); padding-bottom: 0.5rem;"
+        >
+          Interviews ({interviews.length} interviews)
+        </h2>
+        <div style="margin-bottom: 1rem;">
+          <a
+            href="/interviews"
+            style="color: var(--color-burgundy-deep); text-decoration: none; font-family: var(--font-body); font-size: 1.1rem; font-weight: 600;"
+          >
+            🎥 Interviews Index
+          </a>
+          <span
+            style="color: var(--color-burgundy-brown); margin-left: 1rem; font-style: italic;"
+            >- All interviews</span
+          >
+        </div>
+        <ul style="list-style: none; padding: 0; margin: 0; margin-left: 2rem;">
+          {
+            interviews.map((interview) => (
+              <li style="margin-bottom: 0.75rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.3); border-radius: 4px;">
+                <a
+                  href={`/interviews/${interview.slug.current}`}
+                  style="color: var(--color-burgundy-deep); text-decoration: none; font-family: var(--font-body); font-weight: 500;"
+                >
+                  ▶️ {interview.title}
+                </a>
+                <div style="font-size: 0.9rem; color: var(--color-brown-warm); margin-top: 0.25rem;">
+                  {new Date(interview.publishedAt).toLocaleDateString()}
+                  <span style="margin-left: 1rem; font-style: italic;">
+                    with {interview.guest.name}
+                  </span>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <!-- Resources Section -->
+      <section>
+        <h2
+          style="font-family: var(--font-header-primary); color: var(--color-burgundy-deep); font-size: 1.8rem; margin-bottom: 1rem; border-bottom: 2px solid var(--color-pink-rose); padding-bottom: 0.5rem;"
+        >
+          Resources
+        </h2>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 0.5rem;">
+            <a
+              href="/rss.xml"
+              style="color: var(--color-burgundy-deep); text-decoration: none; font-family: var(--font-body); font-size: 1.1rem; font-weight: 600;"
+            >
+              📡 RSS Feed
+            </a>
+            <span
+              style="color: var(--color-burgundy-brown); margin-left: 1rem; font-style: italic;"
+              >- Subscribe to updates</span
+            >
+          </li>
+          <li style="margin-bottom: 0.5rem;">
+            <a
+              href="/sitemap.xml"
+              style="color: var(--color-burgundy-deep); text-decoration: none; font-family: var(--font-body); font-size: 1.1rem; font-weight: 600;"
+            >
+              🗺️ XML Sitemap
+            </a>
+            <span
+              style="color: var(--color-burgundy-brown); margin-left: 1rem; font-style: italic;"
+              >- Machine-readable sitemap</span
+            >
+          </li>
+        </ul>
+      </section>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  a:hover {
+    text-decoration: underline !important;
+  }
+
+  @media (max-width: 768px) {
+    main {
+      padding: 1rem 0 !important;
+    }
+
+    div {
+      padding: 0 1rem !important;
+    }
+
+    h1 {
+      font-size: 2rem !important;
+    }
+
+    h2 {
+      font-size: 1.4rem !important;
+    }
+
+    ul {
+      margin-left: 1rem !important;
+    }
+  }
+</style>

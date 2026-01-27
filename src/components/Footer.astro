@@ -43,6 +43,22 @@ const socialPlatforms = [
     label: "Connect with us on LinkedIn",
   },
 ].filter((platform) => platform.url && platform.url.trim() !== "");
+
+// Define RSS and sitemap links
+const feedLinks = [
+  {
+    name: "RSS Feed",
+    url: "/rss.xml",
+    icon: "fas fa-rss", // RSS icon
+    label: "Subscribe to our RSS feed",
+  },
+  {
+    name: "Sitemap",
+    url: "/sitemap",
+    icon: "fas fa-sitemap", // Sitemap icon
+    label: "View our sitemap",
+  },
+];
 ---
 
 <footer class="footer">
@@ -151,6 +167,20 @@ const socialPlatforms = [
         </div>
       )
     }
+
+    <!-- RSS Feed and Sitemap Links -->
+    <div class="footer__feeds">
+      <div class="feed-links">
+        {
+          feedLinks.map((feed) => (
+            <a href={feed.url} class="feed-link" aria-label={feed.label}>
+              <i class={`feed-icon ${feed.icon}`} />
+              <span class="feed-name">{feed.name}</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
   </div>
 
   <!-- Developer Promo Banner -->
@@ -580,6 +610,56 @@ const socialPlatforms = [
     letter-spacing: 0.5px;
   }
 
+  .footer__feeds {
+    padding-top: 1.5rem;
+    text-align: center;
+  }
+
+  .feed-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .feed-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-cream-peach);
+    text-decoration: none;
+    padding: 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    min-width: 80px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .feed-link:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .feed-link:focus {
+    outline: 2px solid #007acc;
+    outline-offset: 2px;
+  }
+
+  .feed-icon {
+    font-size: 1.5rem;
+    display: block;
+  }
+
+  .feed-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
   .footer__promo {
     display: flex;
     background: #3d2b1e;
@@ -680,6 +760,24 @@ const socialPlatforms = [
     }
 
     .social-name {
+      font-size: 0.8rem;
+    }
+
+    /* Feed links mobile styles */
+    .feed-links {
+      gap: 1rem;
+    }
+
+    .feed-link {
+      min-width: 60px;
+      padding: 0.75rem;
+    }
+
+    .feed-icon {
+      font-size: 1.25rem;
+    }
+
+    .feed-name {
       font-size: 0.8rem;
     }
   }

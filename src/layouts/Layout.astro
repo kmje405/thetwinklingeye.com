@@ -46,6 +46,13 @@ const faviconUrl = dynamicSiteConfig.sanityData?.favicon
     <meta name="description" content={dynamicSiteConfig.description} />
     <title>{dynamicSiteConfig.title}</title>
 
+    <!-- Prevent indexing on development/staging environments -->
+    {
+      Astro.url.hostname.includes("dev.") && (
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+      )
+    }
+
     <!-- Structured Data -->
     <script
       type="application/ld+json"
