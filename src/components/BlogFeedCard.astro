@@ -57,16 +57,19 @@ const imageUrl =
           <div class="blog__feed--card__left">
             <div class="blog__feed--card__meta">
               <time class="blog__feed--card__date">{formattedDate}</time>
-              {categories.length > 0 && (
-                <div class="blog__feed--card__categories">
-                  {categories.map((category) => (
-                    <span class="blog__feed--card__category">
-                      {category.title}
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
+            {categories.length > 0 && (
+              <div class="blog__feed--card__categories">
+                {categories.map((category) => (
+                  <a
+                    href={`/categories/${category.slug.current}`}
+                    class="blog__feed--card__category"
+                  >
+                    {category.title}
+                  </a>
+                ))}
+              </div>
+            )}
 
             <h2 class="blog__feed--card__title">{title}</h2>
           </div>
@@ -218,10 +221,7 @@ const imageUrl =
   }
 
   .blog__feed--card__meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     font-size: 0.85rem;
     color: #666;
   }
@@ -235,16 +235,25 @@ const imageUrl =
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
+    margin-bottom: 1rem;
   }
 
   .blog__feed--card__category {
-    color: #666;
+    color: #a37351;
     font-weight: 500;
     font-size: 0.85rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .blog__feed--card__category:hover {
+    color: #8b5d3f;
+    text-decoration: underline;
   }
 
   .blog__feed--card__category:not(:last-child)::after {
     content: ", ";
+    color: #666;
   }
 
   .blog__feed--card__title {
@@ -272,7 +281,7 @@ const imageUrl =
   .blog__feed--card__footer {
     padding: 0.5rem 1.5rem 1.5rem 1.5rem;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
   }
 

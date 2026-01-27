@@ -1,0 +1,228 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { client, queries } from "../../lib/sanity";
+import type { Category } from "../../types/sanity";
+
+// Fetch all categories
+const categories = await client.fetch<Category[]>(queries.allCategories);
+
+// Sort categories alphabetically by title
+const sortedCategories = categories.sort((a, b) =>
+  a.title.localeCompare(b.title)
+);
+
+// Get post count for each category
+const categoriesWithCounts = await Promise.all(
+  sortedCategories.map(async (category) => {
+    const postCount = await client.fetch<number>(
+      `count(*[_type == "blogPost" && references($categoryId)])`,
+      { categoryId: category._id }
+    );
+    return { ...category, postCount };
+  })
+);
+---
+
+<Layout>
+  <!-- Categories Page Structured Data -->
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: "Categories - The Twinkling Eye",
+      description: "Browse all blog post categories on The Twinkling Eye",
+      url: "https://thetwinklingeye.com/categories",
+      mainEntity: {
+        "@type": "ItemList",
+        name: "Blog Categories",
+        itemListElement: categoriesWithCounts.map((category, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          item: {
+            "@type": "Thing",
+            name: category.title,
+            description:
+              category.description || `Posts in ${category.title} category`,
+            url: `https://thetwinklingeye.com/categories/${category.slug.current}`,
+          },
+        })),
+      },
+      breadcrumb: {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://thetwinklingeye.com",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Categories",
+            item: "https://thetwinklingeye.com/categories",
+          },
+        ],
+      },
+    })}
+  />
+
+  <main class="categories">
+    <header class="categories__header">
+      <h1 class="categories__title">Categories</h1>
+      <p class="categories__description">
+        Browse all blog post categories to find content that interests you.
+      </p>
+    </header>
+
+    <section class="categories__grid">
+      {
+        categoriesWithCounts.map((category) => (
+          <article class="category-card">
+            <a
+              href={`/categories/${category.slug.current}`}
+              class="category-card__link"
+            >
+              <h2 class="category-card__title">{category.title}</h2>
+              {category.description && (
+                <p class="category-card__description">{category.description}</p>
+              )}
+              <div class="category-card__meta">
+                <span class="category-card__count">
+                  {category.postCount}{" "}
+                  {category.postCount === 1 ? "post" : "posts"}
+                </span>
+              </div>
+            </a>
+          </article>
+        ))
+      }
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .categories {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 80vh;
+  }
+
+  .categories__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .categories__title {
+    font-family: var(--font-header-primary);
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
+    color: #333;
+    margin-bottom: 1rem;
+  }
+
+  .categories__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .categories__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .category-card {
+    background: white;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .category-card__link {
+    display: block;
+    padding: 2rem;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+
+  .category-card__title {
+    font-family: var(--font-header-primary);
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-h2);
+    color: #333;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+
+  .category-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .category-card__meta {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+  }
+
+  .category-card__count {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #a37351;
+    font-weight: 500;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .categories {
+      padding: 1rem;
+    }
+
+    .categories__grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .category-card__link {
+      padding: 1.5rem;
+    }
+
+    .categories__title {
+      font-size: 2rem;
+    }
+  }
+
+  /* Small mobile */
+  @media (max-width: 480px) {
+    .categories {
+      padding: 0.5rem;
+    }
+
+    .category-card__link {
+      padding: 1rem;
+    }
+  }
+</style>

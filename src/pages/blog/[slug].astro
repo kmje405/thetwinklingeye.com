@@ -139,6 +139,18 @@ const bodyHtml = post.body
           <div class="post__byline">
             <p>By {post.author?.name || 'Unknown Author'}</p>
             <p>{formattedDate}</p>
+            {
+              post.categories && post.categories.length > 0 && (
+                <div class="post__byline-categories">
+                  {post.categories.map((category, index) => (
+                    <a href={`/categories/${category.slug.current}`} class="post__category">
+                      {category.title}
+                      {index < (post.categories?.length || 0) - 1 ? ", " : ""}
+                    </a>
+                  ))}
+                </div>
+              )
+            }
           </div>
         </figure>
       )
@@ -155,19 +167,6 @@ const bodyHtml = post.body
         )
       }
 
-      <!-- Tags only -->
-      {
-        post.categories && post.categories.length > 0 && (
-          <div class="post__categories">
-            {post.categories.map((category, index) => (
-              <span class="post__category">
-                {category.title}
-                {index < (post.categories?.length || 0) - 1 ? ", " : ""}
-              </span>
-            ))}
-          </div>
-        )
-      }
     </section>
 
     <!-- Main Body spans both columns -->
@@ -255,6 +254,24 @@ const bodyHtml = post.body
 
     .post__byline p {
       margin: 0.25rem 0;
+    }
+
+    .post__byline-categories {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    .post__byline-categories .post__category {
+      color: #a37351;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .post__byline-categories .post__category:hover {
+      color: #8b5d3f;
+      text-decoration: underline;
     }
 
     /* Intro in right column */

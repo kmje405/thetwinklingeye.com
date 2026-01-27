@@ -1,0 +1,294 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BlogFeedCard from "../../components/BlogFeedCard.astro";
+import { client, queries } from "../../lib/sanity";
+import type { Category, BlogPost } from "../../types/sanity";
+
+export async function getStaticPaths() {
+  try {
+    const categories = await client.fetch<Category[]>(queries.allCategories);
+
+    return categories.map((category) => ({
+      params: { slug: category.slug.current },
+    }));
+  } catch (error) {
+    console.error("Error fetching categories for static paths:", error);
+    return [];
+  }
+}
+
+const { slug } = Astro.params;
+
+// Fetch the category
+const category = await client.fetch<Category>(
+  `*[_type == "category" && slug.current == $slug][0]{
+    _id,
+    title,
+    slug,
+    description
+  }`,
+  { slug }
+);
+
+if (!category) {
+  return Astro.redirect("/404");
+}
+
+// Fetch posts for this category
+const posts = await client.fetch<BlogPost[]>(queries.postsByCategory, {
+  categoryId: category._id,
+});
+
+// Format the page title
+const pageTitle = `${category.title} - Categories`;
+const pageDescription =
+  category.description ||
+  `Browse all blog posts in the ${category.title} category.`;
+---
+
+<Layout>
+  <!-- Category Page Structured Data -->
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: pageTitle,
+      description: pageDescription,
+      url: `https://thetwinklingeye.com/categories/${category.slug.current}`,
+      mainEntity: {
+        "@type": "ItemList",
+        name: `${category.title} Posts`,
+        itemListElement: posts.map((post, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          item: {
+            "@type": "BlogPosting",
+            headline: post.title,
+            description: post.excerpt || post.title,
+            url: `https://thetwinklingeye.com/blog/${post.slug.current}`,
+            datePublished: post.publishedAt,
+            author: {
+              "@type": "Person",
+              name: post.author?.name || "The Twinkling Eye",
+            },
+          },
+        })),
+      },
+      breadcrumb: {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://thetwinklingeye.com",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Categories",
+            item: "https://thetwinklingeye.com/categories",
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: category.title,
+            item: `https://thetwinklingeye.com/categories/${category.slug.current}`,
+          },
+        ],
+      },
+    })}
+  />
+
+  <div class="blog__feed--wrapper">
+    <header class="category-page__header">
+      <nav class="category-page__breadcrumb">
+        <a href="/categories">← Back to Categories</a>
+      </nav>
+
+      <h1 class="category-page__title">{category.title}</h1>
+
+      {
+        category.description && (
+          <p class="category-page__description">{category.description}</p>
+        )
+      }
+
+      <div class="category-page__meta">
+        <span class="category-page__count">
+          {posts.length}
+          {posts.length === 1 ? "post" : "posts"}
+        </span>
+      </div>
+    </header>
+
+    {
+      posts.length > 0 ? (
+        <div class="blog__feed">
+          {posts.map((post) => (
+            <BlogFeedCard
+              title={post.title}
+              excerpt={post.excerpt || ""}
+              publishedAt={post.publishedAt}
+              slug={post.slug.current}
+              featuredImage={post.featuredImage}
+              author={post.author || { name: "Unknown Author" }}
+              categories={post.categories || []}
+              variant={post.cardVariant || "editorial"}
+              size="md"
+            />
+          ))}
+        </div>
+      ) : (
+        <section class="category-page__empty">
+          <div class="category-page__empty-content">
+            <h2>No posts found</h2>
+            <p>
+              There are currently no blog posts in the {category.title}{" "}
+              category.
+            </p>
+            <a href="/blog" class="category-page__empty-link">
+              Browse all posts
+            </a>
+          </div>
+        </section>
+      )
+    }
+  </div>
+</Layout>
+
+<style>
+  .blog__feed--wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    flex-direction: column;
+    justify-self: center;
+  }
+
+  .blog__feed {
+    margin: 0 1rem;
+  }
+
+  .category-page__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .category-page__breadcrumb {
+    margin-bottom: 2rem;
+  }
+
+  .category-page__breadcrumb a {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #a37351;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .category-page__breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .category-page__title {
+    font-family: var(--font-header-primary);
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
+    color: #333;
+    margin-bottom: 1rem;
+  }
+
+  .category-page__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto 1.5rem auto;
+    line-height: 1.6;
+  }
+
+  .category-page__meta {
+    margin-bottom: 1rem;
+  }
+
+  .category-page__count {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #a37351;
+    font-weight: 500;
+    background: white;
+    padding: 0.5rem 1rem;
+    display: inline-block;
+  }
+
+  .category-page__empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+  }
+
+  .category-page__empty-content {
+    text-align: center;
+    background: white;
+    padding: 3rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .category-page__empty-content h2 {
+    font-family: var(--font-header-primary);
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+
+  .category-page__empty-content p {
+    font-family: var(--font-body);
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .category-page__empty-link {
+    display: inline-block;
+    background: #a37351;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+
+  .category-page__empty-link:hover {
+    background: #8b5d3f;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .blog__feed {
+      margin: 0 0.5rem;
+    }
+
+    .category-page__title {
+      font-size: 2rem;
+    }
+
+    .category-page__empty-content {
+      padding: 2rem;
+    }
+  }
+
+  /* Small mobile */
+  @media (max-width: 480px) {
+    .category-page {
+      padding: 0.5rem;
+    }
+
+    .category-page__empty-content {
+      padding: 1.5rem;
+    }
+  }
+</style>

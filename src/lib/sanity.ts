@@ -200,4 +200,49 @@ export const queries = {
     },
     seo
   }`,
+
+  // All categories
+  allCategories: `*[_type == "category"] | order(title asc){
+    _id,
+    title,
+    slug,
+    description
+  }`,
+
+  // Posts by category
+  postsByCategory: `*[_type == "blogPost" && references($categoryId) && defined(slug.current)] | order(publishedAt desc){
+    _id,
+    title,
+    slug,
+    excerpt,
+    publishedAt,
+    cardVariant,
+    featuredImage {
+      asset->{
+        _id,
+        url,
+        metadata {
+          dimensions {
+            width,
+            height
+          }
+        }
+      },
+      alt,
+      caption
+    },
+    author->{
+      name,
+      image {
+        asset->{
+          _id,
+          url
+        }
+      }
+    },
+    categories[]->{
+      title,
+      slug
+    }
+  }`,
 };
