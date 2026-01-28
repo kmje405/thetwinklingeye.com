@@ -1,5 +1,5 @@
 ---
-import BlogFeedCard from "./BlogFeedCard.astro";
+import Card from "./Card.astro";
 import { client } from "../lib/sanity";
 import type { BlogPost } from "../types/sanity";
 
@@ -43,7 +43,8 @@ const blogPosts = await client.fetch<BlogPost[]>(`
 <div class="blog__feed">
   {
     blogPosts.map((post: BlogPost) => (
-      <BlogFeedCard
+      <Card
+        type="blog"
         title={post.title}
         excerpt={post.excerpt || ""}
         publishedAt={post.publishedAt}
@@ -59,11 +60,17 @@ const blogPosts = await client.fetch<BlogPost[]>(`
 
 <style>
   .blog__feed {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
     margin: 0 1rem;
+    max-width: 800px;
+    margin: 0 auto;
   }
 
   @media (max-width: 768px) {
     .blog__feed {
+      gap: 1rem;
       margin: 0 0.5rem;
     }
   }

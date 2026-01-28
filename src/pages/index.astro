@@ -1,7 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import BlogFeedCard from "../components/BlogFeedCard.astro";
-import InterviewCard from "../components/InterviewCard.astro";
+import Card from "../components/Card.astro";
 import { client, queries } from "../lib/sanity";
 import type { BlogPostPreview, InterviewPreview } from "../types/sanity";
 
@@ -112,7 +111,8 @@ try {
           </h2>
           {
             latestInterview ? (
-              <InterviewCard
+              <Card
+                type="interview"
                 title={latestInterview.title}
                 excerpt={latestInterview.excerpt}
                 publishedAt={latestInterview.publishedAt}
@@ -120,8 +120,7 @@ try {
                 youtubeUrl={latestInterview.youtubeUrl}
                 thumbnail={latestInterview.thumbnail}
                 guest={latestInterview.guest}
-                variant="full-image"
-                size="sm"
+                homepage={true}
               />
             ) : (
               <div class="placeholder-card">
@@ -140,7 +139,8 @@ try {
                   Latest Blog Posts
                 </h2>
               )}
-              <BlogFeedCard
+              <Card
+                type="blog"
                 title={post.title}
                 excerpt={post.excerpt || ""}
                 publishedAt={post.publishedAt}
@@ -149,7 +149,7 @@ try {
                 author={post.author}
                 categories={post.categories || []}
                 variant={post.cardVariant || "editorial"}
-                size="sm"
+                homepage={true}
               />
             </div>
           ))
@@ -232,28 +232,25 @@ try {
     display: flex;
     gap: 1rem;
     align-items: stretch;
+    flex-wrap: wrap;
   }
 
   .home__item {
     flex: 1;
+    min-width: 300px;
     display: flex;
     flex-direction: column;
-    min-height: 400px;
   }
 
-  .home__item .blog__feed--card,
-  .home__item .interview-card {
+  .home__item .card {
     width: 100%;
     max-width: none;
-    height: 100%;
+  }
+
+  .home__item .card__content {
     flex: 1;
     display: flex;
     flex-direction: column;
-  }
-
-  .home__item .blog__feed--card__container,
-  .home__item .interview-card .interview-card__full-image {
-    flex: 1;
   }
 
   .home__column {
@@ -296,6 +293,8 @@ try {
 
     .home__item {
       min-height: auto;
+      width: 100%;
+      max-width: 600px;
     }
   }
 
@@ -330,6 +329,9 @@ try {
 
     .home__item {
       min-height: auto;
+      width: 100%;
+      max-width: none;
+      min-width: auto;
     }
   }
 </style>

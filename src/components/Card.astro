@@ -1,0 +1,565 @@
+---
+import Button from "./Button.astro";
+import { urlFor } from "../lib/sanity";
+import type { SanityImageWithMetadata } from "../types/sanity";
+
+export interface Props {
+  type: "blog" | "interview";
+  title: string;
+  excerpt?: string;
+  publishedAt: string;
+  slug: string;
+  featuredImage?: SanityImageWithMetadata;
+  author?: {
+    name: string;
+    image?: SanityImageWithMetadata;
+  };
+  categories?: {
+    title: string;
+    slug: { current: string };
+  }[];
+  variant?: "editorial" | "full-image" | "text-only";
+  homepage?: boolean;
+  // Interview-specific props
+  youtubeUrl?: string;
+  thumbnail?: SanityImageWithMetadata;
+  guest?: {
+    name: string;
+  };
+}
+
+const {
+  type,
+  title,
+  excerpt,
+  publishedAt,
+  slug,
+  featuredImage,
+  author,
+  categories = [],
+  variant = type === "interview" ? "full-image" : "editorial",
+  youtubeUrl,
+  thumbnail,
+  guest,
+} = Astro.props;
+
+// Format date
+const formattedDate = new Date(publishedAt).toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+// Get image URL based on type with 16:9 aspect ratio (400x225)
+const imageUrl =
+  type === "blog"
+    ? featuredImage && featuredImage.asset
+      ? urlFor(featuredImage).width(400).height(225).url()
+      : null
+    : thumbnail && thumbnail.asset
+      ? urlFor(thumbnail).width(400).height(225).url()
+      : null;
+
+// Get link path based on type
+const linkPath = type === "blog" ? `/blog/${slug}` : `/interviews/${slug}`;
+---
+
+<article
+  class={`card card--${type} card--${variant} ${Astro.props.homepage ? "card--homepage" : ""}`}
+>
+  {
+    variant === "editorial" && (
+      <div class="card__editorial-wrapper">
+        <div class="card__editorial-layout">
+          <div class="card__content">
+            <div class="card__header">
+              <div class="card__meta">
+                <time class="card__date">{formattedDate}</time>
+              </div>
+
+              {categories && categories.length > 0 && (
+                <div class="card__categories">
+                  {categories.map((category) => (
+                    <a
+                      href={`/categories/${category.slug.current}`}
+                      class="card__category"
+                    >
+                      {category.title}
+                    </a>
+                  ))}
+                </div>
+              )}
+
+              <h2 class="card__title">{title}</h2>
+              {type === "interview" && guest && (
+                <p class="card__guest">with {guest.name}</p>
+              )}
+            </div>
+          </div>
+
+          {imageUrl && (
+            <div class="card__image">
+              <img
+                src={imageUrl}
+                alt={featuredImage?.alt || thumbnail?.alt || title}
+                loading="lazy"
+              />
+              {type === "interview" && <div class="card__play-button">▶</div>}
+            </div>
+          )}
+        </div>
+
+        <div class="card__footer">
+          <Button variant="primary" size="small" type="button" href={linkPath}>
+            {type === "blog" ? "read more" : "watch interview"}
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    variant === "full-image" && imageUrl && (
+      <a href={linkPath} class="card__link">
+        <div class="card__image-full">
+          <img
+            src={imageUrl}
+            alt={featuredImage?.alt || thumbnail?.alt || title}
+            loading="lazy"
+          />
+          {type === "interview" && (
+            <div class="card__play-button card__play-button--overlay">▶</div>
+          )}
+          <div class="card__overlay">
+            <div class="card__overlay-content">
+              <h2 class="card__title">{title}</h2>
+              {type === "interview" && guest && (
+                <p class="card__guest">with {guest.name}</p>
+              )}
+              {categories && categories.length > 0 && (
+                <div class="card__categories">
+                  {categories.map((category) => (
+                    <span class="card__category">{category.title}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </a>
+    )
+  }
+
+  {
+    variant === "text-only" && (
+      <div class="card__content card__content--text-only">
+        <div class="card__header">
+          <div class="card__meta">
+            <time class="card__date">{formattedDate}</time>
+          </div>
+
+          {categories && categories.length > 0 && (
+            <div class="card__categories">
+              {categories.map((category) => (
+                <a
+                  href={`/categories/${category.slug.current}`}
+                  class="card__category"
+                >
+                  {category.title}
+                </a>
+              ))}
+            </div>
+          )}
+
+          <h2 class="card__title">{title}</h2>
+          {type === "interview" && guest && (
+            <p class="card__guest">with {guest.name}</p>
+          )}
+        </div>
+
+        {excerpt && (
+          <div class="card__excerpt">
+            <p>{excerpt}</p>
+          </div>
+        )}
+
+        <div class="card__footer">
+          <Button variant="primary" size="small" type="button" href={linkPath}>
+            {type === "blog" ? "read more" : "watch interview"}
+          </Button>
+        </div>
+      </div>
+    )
+  }
+</article>
+
+<style>
+  .card {
+    background-color: #f8f0e5;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+    position: relative;
+    height: auto;
+    min-height: fit-content;
+    margin: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .card__editorial-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  }
+
+  .card__editorial-layout {
+    display: flex;
+    flex: 1;
+  }
+
+  .card__content {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card__header {
+    margin-bottom: 0.5rem;
+  }
+
+  .card__meta {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .card__date {
+    font-family: var(--font-body);
+  }
+
+  .card__categories {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .card__category {
+    color: var(--color-burgundy-deep);
+    font-weight: 500;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .card__category:hover {
+    color: #8b5d3f;
+    text-decoration: underline;
+  }
+
+  .card__category:not(:last-child)::after {
+    content: ", ";
+    color: #666;
+  }
+
+  .card__title {
+    font-family: var(--font-header-primary);
+    font-size: 1rem;
+    font-weight: var(--font-weight-h2);
+    color: #333;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .card__guest {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0.5rem 0 0 0;
+    font-style: italic;
+  }
+
+  .card--editorial .card__content {
+    flex: 3;
+    background: #f8f0e5;
+    padding: 1rem;
+  }
+
+  .card--editorial .card__image {
+    flex: 2;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    min-height: 150px;
+  }
+
+  .card--editorial .card__footer {
+    padding: 1rem;
+    text-align: center;
+    background: #f8f0e5;
+  }
+
+  .card--full-image {
+    aspect-ratio: 16 / 9;
+    min-height: 300px;
+  }
+
+  .card--full-image .card__image,
+  .card--text-only .card__image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .card--text-only {
+    height: min-content;
+    min-height: auto;
+  }
+
+  .card--editorial .card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+  }
+
+  .card--editorial:hover .card__image img {
+    transform: scale(1.05);
+  }
+
+  .card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+  }
+
+  .card:hover .card__image img {
+    transform: scale(1.05);
+  }
+
+  .card__play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+  }
+
+  .card:hover .card__play-button {
+    background: rgba(0, 0, 0, 0.9);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  .card__excerpt {
+    flex: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .card__excerpt p {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: #555;
+    line-height: 1.3;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card__footer {
+    margin-top: auto;
+    text-align: center;
+  }
+
+  .card__content--text-only {
+    padding: 1.5rem;
+    text-align: left;
+    background: #f8f0e5;
+  }
+
+  /* Full Image Variant */
+  .card--full-image {
+    position: relative;
+    background: transparent;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .card__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .card__image-full {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .card__image-full img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+  }
+
+  .card--full-image:hover .card__image-full img {
+    transform: scale(1.05);
+  }
+
+  .card__play-button--overlay {
+    z-index: 3;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .card--full-image:hover .card__play-button--overlay {
+    background: rgba(255, 255, 255, 1);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  .card__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(transparent 30%, rgba(0, 0, 0, 0.7));
+    display: flex;
+    align-items: flex-end;
+    z-index: 2;
+  }
+
+  .card__overlay-content {
+    padding: 1.5rem;
+    width: 100%;
+  }
+
+  .card__overlay .card__title {
+    color: white;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .card__overlay .card__guest {
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 0.5rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .card__overlay .card__categories {
+    margin-bottom: 0;
+  }
+
+  .card__overlay .card__category {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    text-shadow: none;
+  }
+
+  .card__overlay .card__title {
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  .card__overlay .card__guest {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0.5rem;
+  }
+
+  .card__overlay .card__categories {
+    margin-bottom: 0;
+  }
+
+  .card__overlay .card__category {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Homepage Cards - Uniform Sizing */
+  .card--homepage {
+    height: 300px !important;
+    min-height: 300px !important;
+    max-height: 300px !important;
+  }
+
+  .card--homepage.card--full-image {
+    aspect-ratio: unset !important;
+    height: 300px !important;
+    min-height: 300px !important;
+    max-height: 300px !important;
+  }
+
+  .card--homepage .card__image-full {
+    height: 100% !important;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .card__content {
+      padding: 0.8rem;
+    }
+
+    .card__title {
+      font-size: 0.9rem;
+    }
+
+    .card__excerpt p {
+      font-size: 0.75rem;
+      -webkit-line-clamp: 2;
+    }
+
+    .card__play-button {
+      width: 35px;
+      height: 35px;
+      font-size: 0.9rem;
+    }
+
+    .card__overlay .card__title {
+      font-size: 1rem;
+    }
+
+    .card--homepage {
+      height: 250px !important;
+      min-height: 250px !important;
+      max-height: 250px !important;
+    }
+  }
+</style>
