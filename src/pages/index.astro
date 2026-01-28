@@ -315,6 +315,7 @@ try {
     .home__grid {
       flex-direction: column;
       gap: 1.5rem;
+      align-items: center;
     }
 
     .home__section-titles--desktop {
@@ -330,8 +331,16 @@ try {
     .home__item {
       min-height: auto;
       width: 100%;
-      max-width: none;
+      max-width: 500px;
       min-width: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .home__item .card {
+      width: 100%;
+      max-width: 500px;
     }
   }
 </style>
