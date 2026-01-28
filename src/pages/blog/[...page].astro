@@ -1,0 +1,273 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BlogFeed from "../../components/BlogFeed.astro";
+import { client } from "../../lib/sanity";
+import type { BlogPost } from "../../types/sanity";
+import type { Page } from "astro";
+
+type Props = {
+  page: Page<BlogPost>;
+};
+
+export async function getStaticPaths({ paginate }: any) {
+  // Fetch all blog posts
+  const blogPosts = await client.fetch<BlogPost[]>(`
+    *[_type == "blogPost" && defined(slug.current)] | order(publishedAt desc) {
+      _id,
+      title,
+      slug,
+      excerpt,
+      publishedAt,
+      cardVariant,
+      featuredImage {
+        asset->{
+          _id,
+          url
+        },
+        alt,
+        caption
+      },
+      "author": author->{
+        _id,
+        name,
+        slug,
+        image {
+          asset->{
+            _id,
+            url
+          }
+        }
+      },
+      categories[]->{
+        _id,
+        title,
+        slug
+      }
+    }
+  `);
+
+  return paginate(blogPosts, { pageSize: 4 });
+}
+
+const { page } = Astro.props;
+---
+
+<Layout>
+  <div class="blog__feed--wrapper">
+    <BlogFeed
+      blogPosts={page.data}
+      currentPage={page.currentPage}
+      postsPerPage={4}
+    />
+
+    {
+      page.lastPage > 1 && (
+        <nav class="list-pagination" aria-label="Blog pagination">
+          <div class="pagination-container">
+            <!-- Previous Button -->
+            <div class="pagination-nav">
+              {page.url.prev ? (
+                <a
+                  href={page.url.prev}
+                  class="pagination-btn pagination-prev"
+                >
+                  <span class="pagination-arrow">←</span>
+                  <span class="pagination-text">Previous</span>
+                </a>
+              ) : (
+                <div class="pagination-btn pagination-prev disabled">
+                  <span class="pagination-arrow">←</span>
+                  <span class="pagination-text">Previous</span>
+                </div>
+              )}
+            </div>
+
+            <!-- Page Numbers -->
+            <div class="pagination-numbers">
+              {Array.from({ length: page.lastPage }, (_, i) => i + 1).map((num) => (
+                <a
+                  href={num === 1 ? "/blog" : `/blog/${num}`}
+                  class={`pagination-number ${page.currentPage === num ? "active" : ""}`}
+                  aria-current={page.currentPage === num ? "page" : undefined}
+                >
+                  {num}
+                </a>
+              ))}
+            </div>
+
+            <!-- Next Button -->
+            <div class="pagination-nav">
+              {page.url.next ? (
+                <a
+                  href={page.url.next}
+                  class="pagination-btn pagination-next"
+                >
+                  <span class="pagination-text">Next</span>
+                  <span class="pagination-arrow">→</span>
+                </a>
+              ) : (
+                <div class="pagination-btn pagination-next disabled">
+                  <span class="pagination-text">Next</span>
+                  <span class="pagination-arrow">→</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </nav>
+      )
+    }
+  </div>
+</Layout>
+
+<style>
+  .blog__feed--wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    flex-direction: column;
+    justify-self: center;
+  }
+
+  .list-pagination {
+    margin: 3rem 0 2rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid #e5e5e5;
+  }
+
+  .pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 800px;
+    margin: 0 auto;
+    gap: 1rem;
+  }
+
+  .pagination-nav {
+    flex: 0 0 auto;
+  }
+
+  .pagination-numbers {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .pagination-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    min-width: 100px;
+    justify-content: center;
+  }
+
+  .pagination-btn:hover:not(.disabled) {
+    background-color: #f8f0e5;
+    border-color: #a37351;
+    transform: translateY(-1px);
+  }
+
+  .pagination-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: #999;
+  }
+
+  .pagination-arrow {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #a37351;
+  }
+
+  .pagination-text {
+    font-size: 0.9rem;
+  }
+
+  .pagination-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    text-decoration: none;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    font-weight: 500;
+  }
+
+  .pagination-number:hover {
+    background-color: #f8f0e5;
+    border-color: #a37351;
+    transform: translateY(-1px);
+  }
+
+  .pagination-number.active {
+    background-color: #a37351;
+    color: #fff;
+    border-color: #a37351;
+    cursor: default;
+  }
+
+  .pagination-number.active:hover {
+    transform: none;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .pagination-container {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .pagination-nav {
+      order: 2;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .pagination-numbers {
+      order: 1;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .pagination-btn {
+      min-width: 80px;
+      padding: 0.6rem 0.8rem;
+    }
+
+    .pagination-text {
+      font-size: 0.8rem;
+    }
+
+    .pagination-number {
+      width: 36px;
+      height: 36px;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Tablet responsive */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .pagination-container {
+      gap: 0.75rem;
+    }
+
+    .pagination-btn {
+      min-width: 90px;
+    }
+  }
+</style>

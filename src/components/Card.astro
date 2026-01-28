@@ -533,6 +533,11 @@ const linkPath = type === "blog" ? `/blog/${slug}` : `/interviews/${slug}`;
 
   /* Mobile Responsive */
   @media (max-width: 768px) {
+    .card {
+      margin: 0.125rem;
+      max-width: calc(100vw - 4rem);
+    }
+
     .card__content {
       padding: 0.8rem;
     }

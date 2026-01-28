@@ -3,41 +3,13 @@ import Card from "./Card.astro";
 import { client } from "../lib/sanity";
 import type { BlogPost } from "../types/sanity";
 
-// Fetch blog posts from Sanity
-const blogPosts = await client.fetch<BlogPost[]>(`
-  *[_type == "blogPost" && defined(slug.current)] | order(publishedAt desc)[0...6] {
-    _id,
-    title,
-    slug,
-    excerpt,
-    publishedAt,
-    cardVariant,
-    featuredImage {
-      asset->{
-        _id,
-        url
-      },
-      alt,
-      caption
-    },
-    "author": author->{
-      _id,
-      name,
-      slug,
-      image {
-        asset->{
-          _id,
-          url
-        }
-      }
-    },
-    categories[]->{
-      _id,
-      title,
-      slug
-    }
-  }
-`);
+interface Props {
+  currentPage?: number;
+  postsPerPage?: number;
+  blogPosts: BlogPost[];
+}
+
+const { currentPage = 1, postsPerPage = 2, blogPosts } = Astro.props;
 ---
 
 <div class="blog__feed">
