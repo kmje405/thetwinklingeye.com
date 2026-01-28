@@ -156,49 +156,31 @@ const { page } = Astro.props;
   }
 
   .pagination-btn {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
-    padding: 8px 16px;
+    padding: 0.75rem 1rem;
     text-decoration: none;
-    border: none;
-    cursor: pointer !important;
-    font-family: var(--button-text);
-    font-weight: 700;
-    font-size: 14px;
-    line-height: 1.4;
-    transition: all 0.2s ease-in-out;
-    white-space: nowrap;
-    text-transform: uppercase;
-    background-color: var(--button-bg-light);
-    color: var(--button-font-color);
-    box-shadow:
-      0 4px 4px rgba(0, 0, 0, 0.05),
-      0 16px 32px rgba(0, 0, 0, 0.1);
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    font-weight: 500;
     min-width: 100px;
+    justify-content: center;
   }
 
   .pagination-btn:hover:not(.disabled) {
-    background-color: var(--button-bg-light-hover);
+    background-color: #f8f0e5;
+    border-color: #a37351;
     transform: translateY(-1px);
-    box-shadow:
-      0 6px 6px rgba(0, 0, 0, 0.08),
-      0 20px 40px rgba(0, 0, 0, 0.15);
   }
 
   .pagination-btn.disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
-    background-color: var(--button-bg-light);
-    color: var(--button-font-color);
-  }
-
-  .pagination-btn.disabled:hover {
-    transform: none;
-    box-shadow:
-      0 4px 4px rgba(0, 0, 0, 0.05),
-      0 16px 32px rgba(0, 0, 0, 0.1);
+    color: #999;
   }
 
   .pagination-arrow {
@@ -220,7 +202,7 @@ const { page } = Astro.props;
     text-decoration: none;
     color: #333;
     border: 1px solid #ddd;
-    border-radius: 0;
+    border-radius: 6px;
     background-color: #fff;
     transition: all 0.2s ease;
     font-weight: 500;
