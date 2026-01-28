@@ -53,7 +53,7 @@ export async function GET(context: any) {
       })),
       customData: `<language>en-us</language>
 <managingEditor>hello@thetwinklingeye.com (The Twinkling Eye)</managingEditor>
-<webMaster>hello@thetwinklingeye.com (The Twinkling Eye)</webMaster>
+<webMaster>hello@eastlandjones.com (East)</webMaster>
 <copyright>Copyright ${new Date().getFullYear()} The Twinkling Eye</copyright>
 <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
 <ttl>60</ttl>`,
