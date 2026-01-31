@@ -316,7 +316,7 @@ const linkPath = type === "blog" ? `/blog/${slug}` : `/interviews/${slug}`;
   }
 
   .card--editorial .card__footer {
-    padding: 1rem;
+    padding-top: 1rem;
     text-align: center;
     background: #f8f0e5;
   }
@@ -539,15 +539,11 @@ const linkPath = type === "blog" ? `/blog/${slug}` : `/interviews/${slug}`;
   /* Homepage Cards - Uniform Sizing */
   .card--homepage {
     height: 300px !important;
-    min-height: 300px !important;
-    max-height: 300px !important;
   }
 
   .card--homepage.card--full-image {
     aspect-ratio: unset !important;
     height: 300px !important;
-    min-height: 300px !important;
-    max-height: 300px !important;
   }
 
   .card--homepage .card__image-full {
@@ -557,8 +553,7 @@ const linkPath = type === "blog" ? `/blog/${slug}` : `/interviews/${slug}`;
   /* Mobile Responsive */
   @media (max-width: 768px) {
     .card {
-      margin: 0.125rem;
-      max-width: calc(100vw - 4rem);
+      max-width: calc(100vw);
     }
 
     .card__content {
@@ -587,8 +582,6 @@ const linkPath = type === "blog" ? `/blog/${slug}` : `/interviews/${slug}`;
 
     .card--homepage {
       height: 250px !important;
-      min-height: 250px !important;
-      max-height: 250px !important;
     }
   }
 </style>

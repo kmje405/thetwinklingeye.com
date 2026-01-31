@@ -70,15 +70,48 @@
   font-display: swap;
 }
 
-/* Michigan Signature - Callout */
+/* Dancing Script - Callout */
 @font-face {
-  font-family: "Michigan Signature";
-  src:
-    url("../assets/fonts/michigan-signature-2023-11-27-05-18-19-utc/Michigan Signature.woff")
-      format("woff"),
-    url("../assets/fonts/michigan-signature-2023-11-27-05-18-19-utc/Michigan Signature.otf")
-      format("opentype");
-  font-weight: normal;
+  font-family: "Dancing Script";
+  src: url("../assets/fonts/Nunito,Playwrite_NZ_Basic,Roboto/Playwrite_NZ_Basic/Dancing_Script/DancingScript-VariableFont_wght.ttf")
+    format("truetype");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Dancing Script";
+  src: url("../assets/fonts/Nunito,Playwrite_NZ_Basic,Roboto/Playwrite_NZ_Basic/Dancing_Script/static/DancingScript-Regular.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Dancing Script";
+  src: url("../assets/fonts/Nunito,Playwrite_NZ_Basic,Roboto/Playwrite_NZ_Basic/Dancing_Script/static/DancingScript-Medium.ttf")
+    format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Dancing Script";
+  src: url("../assets/fonts/Nunito,Playwrite_NZ_Basic,Roboto/Playwrite_NZ_Basic/Dancing_Script/static/DancingScript-SemiBold.ttf")
+    format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Dancing Script";
+  src: url("../assets/fonts/Nunito,Playwrite_NZ_Basic,Roboto/Playwrite_NZ_Basic/Dancing_Script/static/DancingScript-Bold.ttf")
+    format("truetype");
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -90,7 +123,7 @@
   --font-header-secondary: "Averia Serif", serif;
   --font-body: "Averia Serif", serif;
   --font-caption: "Averia Serif", serif;
-  --font-callout: "Michigan Signature", cursive;
+  --font-callout: "Dancing Script", cursive;
 
   /* Button Styling */
   --button-text: "Averia Serif", serif;

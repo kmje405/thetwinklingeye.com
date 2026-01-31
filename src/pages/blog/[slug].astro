@@ -65,14 +65,18 @@ const bodyHtml = post.body
         types: {
           image: ({ value }) => {
             // Check if image value exists and has required properties
-            if (!value || !value._ref) {
+            if (!value || (!value.asset && !value._ref)) {
+              console.warn('Image value missing or invalid:', value);
               return `<div class="missing-image">Image not available</div>`;
             }
             try {
-              const imageUrl = urlFor(value).width(800).url();
-              return `<img src="${imageUrl}" alt="${value.alt || ""}" loading="lazy" style="width: 100%; height: auto;" />`;
+              // Handle both direct asset reference and nested asset structure
+              const imageSource = value.asset || value;
+              const imageUrl = urlFor(imageSource).width(800).url();
+              const altText = value.alt || value.caption || "";
+              return `<img src="${imageUrl}" alt="${altText}" loading="lazy" style="width: 100%; height: auto; border-radius: 6px; margin: 1.5rem 0;" />`;
             } catch (error) {
-              console.warn('Error processing image:', error);
+              console.warn('Error processing image:', error, value);
               return `<div class="missing-image">Image not available</div>`;
             }
           },
@@ -396,7 +400,7 @@ const bodyHtml = post.body
       .post {
         grid-template-columns: 1fr;
         max-width: 100%;
-        margin: 2rem;
+        margin: 1rem;
       }
 
       /* Stack content in proper order: title, hero (image + caption), intro, body, comments */
@@ -453,7 +457,7 @@ const bodyHtml = post.body
       .post {
         grid-template-columns: 1fr;
         max-width: 100%;
-        margin: 2rem;
+        margin: 1rem;
       }
 
       /* Stack content in proper order for tablet: title, hero (image + caption), intro, body, comments */
