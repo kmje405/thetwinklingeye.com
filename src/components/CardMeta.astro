@@ -1,0 +1,80 @@
+---
+export interface Props {
+  publishedAt: string;
+  categories?: {
+    title: string;
+    slug: { current: string };
+  }[];
+}
+
+const { publishedAt, categories = [] } = Astro.props;
+
+// Format date
+const formattedDate = new Date(publishedAt).toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<div class="card-meta">
+  <div class="card-meta__date-wrapper">
+    <time class="card-meta__date">{formattedDate}</time>
+  </div>
+
+  {
+    categories && categories.length > 0 && (
+      <div class="card-meta__categories">
+        {categories.map((category) => (
+          <a
+            href={`/categories/${category.slug.current}`}
+            class="card-meta__category"
+          >
+            {category.title}
+          </a>
+        ))}
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .card-meta {
+    margin-bottom: 0.5rem;
+  }
+
+  .card-meta__date-wrapper {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-meta__date {
+    font-family: var(--font-body);
+  }
+
+  .card-meta__categories {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .card-meta__category {
+    color: var(--color-burgundy-deep);
+    font-weight: 500;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .card-meta__category:hover {
+    color: #8b5d3f;
+    text-decoration: underline;
+  }
+
+  .card-meta__category:not(:last-child)::after {
+    content: ", ";
+    color: #666;
+  }
+</style>

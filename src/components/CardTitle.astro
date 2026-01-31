@@ -1,0 +1,76 @@
+---
+export interface Props {
+  title: string;
+  type: "blog" | "interview";
+  guest?: {
+    name: string;
+  };
+  variant?: "default" | "overlay";
+}
+
+const { title, type, guest, variant = "default" } = Astro.props;
+---
+
+<div class={`card-title card-title--${variant}`}>
+  <h2 class="card-title__heading">{title}</h2>
+  {
+    type === "interview" && guest && (
+      <p class="card-title__guest">with {guest.name}</p>
+    )
+  }
+</div>
+
+<style>
+  .card-title__heading {
+    font-family: var(--font-header-primary);
+    font-size: 2rem;
+    font-weight: var(--font-weight-h2);
+    color: #333;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .card-title__guest {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0.5rem 0 0 0;
+    font-style: italic;
+  }
+
+  /* Overlay variant */
+  .card-title--overlay .card-title__heading {
+    color: white;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .card-title--overlay .card-title__guest {
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 0.5rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Tablet Responsive */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .card-title__heading {
+      font-size: 1.5rem;
+    }
+
+    .card-title--overlay .card-title__heading {
+      font-size: 1.1rem;
+    }
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .card-title__heading {
+      font-size: 1.2rem;
+    }
+
+    .card-title--overlay .card-title__heading {
+      font-size: 1rem;
+    }
+  }
+</style>

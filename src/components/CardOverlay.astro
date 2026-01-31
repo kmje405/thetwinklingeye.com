@@ -1,0 +1,67 @@
+---
+import CardTitle from "./CardTitle.astro";
+import CardExcerpt from "./CardExcerpt.astro";
+
+export interface Props {
+  title: string;
+  type: "blog" | "interview";
+  excerpt?: string;
+  guest?: {
+    name: string;
+  };
+  categories?: {
+    title: string;
+    slug: { current: string };
+  }[];
+}
+
+const { title, type, excerpt, guest, categories = [] } = Astro.props;
+---
+
+<div class="card-overlay">
+  <div class="card-overlay__content">
+    <CardTitle title={title} type={type} guest={guest} variant="overlay" />
+    <CardExcerpt excerpt={excerpt} variant="overlay" />
+    {
+      categories && categories.length > 0 && (
+        <div class="card-overlay__categories">
+          {categories.map((category) => (
+            <span class="card-overlay__category">{category.title}</span>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(transparent 30%, rgba(0, 0, 0, 0.7));
+    display: flex;
+    align-items: flex-end;
+    z-index: 2;
+  }
+
+  .card-overlay__content {
+    padding: 1.5rem;
+    width: 100%;
+  }
+
+  .card-overlay__categories {
+    margin-bottom: 0;
+  }
+
+  .card-overlay__category {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    text-shadow: none;
+  }
+</style>

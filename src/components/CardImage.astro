@@ -1,0 +1,79 @@
+---
+import { urlFor } from "../lib/sanity";
+import type { SanityImageWithMetadata } from "../types/sanity";
+import CardPlayButton from "./CardPlayButton.astro";
+
+export interface Props {
+  featuredImage?: SanityImageWithMetadata;
+  thumbnail?: SanityImageWithMetadata;
+  title: string;
+  type: "blog" | "interview";
+  variant?: "editorial" | "full-image";
+}
+
+const {
+  featuredImage,
+  thumbnail,
+  title,
+  type,
+  variant = "editorial",
+} = Astro.props;
+
+// Get image URL based on type with 16:9 aspect ratio (400x225)
+const imageUrl =
+  type === "blog"
+    ? featuredImage && featuredImage.asset
+      ? urlFor(featuredImage).width(400).height(225).url()
+      : null
+    : thumbnail && thumbnail.asset
+      ? urlFor(thumbnail).width(400).height(225).url()
+      : null;
+---
+
+{
+  imageUrl && (
+    <div class={`card-image card-image--${variant}`}>
+      <img
+        src={imageUrl}
+        alt={featuredImage?.alt || thumbnail?.alt || title}
+        loading="lazy"
+      />
+      {type === "interview" && (
+        <CardPlayButton
+          variant={variant === "full-image" ? "overlay" : "default"}
+        />
+      )}
+    </div>
+  )
+}
+
+<style>
+  .card-image {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-image--editorial {
+    flex: 2;
+    aspect-ratio: 16 / 9;
+    min-height: 150px;
+  }
+
+  .card-image--full-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+  }
+
+  /* Hover effects are handled by parent card component */
+</style>
