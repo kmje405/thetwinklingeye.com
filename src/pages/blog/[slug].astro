@@ -46,7 +46,7 @@ const formattedDate = new Date(post.publishedAt).toLocaleDateString("en-US", {
 });
 
 // Get featured image URL and dimensions if available
-const imageUrl = post.featuredImage
+const imageUrl = post.featuredImage?.asset
   ? urlFor(post.featuredImage).width(800).url()
   : null;
 
@@ -126,7 +126,7 @@ const bodyHtml = post.body
     <!-- Hero / Lead Image -->
     {
       imageUrl && (
-        <figure class="post__hero">
+        <figure class={`post__hero ${!post.excerpt ? 'post__hero--no-excerpt' : ''}`}>
           <Image
             src={imageUrl}
             alt={post.featuredImage?.alt || post.title}
@@ -160,18 +160,43 @@ const bodyHtml = post.body
       )
     }
 
-    <!-- Right column: Excerpt as pullquote, then byline with tags -->
-    <section class="post__intro">
-      <!-- Pull Quote / Aside - using excerpt as callout -->
-      {
-        post.excerpt && (
-          <aside class="post__pullquote">
-            <blockquote>"{post.excerpt}"</blockquote>
-          </aside>
-        )
-      }
+    <!-- Right column: Excerpt as pullquote, then byline with tags (or full width if no image) -->
+    {
+      (post.excerpt || !imageUrl) && (
+        <section class={`post__intro ${!imageUrl ? 'post__intro--no-image' : ''}`}>
+          <!-- Pull Quote / Aside - using excerpt as callout -->
+          {
+            post.excerpt && (
+              <aside class="post__pullquote">
+                <blockquote>"{post.excerpt}"</blockquote>
+              </aside>
+            )
+          }
 
-    </section>
+          <!-- Show byline here if no image -->
+          {
+            !imageUrl && (
+              <div class="post__byline">
+                <p>By {post.author?.name || 'Unknown Author'}</p>
+                <p>{formattedDate}</p>
+                {
+                  post.categories && post.categories.length > 0 && (
+                    <div class="post__byline-categories">
+                      {post.categories.map((category, index) => (
+                        <a href={`/categories/${category.slug.current}`} class="post__category">
+                          {category.title}
+                          {index < (post.categories?.length || 0) - 1 ? ", " : ""}
+                        </a>
+                      ))}
+                    </div>
+                  )
+                }
+              </div>
+            )
+          }
+        </section>
+      )
+    }
 
     <!-- Main Body spans both columns -->
     <section class="post__body">
@@ -232,6 +257,13 @@ const bodyHtml = post.body
       margin: 0;
     }
 
+    /* Hero image spans full width when no excerpt */
+    .post__hero--no-excerpt {
+      grid-column: 1 / -1;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
     .post__hero img,
     .post__hero :global(img) {
       width: 100%;
@@ -282,6 +314,13 @@ const bodyHtml = post.body
     .post__intro {
       grid-column: 2 / 3;
       align-self: start;
+    }
+
+    /* Intro spans full width when no image */
+    .post__intro--no-image {
+      grid-column: 1 / -1;
+      text-align: center;
+      margin-bottom: 2rem;
     }
 
     /* Body spans both columns */

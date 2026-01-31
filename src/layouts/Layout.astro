@@ -11,7 +11,7 @@ import plantDecor from "../assets/plantDecor.png";
 
 // Get site configuration from Sanity
 const dynamicSiteConfig = await getSiteConfig();
-const faviconUrl = dynamicSiteConfig.sanityData?.favicon
+const faviconUrl = dynamicSiteConfig.sanityData?.favicon?.asset
   ? urlFor(dynamicSiteConfig.sanityData.favicon).url()
   : "/favicon.svg";
 ---

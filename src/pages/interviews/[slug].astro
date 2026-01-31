@@ -104,7 +104,7 @@ if (!interview && !error) {
       "@type": "VideoObject",
       "name": interview.title,
       "description": interview.excerpt || `Interview with ${interview.guest.name}`,
-      "thumbnailUrl": interview.thumbnail ? urlFor(interview.thumbnail).width(800).url() : undefined,
+      "thumbnailUrl": interview.thumbnail?.asset ? urlFor(interview.thumbnail).width(800).url() : undefined,
       "uploadDate": interview.publishedAt,
       "embedUrl": getYouTubeEmbedUrl(interview.youtubeUrl),
       "contentUrl": interview.youtubeUrl,
@@ -221,7 +221,7 @@ if (!interview && !error) {
           <div class="guest-info">
             <h2>About {interview.guest.name}</h2>
             <div class="guest-content">
-              {interview.guest.image && (
+              {interview.guest.image?.asset && (
                 <div class="guest-image">
                   <img
                     src={urlFor(interview.guest.image)

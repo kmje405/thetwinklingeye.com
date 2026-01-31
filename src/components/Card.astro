@@ -60,7 +60,9 @@ const hasImage =
   {
     variant === "editorial" && (
       <div class="card__editorial-wrapper">
-        <div class="card__editorial-layout">
+        <div
+          class={`card__editorial-layout ${!hasImage ? "card__editorial-layout--no-image" : ""}`}
+        >
           <div class="card__content">
             <div class="card__header">
               <CardMeta publishedAt={publishedAt} categories={categories} />
@@ -69,13 +71,15 @@ const hasImage =
             </div>
           </div>
 
-          <CardImage
-            featuredImage={featuredImage}
-            thumbnail={thumbnail}
-            title={title}
-            type={type}
-            variant="editorial"
-          />
+          {hasImage && (
+            <CardImage
+              featuredImage={featuredImage}
+              thumbnail={thumbnail}
+              title={title}
+              type={type}
+              variant="editorial"
+            />
+          )}
         </div>
 
         <div class="card__footer">
@@ -159,6 +163,23 @@ const hasImage =
   .card__editorial-layout {
     display: flex;
     flex: 1;
+  }
+
+  .card__editorial-layout--no-image {
+    display: block;
+    width: 100%;
+  }
+
+  .card--editorial .card__editorial-layout--no-image .card__content {
+    flex: none !important;
+    width: 100%;
+    padding: 1.5rem;
+    text-align: left;
+  }
+
+  .card__editorial-layout--no-image :global(.card-excerpt) {
+    max-width: none !important;
+    width: 100%;
   }
 
   .card__content {
