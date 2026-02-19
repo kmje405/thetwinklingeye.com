@@ -43,8 +43,11 @@ const faviconUrl = dynamicSiteConfig.sanityData?.favicon?.asset
     <link rel="alternate icon" href={faviconUrl} />
     <link rel="mask-icon" href={faviconUrl} color="#ec87a5" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={dynamicSiteConfig.description} />
-    <title>{dynamicSiteConfig.title}</title>
+    <meta
+      name="description"
+      content={dynamicSiteConfig?.description || "Personal Brand & Blog"}
+    />
+    <title>{dynamicSiteConfig?.title || "The Twinkling Eye"}</title>
 
     <!-- Prevent indexing on development/staging environments -->
     {
@@ -59,8 +62,8 @@ const faviconUrl = dynamicSiteConfig.sanityData?.favicon?.asset
       set:html={JSON.stringify({
         "@context": "https://schema.org",
         "@type": "WebSite",
-        name: dynamicSiteConfig.title,
-        description: dynamicSiteConfig.description,
+        name: dynamicSiteConfig?.title || "The Twinkling Eye",
+        description: dynamicSiteConfig?.description || "Personal Brand & Blog",
         url: "https://thetwinklingeye.com",
         publisher: {
           "@type": "Organization",
