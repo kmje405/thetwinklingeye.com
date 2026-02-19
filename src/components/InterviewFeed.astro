@@ -186,12 +186,14 @@ if (interviews.length > 0) {
     margin: 0 1rem;
     max-width: 800px;
     margin: 0 auto;
+    overflow-x: hidden;
   }
 
   .interview__feed-cards {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    overflow-x: hidden;
   }
 
   .error-message,
@@ -202,6 +204,8 @@ if (interviews.length > 0) {
     border-radius: 8px;
     margin-bottom: 2rem;
     text-align: center;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .error-message {

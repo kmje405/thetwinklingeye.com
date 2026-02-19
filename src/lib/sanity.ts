@@ -135,8 +135,7 @@ export const queries = {
     categories[]->{
       title,
       slug
-    },
-    seo
+    }
   }`,
 
   // All interviews
@@ -197,8 +196,7 @@ export const queries = {
         alt,
         caption
       }
-    },
-    seo
+    }
   }`,
 
   // All categories

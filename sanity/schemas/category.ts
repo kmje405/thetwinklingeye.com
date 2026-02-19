@@ -29,16 +29,6 @@ export const categorySchema = {
       type: "text",
       rows: 3,
     },
-    {
-      name: "color",
-      title: "Color",
-      type: "string",
-      description: "Hex color code for category styling",
-      validation: (Rule: any) =>
-        Rule.regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/).error(
-          "Please enter a valid hex color code"
-        ),
-    },
   ],
   preview: {
     select: {

@@ -3,11 +3,26 @@ import { Image } from "astro:assets";
 import logo from "../assets/logo-color-main.svg";
 import mobileLogo from "../assets/mobileLogo.png";
 import MobileNav from "./MobileNav.astro";
+import { client } from "../lib/sanity";
+
+// Check if there are any interviews
+let hasInterviews = false;
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    const interviews = await client.fetch(
+      `*[_type == "interview"] | order(publishedAt desc) [0...1] { _id }`
+    );
+    hasInterviews = interviews.length > 0;
+  }
+} catch (error) {
+  console.error("Error checking for interviews:", error);
+  hasInterviews = false;
+}
 
 const navItems = [
   { name: "Home", href: "/" },
   { name: "Blog", href: "/blog" },
-  { name: "Interviews", href: "/interviews" },
+  ...(hasInterviews ? [{ name: "Interviews", href: "/interviews" }] : []),
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];
@@ -85,7 +100,7 @@ const navItems = [
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem;
+      padding: 1rem 0.5rem;
     }
 
     .logo-link {
@@ -106,6 +121,12 @@ const navItems = [
 
     .nav-links {
       display: none;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    nav {
+      padding: 1rem 0.75rem;
     }
   }
 </style>

@@ -200,7 +200,7 @@
   --font-weight-h3: 700; /* bold */
   --font-weight-body: 400; /* regular */
   --font-weight-caption: 300; /* light */
-  --font-weight-callout: normal;
+  --font-weight-callout: bold;
 
   /* Text Transforms */
   --text-transform-h2: none;
@@ -283,11 +283,14 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 body {
   color: #333;
   background-color: #fff;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* Utility Classes */

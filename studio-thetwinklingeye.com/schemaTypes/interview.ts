@@ -121,47 +121,6 @@ export default defineType({
       type: 'number',
       description: 'Interview duration in minutes',
     }),
-    defineField({
-      name: 'featured',
-      title: 'Featured Interview',
-      type: 'boolean',
-      description: 'Mark as featured to highlight on homepage',
-    }),
-    defineField({
-      name: 'seo',
-      title: 'SEO',
-      type: 'object',
-      fields: [
-        {
-          name: 'title',
-          title: 'SEO Title',
-          type: 'string',
-        },
-        {
-          name: 'description',
-          title: 'SEO Description',
-          type: 'text',
-          rows: 3,
-        },
-        {
-          name: 'keywords',
-          title: 'Keywords',
-          type: 'array',
-          of: [{type: 'string'}],
-        },
-        {
-          name: 'ogImage',
-          title: 'Open Graph Image',
-          type: 'image',
-        },
-        {
-          name: 'noIndex',
-          title: 'No Index',
-          type: 'boolean',
-          description: 'Prevent search engines from indexing this page',
-        },
-      ],
-    }),
   ],
   preview: {
     select: {

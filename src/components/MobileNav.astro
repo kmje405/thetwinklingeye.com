@@ -6,11 +6,28 @@ import interviewIcon from "../assets/interviewIcon.png";
 import aboutIcon from "../assets/aboutIcon.png";
 import contactIcon from "../assets/contactIcon.png";
 import hamburgerIcon from "../assets/hamburger.png";
+import { client } from "../lib/sanity";
+
+// Check if there are any interviews
+let hasInterviews = false;
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    const interviews = await client.fetch(
+      `*[_type == "interview"] | order(publishedAt desc) [0...1] { _id }`
+    );
+    hasInterviews = interviews.length > 0;
+  }
+} catch (error) {
+  console.error("Error checking for interviews:", error);
+  hasInterviews = false;
+}
 
 const navItems = [
   { name: "Home", href: "/", icon: homeIcon },
   { name: "Blog", href: "/blog", icon: blogIcon },
-  { name: "Interviews", href: "/interviews", icon: interviewIcon },
+  ...(hasInterviews
+    ? [{ name: "Interviews", href: "/interviews", icon: interviewIcon }]
+    : []),
   { name: "About", href: "/about", icon: aboutIcon },
   { name: "Contact", href: "/contact", icon: contactIcon },
 ];

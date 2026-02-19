@@ -83,7 +83,25 @@ const bodyHtml = post.body
         },
         marks: {
           link: ({ children, value }) => {
-            return `<a href="${value.href}" target="_blank" rel="noopener noreferrer">${children}</a>`;
+            // Debug logging to see what we're getting
+            console.log('Link value:', value);
+            
+            if (!value || !value.href) {
+              console.warn('Link missing href value:', value);
+              return children; // Return just the text without a link
+            }
+            
+            const href = value.href;
+            // Check if it's an external URL (starts with http:// or https://)
+            const isExternal = href.startsWith('http://') || href.startsWith('https://');
+            
+            if (isExternal) {
+              return `<a href="${href}" target="_blank" rel="noopener noreferrer">${children}</a>`;
+            } else {
+              // For internal links, ensure they start with / for proper routing
+              const internalHref = href.startsWith('/') ? href : `/${href}`;
+              return `<a href="${internalHref}">${children}</a>`;
+            }
           },
         },
       },

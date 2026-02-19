@@ -96,21 +96,32 @@ try {
     <div class="home__content">
       <!-- Desktop Section Titles -->
       <div class="home__section-titles home__section-titles--desktop">
-        <h2 class="home__section-title">Latest Interview</h2>
-        <h2 class="home__section-title">Latest Blog Posts</h2>
-        <h2 class="home__section-title home__section-title--hidden">
-          Latest Blog Posts
-        </h2>
+        {
+          latestInterview && (
+            <h2 class="home__section-title">Latest Interview</h2>
+          )
+        }
+        <div class="home__section-title-with-link">
+          <h2 class="home__section-title">Latest Blog Posts</h2>
+          <a href="/categories" class="categories-link">Browse Categories</a>
+        </div>
+        {
+          !latestInterview && (
+            <h2 class="home__section-title home__section-title--hidden">
+              Latest Blog Posts
+            </h2>
+          )
+        }
       </div>
 
       <div class="home__grid">
         <!-- Latest Interview -->
-        <div class="home__item">
-          <h2 class="home__section-title home__section-title--mobile">
-            Latest Interview
-          </h2>
-          {
-            latestInterview ? (
+        {
+          latestInterview && (
+            <div class="home__item">
+              <h2 class="home__section-title home__section-title--mobile">
+                Latest Interview
+              </h2>
               <Card
                 type="interview"
                 title={latestInterview.title}
@@ -122,22 +133,23 @@ try {
                 guest={latestInterview.guest}
                 homepage={true}
               />
-            ) : (
-              <div class="placeholder-card">
-                <p>No interviews available yet</p>
-              </div>
-            )
-          }
-        </div>
+            </div>
+          )
+        }
 
         <!-- Latest Blog Posts -->
         {
           latestBlogPosts.map((post, index) => (
             <div class="home__item">
               {index === 0 && (
-                <h2 class="home__section-title home__section-title--mobile">
-                  Latest Blog Posts
-                </h2>
+                <div class="home__section-title-with-link home__section-title-with-link--mobile">
+                  <h2 class="home__section-title home__section-title--mobile">
+                    Latest Blog Posts
+                  </h2>
+                  <a href="/categories" class="categories-link">
+                    Browse Categories
+                  </a>
+                </div>
               )}
               <Card
                 type="blog"
@@ -161,9 +173,14 @@ try {
             (_, index) => (
               <div class="home__item">
                 {index === 0 && latestBlogPosts.length === 0 && (
-                  <h2 class="home__section-title home__section-title--mobile">
-                    Latest Blog Posts
-                  </h2>
+                  <div class="home__section-title-with-link home__section-title-with-link--mobile">
+                    <h2 class="home__section-title home__section-title--mobile">
+                      Latest Blog Posts
+                    </h2>
+                    <a href="/categories" class="categories-link">
+                      Browse Categories
+                    </a>
+                  </div>
                 )}
                 <div class="placeholder-card">
                   <p>No blog posts available yet</p>
@@ -225,6 +242,37 @@ try {
   .home__section-title--mobile {
     display: none;
     margin-bottom: 1rem;
+  }
+
+  .home__section-title-with-link {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .home__section-title-with-link--mobile {
+    display: none;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .categories-link {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #a37351;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .categories-link:hover {
+    color: #461121;
+    background-color: rgba(163, 115, 81, 0.1);
+    transform: translateY(-1px);
   }
 
   .home__grid {
@@ -290,6 +338,10 @@ try {
       display: block;
     }
 
+    .home__section-title-with-link--mobile {
+      display: block;
+    }
+
     .home__item {
       min-height: auto;
       width: 100%;
@@ -325,6 +377,10 @@ try {
       display: block;
       font-size: 1.1rem;
       margin-bottom: 1rem;
+    }
+
+    .home__section-title-with-link--mobile {
+      display: block;
     }
 
     .home__item {

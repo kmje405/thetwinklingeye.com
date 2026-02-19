@@ -215,17 +215,24 @@ const { page } = Astro.props;
 </Layout>
 
 <style>
+  body {
+    overflow-x: hidden;
+  }
+
   .interview__feed--wrapper {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 0 1rem;
     flex-direction: column;
     justify-self: center;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .list-pagination {
     margin: 3rem 0 2rem;
-    padding: 1.5rem 0;
+    padding: 1.5rem 1rem;
     border-top: 1px solid #e5e5e5;
   }
 
@@ -236,6 +243,7 @@ const { page } = Astro.props;
     max-width: 800px;
     margin: 0 auto;
     gap: 1rem;
+    padding: 0 1rem;
   }
 
   .pagination-nav {
@@ -322,9 +330,18 @@ const { page } = Astro.props;
 
   /* Mobile responsive */
   @media (max-width: 768px) {
+    .interview__feed--wrapper {
+      padding: 0 0.5rem;
+    }
+
+    .list-pagination {
+      padding: 1.5rem 0.5rem;
+    }
+
     .pagination-container {
       flex-direction: column;
       gap: 1.5rem;
+      padding: 0;
     }
 
     .pagination-nav {
@@ -357,6 +374,10 @@ const { page } = Astro.props;
 
   /* Tablet responsive */
   @media (min-width: 769px) and (max-width: 1024px) {
+    .interview__feed--wrapper {
+      padding: 0 0.75rem;
+    }
+
     .pagination-container {
       gap: 0.75rem;
     }

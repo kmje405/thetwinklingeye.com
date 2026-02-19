@@ -273,7 +273,10 @@ const hasImage =
   /* Mobile Responsive */
   @media (max-width: 768px) {
     .card {
-      max-width: calc(100vw);
+      max-width: calc(100vw - 2rem);
+      margin: 0.25rem 0;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .card__content {

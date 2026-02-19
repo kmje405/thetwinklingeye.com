@@ -104,16 +104,6 @@ export interface Category extends SanityDocument {
   title: string;
   slug: SanitySlug;
   description?: string;
-  color?: string;
-}
-
-// SEO
-export interface SEO {
-  title?: string;
-  description?: string;
-  keywords?: string[];
-  ogImage?: SanityImage;
-  noIndex?: boolean;
 }
 
 // Blog Post
@@ -128,9 +118,6 @@ export interface BlogPost extends SanityDocument {
   body: PortableText;
   author: Person;
   categories?: Category[];
-  tags?: string[];
-  seo?: SEO;
-  featured?: boolean;
 }
 
 // Interview
@@ -146,8 +133,6 @@ export interface Interview extends SanityDocument {
   description?: PortableText;
   guest: Person;
   duration?: number;
-  seo?: SEO;
-  featured?: boolean;
 }
 
 // API Response types

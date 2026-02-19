@@ -124,54 +124,19 @@ export const blogPostSchema = {
       of: [{ type: "reference", to: [{ type: "category" }] }],
     },
     {
-      name: "tags",
-      title: "Tags",
-      type: "array",
-      of: [{ type: "string" }],
+      name: "cardVariant",
+      title: "Card Display Style",
+      type: "string",
       options: {
-        layout: "tags",
+        list: [
+          { title: "Editorial (Default)", value: "editorial" },
+          { title: "Full Image", value: "full-image" },
+          { title: "Text Only", value: "text-only" },
+        ],
+        layout: "radio",
       },
-    },
-    {
-      name: "featured",
-      title: "Featured Post",
-      type: "boolean",
-      description: "Mark as featured to highlight on homepage",
-    },
-    {
-      name: "seo",
-      title: "SEO",
-      type: "object",
-      fields: [
-        {
-          name: "title",
-          title: "SEO Title",
-          type: "string",
-        },
-        {
-          name: "description",
-          title: "SEO Description",
-          type: "text",
-          rows: 3,
-        },
-        {
-          name: "keywords",
-          title: "Keywords",
-          type: "array",
-          of: [{ type: "string" }],
-        },
-        {
-          name: "ogImage",
-          title: "Open Graph Image",
-          type: "image",
-        },
-        {
-          name: "noIndex",
-          title: "No Index",
-          type: "boolean",
-          description: "Prevent search engines from indexing this page",
-        },
-      ],
+      initialValue: "editorial",
+      description: "Choose how this post appears in blog feeds and listings",
     },
   ],
   preview: {
