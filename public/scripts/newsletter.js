@@ -1,90 +1,79 @@
-// Simple newsletter subscription functionality
 document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("footer-newsletter-form");
-  if (!form) return;
+  console.log("Newsletter script loaded");
 
-  const emailInput = form.querySelector('input[type="email"]');
-  const consentInput = form.querySelector('input[name="consent"]');
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const messageDiv = form.querySelector(".message");
+  const form = document.getElementById("newsletter-form");
+  if (!form) {
+    console.log("Newsletter form not found");
+    return;
+  }
 
-  if (!emailInput || !consentInput || !submitBtn || !messageDiv) return;
+  console.log("Newsletter form found, adding event listener");
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
+    console.log("Form submission intercepted");
 
-    const email = emailInput.value.trim();
-    const consent = consentInput.checked;
-    const honeypot = form.querySelector('input[name="hp"]')?.value;
+    const submitBtn = form.querySelector(".subscribe-btn");
+    const messageDiv = form.querySelector(".message");
+    const originalText = submitBtn?.textContent || "Subscribe";
 
-    // Check honeypot
-    if (honeypot) return;
-
-    // Basic validation
-    if (!email) {
-      showMessage("Please enter your email address.", "error");
-      return;
-    }
-
-    if (!isValidEmail(email)) {
-      showMessage("Please enter a valid email address.", "error");
-      return;
-    }
-
-    if (!consent) {
-      showMessage("Please agree to receive our newsletter.", "error");
-      return;
-    }
-
-    // Set loading state
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Subscribing...";
+    if (!submitBtn || !messageDiv) return;
 
     try {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Subscribing...";
+
+      // Hide any existing messages
+      messageDiv.style.display = "none";
+      messageDiv.className = "message";
+
+      // Check consent
+      const consentCheckbox = form.querySelector("#consent");
+      if (!consentCheckbox || !consentCheckbox.checked) {
+        throw new Error("Please consent to receiving newsletters");
+      }
+
+      // Prepare form data
+      const formData = new FormData(form);
+      const data = {
+        email: formData.get("email"),
+        name: formData.get("name"),
+        hp: formData.get("hp") || "",
+      };
+
+      console.log("Sending data:", data);
+
+      // Submit to Netlify function
       const response = await fetch("/.netlify/functions/subscribe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: email,
-          consent: true,
-        }),
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
 
-      if (response.ok) {
-        showMessage("Successfully subscribed!", "success");
+      if (result.ok) {
+        messageDiv.textContent =
+          "✅ " + (result.message || "Successfully subscribed to newsletter!");
+        messageDiv.className = "message success";
         form.reset();
       } else {
-        showMessage(
-          result.error || "Subscription failed. Please try again.",
-          "error"
-        );
+        throw new Error(result.message || "Failed to subscribe");
       }
     } catch (error) {
-      showMessage("Network error. Please try again later.", "error");
+      console.error("Newsletter subscription error:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to subscribe. Please try again later.";
+      messageDiv.textContent = "❌ " + errorMessage;
+      messageDiv.className = "message error";
     } finally {
+      messageDiv.style.display = "block";
       submitBtn.disabled = false;
-      submitBtn.textContent = "SUBSCRIBE";
+      submitBtn.textContent = originalText;
     }
   });
-
-  function showMessage(message, type) {
-    messageDiv.textContent = message;
-    messageDiv.className = `message ${type}`;
-    messageDiv.style.display = "block";
-
-    if (type === "success") {
-      setTimeout(() => {
-        messageDiv.style.display = "none";
-      }, 5000);
-    }
-  }
-
-  function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
 });
