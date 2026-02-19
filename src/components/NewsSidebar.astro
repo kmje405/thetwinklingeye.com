@@ -84,10 +84,7 @@ const formatDate = (dateString: string) => {
     categories.length > 0 && (
       <section class="sidebar-section">
         <h3 class="sidebar-title">Browse by Category</h3>
-        <select
-          class="categories-dropdown"
-          onchange="handleCategoryChange(this.value)"
-        >
+        <select class="categories-dropdown" id="categories-dropdown">
           <option value="">Select a category...</option>
           {categories.map((category) => (
             <option value={`/categories/${category.slug.current}`}>
@@ -167,17 +164,20 @@ const formatDate = (dateString: string) => {
 </aside>
 
 <script is:inline>
-  function handleCategoryChange(url) {
-    if (url) {
-      // Add a small delay to show the selection feedback
-      setTimeout(function () {
-        window.location.href = url;
-      }, 100);
+  document.addEventListener("DOMContentLoaded", function () {
+    const categoryDropdown = document.getElementById("categories-dropdown");
+    if (categoryDropdown) {
+      categoryDropdown.addEventListener("change", function () {
+        const selectedValue = this.value;
+        if (selectedValue) {
+          // Add a small delay to show the selection feedback
+          setTimeout(function () {
+            window.location.href = selectedValue;
+          }, 100);
+        }
+      });
     }
-  }
-
-  // Make function globally available
-  window.handleCategoryChange = handleCategoryChange;
+  });
 </script>
 
 <style>
