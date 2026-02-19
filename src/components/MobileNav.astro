@@ -2,6 +2,9 @@
 import { Image } from "astro:assets";
 import homeIcon from "../assets/homeIcon.png";
 import blogIcon from "../assets/blogIcon.png";
+import poetryIcon from "../assets/poetryIcon.svg";
+import dailyReflectionsIcon from "../assets/dailyReflectionsIcon.svg";
+import worldviewsIcon from "../assets/worldviewsIcon.svg";
 import interviewIcon from "../assets/interviewIcon.png";
 import aboutIcon from "../assets/aboutIcon.png";
 import contactIcon from "../assets/contactIcon.png";
@@ -22,9 +25,82 @@ try {
   hasInterviews = false;
 }
 
+// Check if there are any poetry posts
+let hasPoetry = false;
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    const poetryCategory = await client.fetch(
+      `*[_type == "category" && slug.current == "poetry"][0]{ _id }`
+    );
+    if (poetryCategory) {
+      const poetryPosts = await client.fetch(
+        `*[_type == "blogPost" && references($categoryId)] | order(publishedAt desc) [0...1] { _id }`,
+        { categoryId: poetryCategory._id }
+      );
+      hasPoetry = poetryPosts.length > 0;
+    }
+  }
+} catch (error) {
+  console.error("Error checking for poetry posts:", error);
+  hasPoetry = false;
+}
+
+// Check if there are any daily reflection posts
+let hasDailyReflections = false;
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    const dailyReflectionCategory = await client.fetch(
+      `*[_type == "category" && slug.current == "daily-reflection"][0]{ _id }`
+    );
+    if (dailyReflectionCategory) {
+      const dailyReflectionPosts = await client.fetch(
+        `*[_type == "blogPost" && references($categoryId)] | order(publishedAt desc) [0...1] { _id }`,
+        { categoryId: dailyReflectionCategory._id }
+      );
+      hasDailyReflections = dailyReflectionPosts.length > 0;
+    }
+  }
+} catch (error) {
+  console.error("Error checking for daily reflection posts:", error);
+  hasDailyReflections = false;
+}
+
+// Check if there are any worldviews posts
+let hasWorldviews = false;
+try {
+  if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
+    const worldviewsCategory = await client.fetch(
+      `*[_type == "category" && slug.current == "worldviews"][0]{ _id }`
+    );
+    if (worldviewsCategory) {
+      const worldviewsPosts = await client.fetch(
+        `*[_type == "blogPost" && references($categoryId)] | order(publishedAt desc) [0...1] { _id }`,
+        { categoryId: worldviewsCategory._id }
+      );
+      hasWorldviews = worldviewsPosts.length > 0;
+    }
+  }
+} catch (error) {
+  console.error("Error checking for worldviews posts:", error);
+  hasWorldviews = false;
+}
+
 const navItems = [
   { name: "Home", href: "/", icon: homeIcon },
-  { name: "Blog", href: "/blog", icon: blogIcon },
+  { name: "Deep Dives", href: "/blog", icon: blogIcon },
+  ...(hasPoetry ? [{ name: "Poetry", href: "/poetry", icon: poetryIcon }] : []),
+  ...(hasDailyReflections
+    ? [
+        {
+          name: "Daily Reflections",
+          href: "/daily-reflections",
+          icon: dailyReflectionsIcon,
+        },
+      ]
+    : []),
+  ...(hasWorldviews
+    ? [{ name: "Worldviews", href: "/worldviews", icon: worldviewsIcon }]
+    : []),
   ...(hasInterviews
     ? [{ name: "Interviews", href: "/interviews", icon: interviewIcon }]
     : []),
