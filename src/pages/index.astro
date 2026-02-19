@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
+import NewsSidebar from "../components/NewsSidebar.astro";
 import { client, queries } from "../lib/sanity";
 import type { BlogPostPreview, InterviewPreview } from "../types/sanity";
 
@@ -93,102 +94,108 @@ try {
       <h1 class="home__headline">Welcome to The Twinkling Eye</h1>
     </header>
 
-    <div class="home__content">
-      <!-- Desktop Section Titles -->
-      <div class="home__section-titles home__section-titles--desktop">
-        {
-          latestInterview && (
-            <h2 class="home__section-title">Latest Interview</h2>
-          )
-        }
-        <div class="home__section-title-with-link">
-          <h2 class="home__section-title">Latest Blog Posts</h2>
-          <a href="/categories" class="categories-link">Browse Categories</a>
-        </div>
-        {
-          !latestInterview && (
-            <h2 class="home__section-title home__section-title--hidden">
-              Latest Blog Posts
-            </h2>
-          )
-        }
-      </div>
+    <div class="home__layout">
+      <!-- Left Sidebar (Desktop Only) -->
+      <NewsSidebar />
 
-      <div class="home__grid">
-        <!-- Latest Interview -->
-        {
-          latestInterview && (
-            <div class="home__item">
-              <h2 class="home__section-title home__section-title--mobile">
-                Latest Interview
+      <!-- Main Content -->
+      <div class="home__content">
+        <!-- Desktop Section Titles -->
+        <div class="home__section-titles home__section-titles--desktop">
+          {
+            latestInterview && (
+              <h2 class="home__section-title">Latest Interview</h2>
+            )
+          }
+          <div class="home__section-title-with-link">
+            <h2 class="home__section-title">Latest Deep Dives</h2>
+            <a href="/categories" class="categories-link">Browse Categories</a>
+          </div>
+          {
+            !latestInterview && (
+              <h2 class="home__section-title home__section-title--hidden">
+                Latest Deep Dives
               </h2>
-              <Card
-                type="interview"
-                title={latestInterview.title}
-                excerpt={latestInterview.excerpt}
-                publishedAt={latestInterview.publishedAt}
-                slug={latestInterview.slug.current}
-                youtubeUrl={latestInterview.youtubeUrl}
-                thumbnail={latestInterview.thumbnail}
-                guest={latestInterview.guest}
-                homepage={true}
-              />
-            </div>
-          )
-        }
+            )
+          }
+        </div>
 
-        <!-- Latest Blog Posts -->
-        {
-          latestBlogPosts.map((post, index) => (
-            <div class="home__item">
-              {index === 0 && (
-                <div class="home__section-title-with-link home__section-title-with-link--mobile">
-                  <h2 class="home__section-title home__section-title--mobile">
-                    Latest Blog Posts
-                  </h2>
-                  <a href="/categories" class="categories-link">
-                    Browse Categories
-                  </a>
-                </div>
-              )}
-              <Card
-                type="blog"
-                title={post.title}
-                excerpt={post.excerpt || ""}
-                publishedAt={post.publishedAt}
-                slug={post.slug.current}
-                featuredImage={post.featuredImage}
-                author={post.author}
-                categories={post.categories || []}
-                variant={post.cardVariant || "editorial"}
-                homepage={true}
-              />
-            </div>
-          ))
-        }
-
-        {/* Show placeholders if we don't have enough blog posts */}
-        {
-          Array.from({ length: Math.max(0, 2 - latestBlogPosts.length) }).map(
-            (_, index) => (
+        <div class="home__grid">
+          <!-- Latest Interview -->
+          {
+            latestInterview && (
               <div class="home__item">
-                {index === 0 && latestBlogPosts.length === 0 && (
+                <h2 class="home__section-title home__section-title--mobile">
+                  Latest Interview
+                </h2>
+                <Card
+                  type="interview"
+                  title={latestInterview.title}
+                  excerpt={latestInterview.excerpt}
+                  publishedAt={latestInterview.publishedAt}
+                  slug={latestInterview.slug.current}
+                  youtubeUrl={latestInterview.youtubeUrl}
+                  thumbnail={latestInterview.thumbnail}
+                  guest={latestInterview.guest}
+                  homepage={true}
+                />
+              </div>
+            )
+          }
+
+          <!-- Latest Deep Dives -->
+          {
+            latestBlogPosts.map((post, index) => (
+              <div class="home__item">
+                {index === 0 && (
                   <div class="home__section-title-with-link home__section-title-with-link--mobile">
                     <h2 class="home__section-title home__section-title--mobile">
-                      Latest Blog Posts
+                      Latest Deep Dives
                     </h2>
                     <a href="/categories" class="categories-link">
                       Browse Categories
                     </a>
                   </div>
                 )}
-                <div class="placeholder-card">
-                  <p>No blog posts available yet</p>
-                </div>
+                <Card
+                  type="blog"
+                  title={post.title}
+                  excerpt={post.excerpt || ""}
+                  publishedAt={post.publishedAt}
+                  slug={post.slug.current}
+                  featuredImage={post.featuredImage}
+                  author={post.author}
+                  categories={post.categories || []}
+                  variant={post.cardVariant || "editorial"}
+                  homepage={true}
+                />
               </div>
+            ))
+          }
+
+          {/* Show placeholders if we don't have enough blog posts */}
+          {
+            Array.from({ length: Math.max(0, 2 - latestBlogPosts.length) }).map(
+              (_, index) => (
+                <div class="home__item">
+                  {index === 0 && latestBlogPosts.length === 0 && (
+                    <div class="home__section-title-with-link home__section-title-with-link--mobile">
+                      <h2 class="home__section-title home__section-title--mobile">
+                        Latest Deep Dives
+                      </h2>
+                      <a href="/categories" class="categories-link">
+                        Browse Categories
+                      </a>
+                    </div>
+                  )}
+                  <div class="placeholder-card">
+                    <p>No blog posts available yet</p>
+                  </div>
+                </div>
+              )
             )
-          )
-        }
+          }
+        </div>
       </div>
     </div>
   </div>
@@ -213,6 +220,13 @@ try {
     line-height: 1.1;
     color: #461121;
     margin: 0;
+  }
+
+  /* New layout with sidebar */
+  .home__layout {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
   }
 
   .home__content {
@@ -280,6 +294,8 @@ try {
     gap: 1rem;
     align-items: stretch;
     flex-wrap: wrap;
+    justify-content: center;
+    margin: 0 auto;
   }
 
   .home__item {
@@ -311,12 +327,25 @@ try {
     font-style: italic;
   }
 
-  /* Tablet Responsive */
+  /* Tablet and Mobile Responsive */
   @media (max-width: 1024px) {
-    .home__grid {
+    .home__layout {
       flex-direction: column;
       gap: 2rem;
+    }
+
+    .home__content {
+      flex: none;
+      width: 100%;
+    }
+
+    .home__grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
       align-items: center;
+      width: 100%;
+      margin: 0 auto;
     }
 
     .home__section-titles--desktop {
@@ -332,9 +361,11 @@ try {
     }
 
     .home__item {
-      min-height: auto;
+      flex: none;
       width: 100%;
-      max-width: 600px;
+      max-width: none;
+      margin: 0;
+      min-width: unset;
     }
   }
 
@@ -353,6 +384,7 @@ try {
     }
 
     .home__grid {
+      margin: 0 auto;
       flex-direction: column;
       gap: 1.5rem;
     }

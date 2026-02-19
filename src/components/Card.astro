@@ -274,9 +274,9 @@ const hasImage =
   /* Mobile Responsive */
   @media (max-width: 768px) {
     .card {
-      max-width: calc(100vw - 2rem);
-      margin: 0.25rem 0;
-      width: 100%;
+      margin: 0 auto !important;
+      width: 100% !important;
+      max-width: 370px !important;
       box-sizing: border-box;
     }
 
@@ -286,6 +286,15 @@ const hasImage =
 
     .card--homepage {
       height: 250px !important;
+    }
+  }
+
+  /* Tablet Responsive */
+  @media (max-width: 1024px) {
+    .card {
+      margin: 0 auto;
+      width: 100%;
+      max-width: none;
     }
   }
 </style>
