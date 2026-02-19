@@ -3,15 +3,30 @@ import { client, queries } from "../lib/sanity";
 import { urlFor } from "../lib/sanity";
 import type { BlogPost } from "../types/sanity";
 
-// Fetch latest featured post (most recent blog post)
-let featuredPost: BlogPost | null = null;
+// Fetch all featured posts
+let featuredPosts: BlogPost[] = [];
 let dailyReflections: BlogPost[] = [];
 
 try {
   if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
-    // Fetch latest blog post as featured
-    const blogPosts = await client.fetch<BlogPost[]>(queries.allBlogPosts);
-    featuredPost = blogPosts[0] || null;
+    // Fetch posts marked as featured
+    featuredPosts = await client.fetch<BlogPost[]>(`
+      *[_type == "blogPost" && featured == true && defined(slug.current)] | order(publishedAt desc) {
+        _id,
+        title,
+        slug,
+        excerpt,
+        publishedAt,
+        featuredImage {
+          asset->{
+            _id,
+            url
+          },
+          alt,
+          caption
+        }
+      }
+    `);
 
     // Fetch daily reflections category
     const dailyReflectionCategory = await client.fetch(
@@ -54,40 +69,22 @@ const formatDate = (dateString: string) => {
 ---
 
 <aside class="news-sidebar">
-  <!-- Featured Post Section -->
+  <!-- Featured Posts Section -->
   {
-    featuredPost && (
+    featuredPosts.length > 0 && (
       <section class="sidebar-section">
         <h3 class="sidebar-title">Featured Posts</h3>
-        <article class="featured-post">
-          {featuredPost.featuredImage?.asset && (
-            <div class="featured-post__image">
-              <a href={`/deep-dives/${featuredPost.slug.current}`}>
-                <img
-                  src={urlFor(featuredPost.featuredImage)
-                    .width(300)
-                    .height(200)
-                    .url()}
-                  alt={featuredPost.featuredImage.alt || featuredPost.title}
-                  loading="lazy"
-                />
-              </a>
-            </div>
-          )}
-          <div class="featured-post__content">
-            <h4 class="featured-post__title">
-              <a href={`/deep-dives/${featuredPost.slug.current}`}>
-                {featuredPost.title}
-              </a>
-            </h4>
-            {featuredPost.excerpt && (
-              <p class="featured-post__excerpt">{featuredPost.excerpt}</p>
-            )}
-            <time class="featured-post__date">
-              {formatDate(featuredPost.publishedAt)}
-            </time>
-          </div>
-        </article>
+        <ul class="featured-posts-list">
+          {featuredPosts.map((featuredPost) => (
+            <li class="featured-post-item">
+              <h4 class="featured-post__title">
+                <a href={`/deep-dives/${featuredPost.slug.current}`}>
+                  {featuredPost.title}
+                </a>
+              </h4>
+            </li>
+          ))}
+        </ul>
       </section>
     )
   }
@@ -171,11 +168,19 @@ const formatDate = (dateString: string) => {
     border-bottom: 2px solid var(--color-pink-rose);
   }
 
-  /* Featured Post Styles */
-  .featured-post {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  /* Featured Posts List Styles */
+  .featured-posts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .featured-post-item {
+    margin-bottom: 0.75rem;
+  }
+
+  .featured-post-item:last-child {
+    margin-bottom: 0;
   }
 
   .featured-post__image {

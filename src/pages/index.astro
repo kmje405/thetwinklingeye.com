@@ -95,107 +95,86 @@ try {
     </header>
 
     <div class="home__layout">
-      <!-- Left Sidebar (Desktop Only) -->
+      <!-- Column 1: Sidebar -->
       <NewsSidebar />
 
-      <!-- Main Content -->
-      <div class="home__content">
-        <!-- Desktop Section Titles -->
-        <div class="home__section-titles home__section-titles--desktop">
-          {
-            latestInterview && (
-              <h2 class="home__section-title">Latest Interview</h2>
-            )
-          }
-          <div class="home__section-title-with-link">
-            <h2 class="home__section-title">Latest Deep Dives</h2>
-            <a href="/categories" class="categories-link">Browse Categories</a>
-          </div>
-          {
-            !latestInterview && (
-              <h2 class="home__section-title home__section-title--hidden">
+      <!-- Column 2: Latest Deep Dives Section + First Post -->
+      <div class="home__column-2">
+        <div
+          class="home__section-title-with-link home__section-title-with-link--desktop"
+        >
+          <h2 class="home__section-title">Latest Deep Dives</h2>
+          <a href="/categories" class="categories-link">Browse Categories</a>
+        </div>
+
+        {
+          latestBlogPosts[0] ? (
+            <div class="home__item">
+              <h2 class="home__section-title home__section-title--mobile">
                 Latest Deep Dives
               </h2>
-            )
-          }
-        </div>
-
-        <div class="home__grid">
-          <!-- Latest Interview -->
-          {
-            latestInterview && (
-              <div class="home__item">
-                <h2 class="home__section-title home__section-title--mobile">
-                  Latest Interview
-                </h2>
-                <Card
-                  type="interview"
-                  title={latestInterview.title}
-                  excerpt={latestInterview.excerpt}
-                  publishedAt={latestInterview.publishedAt}
-                  slug={latestInterview.slug.current}
-                  youtubeUrl={latestInterview.youtubeUrl}
-                  thumbnail={latestInterview.thumbnail}
-                  guest={latestInterview.guest}
-                  homepage={true}
-                />
+              <div class="home__section-title-with-link home__section-title-with-link--mobile">
+                <a href="/categories" class="categories-link">
+                  Browse Categories
+                </a>
               </div>
-            )
-          }
-
-          <!-- Latest Deep Dives -->
-          {
-            latestBlogPosts.map((post, index) => (
-              <div class="home__item">
-                {index === 0 && (
-                  <div class="home__section-title-with-link home__section-title-with-link--mobile">
-                    <h2 class="home__section-title home__section-title--mobile">
-                      Latest Deep Dives
-                    </h2>
-                    <a href="/categories" class="categories-link">
-                      Browse Categories
-                    </a>
-                  </div>
-                )}
-                <Card
-                  type="blog"
-                  title={post.title}
-                  excerpt={post.excerpt || ""}
-                  publishedAt={post.publishedAt}
-                  slug={post.slug.current}
-                  featuredImage={post.featuredImage}
-                  author={post.author}
-                  categories={post.categories || []}
-                  variant={post.cardVariant || "editorial"}
-                  homepage={true}
-                />
+              <Card
+                type="blog"
+                title={latestBlogPosts[0].title}
+                excerpt={latestBlogPosts[0].excerpt || ""}
+                publishedAt={latestBlogPosts[0].publishedAt}
+                slug={latestBlogPosts[0].slug.current}
+                featuredImage={latestBlogPosts[0].featuredImage}
+                author={latestBlogPosts[0].author}
+                categories={latestBlogPosts[0].categories || []}
+                variant={latestBlogPosts[0].cardVariant || "editorial"}
+                homepage={true}
+              />
+            </div>
+          ) : (
+            <div class="home__item">
+              <h2 class="home__section-title home__section-title--mobile">
+                Latest Deep Dives
+              </h2>
+              <div class="home__section-title-with-link home__section-title-with-link--mobile">
+                <a href="/categories" class="categories-link">
+                  Browse Categories
+                </a>
               </div>
-            ))
-          }
+              <div class="placeholder-card">
+                <p>No blog posts available yet</p>
+              </div>
+            </div>
+          )
+        }
+      </div>
 
-          {/* Show placeholders if we don't have enough blog posts */}
-          {
-            Array.from({ length: Math.max(0, 2 - latestBlogPosts.length) }).map(
-              (_, index) => (
-                <div class="home__item">
-                  {index === 0 && latestBlogPosts.length === 0 && (
-                    <div class="home__section-title-with-link home__section-title-with-link--mobile">
-                      <h2 class="home__section-title home__section-title--mobile">
-                        Latest Deep Dives
-                      </h2>
-                      <a href="/categories" class="categories-link">
-                        Browse Categories
-                      </a>
-                    </div>
-                  )}
-                  <div class="placeholder-card">
-                    <p>No blog posts available yet</p>
-                  </div>
-                </div>
-              )
-            )
-          }
-        </div>
+      <!-- Column 3: Second Post -->
+      <div class="home__column-3">
+        {
+          latestBlogPosts[1] ? (
+            <div class="home__item">
+              <Card
+                type="blog"
+                title={latestBlogPosts[1].title}
+                excerpt={latestBlogPosts[1].excerpt || ""}
+                publishedAt={latestBlogPosts[1].publishedAt}
+                slug={latestBlogPosts[1].slug.current}
+                featuredImage={latestBlogPosts[1].featuredImage}
+                author={latestBlogPosts[1].author}
+                categories={latestBlogPosts[1].categories || []}
+                variant={latestBlogPosts[1].cardVariant || "editorial"}
+                homepage={true}
+              />
+            </div>
+          ) : (
+            <div class="home__item">
+              <div class="placeholder-card">
+                <p>No blog posts available yet</p>
+              </div>
+            </div>
+          )
+        }
       </div>
     </div>
   </div>
@@ -203,9 +182,7 @@ try {
 
 <style>
   .home {
-    margin: 0 auto;
     padding: 2rem 1rem;
-    min-height: 70vh;
   }
 
   .home__header {
@@ -224,15 +201,30 @@ try {
 
   /* New layout with sidebar */
   .home__layout {
-    display: flex;
+    display: grid;
+    grid-template-columns: 300px 1fr 1fr;
     gap: 2rem;
-    align-items: flex-start;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
-  .home__content {
+  .home__column-2,
+  .home__column-3 {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+  }
+
+  .home__column-3 {
+    margin-top: 6.7rem;
+  }
+
+  .home__section-title-with-link--desktop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
   }
 
   .home__section-titles--desktop {
@@ -241,12 +233,13 @@ try {
   }
 
   .home__section-title {
-    flex: 1;
+    flex: 2;
     font-family: var(--font-header-primary);
     font-size: 1.25rem;
     color: #333;
     margin: 0;
     text-align: center;
+    padding-left: 0;
   }
 
   .home__section-title--hidden {
@@ -259,7 +252,6 @@ try {
   }
 
   .home__section-title-with-link {
-    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -290,17 +282,10 @@ try {
   }
 
   .home__grid {
-    display: flex;
-    gap: 1rem;
-    align-items: stretch;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 0 auto;
+    display: contents;
   }
 
   .home__item {
-    flex: 1;
-    min-width: 300px;
     display: flex;
     flex-direction: column;
   }
@@ -330,25 +315,21 @@ try {
   /* Tablet and Mobile Responsive */
   @media (max-width: 1024px) {
     .home__layout {
+      display: flex;
       flex-direction: column;
       gap: 2rem;
     }
 
-    .home__content {
-      flex: none;
+    .home__column-2,
+    .home__column-3 {
       width: 100%;
     }
 
-    .home__grid {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      align-items: center;
-      width: 100%;
-      margin: 0 auto;
+    .home__column-3 {
+      margin-top: 0;
     }
 
-    .home__section-titles--desktop {
+    .home__section-title-with-link--desktop {
       display: none;
     }
 
@@ -358,14 +339,12 @@ try {
 
     .home__section-title-with-link--mobile {
       display: block;
+      margin-bottom: 1rem;
     }
 
     .home__item {
-      flex: none;
       width: 100%;
       max-width: none;
-      margin: 0;
-      min-width: unset;
     }
   }
 
@@ -383,13 +362,11 @@ try {
       font-size: 2rem;
     }
 
-    .home__grid {
-      margin: 0 auto;
-      flex-direction: column;
+    .home__layout {
       gap: 1.5rem;
     }
 
-    .home__section-titles--desktop {
+    .home__section-title-with-link--desktop {
       display: none;
     }
 
@@ -404,10 +381,8 @@ try {
     }
 
     .home__item {
-      min-height: auto;
       width: 100%;
       max-width: none;
-      min-width: auto;
     }
   }
 </style>
