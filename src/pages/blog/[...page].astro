@@ -54,6 +54,11 @@ const { page } = Astro.props;
 
 <Layout>
   <div class="blog__feed--wrapper">
+    <div class="blog__header">
+      <h1 class="blog__title">Blog</h1>
+      <a href="/categories" class="categories-link">Browse Categories</a>
+    </div>
+    
     <BlogFeed
       blogPosts={page.data}
       currentPage={page.currentPage}
@@ -123,8 +128,40 @@ const { page } = Astro.props;
   .blog__feed--wrapper {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 1rem;
     flex-direction: column;
     justify-self: center;
+    overflow-x: hidden;
+  }
+
+  .blog__header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-top: 2rem;
+  }
+
+  .blog__title {
+    font-family: var(--font-header-primary);
+    font-size: var(--font-size-h1);
+    color: #333;
+    margin: 0 0 1rem 0;
+  }
+
+  .categories-link {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #a37351;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .categories-link:hover {
+    color: #461121;
+    background-color: rgba(163, 115, 81, 0.1);
+    transform: translateY(-1px);
   }
 
   .list-pagination {
@@ -226,6 +263,19 @@ const { page } = Astro.props;
 
   /* Mobile responsive */
   @media (max-width: 768px) {
+    .blog__feed--wrapper {
+      padding: 0 0.5rem;
+    }
+
+    .blog__header {
+      margin-bottom: 2rem;
+      padding-top: 1rem;
+    }
+
+    .blog__title {
+      font-size: 1.75rem;
+    }
+
     .pagination-container {
       flex-direction: column;
       gap: 1.5rem;

@@ -37,13 +37,11 @@ const siteOwner = siteSettings?.siteOwner;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    min-height: 50vh;
-    padding: 2rem 1rem;
+    padding: 0 1rem;
   }
 
   .fallback-content {
     text-align: center;
-    max-width: 600px;
   }
 
   .fallback-content h1 {
@@ -56,5 +54,11 @@ const siteOwner = siteSettings?.siteOwner;
     font-size: 1.1rem;
     color: #666;
     line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .page-content {
+      padding: 0 0.5rem;
+    }
   }
 </style>
