@@ -86,7 +86,7 @@ const formatDate = (dateString: string) => {
         <h3 class="sidebar-title">Browse by Category</h3>
         <select
           class="categories-dropdown"
-          onchange="window.location.href = this.value"
+          onchange="handleCategoryChange(this.value)"
         >
           <option value="">Select a category...</option>
           {categories.map((category) => (
@@ -165,6 +165,20 @@ const formatDate = (dateString: string) => {
     )
   }
 </aside>
+
+<script is:inline>
+  function handleCategoryChange(url) {
+    if (url) {
+      // Add a small delay to show the selection feedback
+      setTimeout(function () {
+        window.location.href = url;
+      }, 100);
+    }
+  }
+
+  // Make function globally available
+  window.handleCategoryChange = handleCategoryChange;
+</script>
 
 <style>
   .news-sidebar {
