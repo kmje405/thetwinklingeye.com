@@ -130,7 +130,7 @@ const bodyHtml = post.body
     "dateModified": post._updatedAt || post.publishedAt,
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://thetwinklingeye.com/blog/${post.slug.current}`
+      "@id": `https://thetwinklingeye.com/deep-dives/${post.slug.current}`
     },
     "articleSection": post.categories?.map(cat => cat.title).join(", ") || "Blog",
     "keywords": post.categories?.map(cat => cat.title).join(", ") || undefined

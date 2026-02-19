@@ -74,23 +74,23 @@ const [blogPosts, interviews] = await Promise.all([
         </ul>
       </section>
 
-      <!-- Blog Section -->
+      <!-- Deep Dives Section -->
       <section style="margin-bottom: 3rem;">
         <h2
           style="font-family: var(--font-header-primary); color: var(--color-burgundy-deep); font-size: 1.8rem; margin-bottom: 1rem; border-bottom: 2px solid var(--color-pink-rose); padding-bottom: 0.5rem;"
         >
-          Blog ({blogPosts.length} posts)
+          Deep Dives ({blogPosts.length} posts)
         </h2>
         <div style="margin-bottom: 1rem;">
           <a
-            href="/blog"
+            href="/deep-dives"
             style="color: var(--color-burgundy-deep); text-decoration: none; font-family: var(--font-body); font-size: 1.1rem; font-weight: 600;"
           >
-            📝 Blog Index
+            📝 Deep Dives Index
           </a>
           <span
             style="color: var(--color-burgundy-brown); margin-left: 1rem; font-style: italic;"
-            >- All blog posts</span
+            >- All deep dive posts</span
           >
         </div>
         <ul style="list-style: none; padding: 0; margin: 0; margin-left: 2rem;">
@@ -98,7 +98,7 @@ const [blogPosts, interviews] = await Promise.all([
             blogPosts.map((post) => (
               <li style="margin-bottom: 0.75rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.3); border-radius: 4px;">
                 <a
-                  href={`/blog/${post.slug.current}`}
+                  href={`/deep-dives/${post.slug.current}`}
                   style="color: var(--color-burgundy-deep); text-decoration: none; font-family: var(--font-body); font-weight: 500;"
                 >
                   📄 {post.title}

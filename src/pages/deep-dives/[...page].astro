@@ -91,7 +91,7 @@ const { page } = Astro.props;
             <div class="pagination-numbers">
               {Array.from({ length: page.lastPage }, (_, i) => i + 1).map((num) => (
                 <a
-                  href={num === 1 ? "/blog" : `/blog/${num}`}
+                  href={num === 1 ? "/deep-dives" : `/deep-dives/${num}`}
                   class={`pagination-number ${page.currentPage === num ? "active" : ""}`}
                   aria-current={page.currentPage === num ? "page" : undefined}
                 >

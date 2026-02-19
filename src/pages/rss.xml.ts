@@ -18,8 +18,9 @@ export async function GET(context: any) {
     const allContent = [
       ...blogPosts.map((post) => ({
         title: post.title,
-        description: post.excerpt || `Read the latest blog post: ${post.title}`,
-        link: `/blog/${post.slug.current}`,
+        description:
+          post.excerpt || `Read the latest deep dive post: ${post.title}`,
+        link: `/deep-dives/${post.slug.current}`,
         pubDate: new Date(post.publishedAt),
         author: post.author?.name || "The Twinkling Eye",
         categories: post.categories?.map((cat) => cat.title) || [],

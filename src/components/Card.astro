@@ -46,7 +46,8 @@ const {
 } = Astro.props;
 
 // Get link path based on type
-const linkPath = type === "blog" ? `/blog/${slug}` : `/interviews/${slug}`;
+const linkPath =
+  type === "blog" ? `/deep-dives/${slug}` : `/interviews/${slug}`;
 
 // Check if we have an image for this card
 const hasImage =

@@ -20,7 +20,7 @@ export async function GET(context: any) {
         priority: "1.0",
       },
       {
-        url: "/blog",
+        url: "/deep-dives",
         lastmod: new Date().toISOString(),
         changefreq: "daily",
         priority: "0.9",
@@ -47,7 +47,7 @@ export async function GET(context: any) {
 
     // Dynamic blog post pages
     const blogPages = blogPosts.map((post) => ({
-      url: `/blog/${post.slug.current}`,
+      url: `/deep-dives/${post.slug.current}`,
       lastmod: new Date(post._updatedAt || post.publishedAt).toISOString(),
       changefreq: "weekly",
       priority: "0.8",
