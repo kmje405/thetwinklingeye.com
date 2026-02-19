@@ -3,8 +3,9 @@ import { client, queries } from "../lib/sanity";
 import { urlFor } from "../lib/sanity";
 import type { BlogPost } from "../types/sanity";
 
-// Fetch all featured posts
+// Fetch all featured posts, categories, and daily reflections
 let featuredPosts: BlogPost[] = [];
+let categories: any[] = [];
 let dailyReflections: BlogPost[] = [];
 
 try {
@@ -25,6 +26,15 @@ try {
           alt,
           caption
         }
+      }
+    `);
+
+    // Fetch all categories
+    categories = await client.fetch(`
+      *[_type == "category" && defined(slug.current)] | order(title asc) {
+        _id,
+        title,
+        slug
       }
     `);
 
@@ -69,6 +79,26 @@ const formatDate = (dateString: string) => {
 ---
 
 <aside class="news-sidebar">
+  <!-- Browse by Category Section -->
+  {
+    categories.length > 0 && (
+      <section class="sidebar-section">
+        <h3 class="sidebar-title">Browse by Category</h3>
+        <select
+          class="categories-dropdown"
+          onchange="window.location.href = this.value"
+        >
+          <option value="">Select a category...</option>
+          {categories.map((category) => (
+            <option value={`/categories/${category.slug.current}`}>
+              {category.title}
+            </option>
+          ))}
+        </select>
+      </section>
+    )
+  }
+
   <!-- Featured Posts Section -->
   {
     featuredPosts.length > 0 && (
@@ -147,6 +177,12 @@ const formatDate = (dateString: string) => {
     top: 2rem;
     max-height: calc(100vh - 4rem);
     overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .news-sidebar::-webkit-scrollbar {
+    display: none;
   }
 
   .sidebar-section {
@@ -170,17 +206,64 @@ const formatDate = (dateString: string) => {
 
   /* Featured Posts List Styles */
   .featured-posts-list {
-    list-style: none;
-    padding: 0;
+    list-style: decimal;
+    padding-left: 1.5rem;
     margin: 0;
+    counter-reset: featured-counter;
   }
 
   .featured-post-item {
     margin-bottom: 0.75rem;
+    padding-left: 0.5rem;
   }
 
   .featured-post-item:last-child {
     margin-bottom: 0;
+  }
+
+  .featured-posts-list li::marker {
+    color: var(--color-burgundy-deep);
+    font-weight: 600;
+  }
+
+  /* Categories Dropdown Styles - Matching Mobile Nav */
+  .categories-dropdown {
+    width: 100%;
+    padding: 0.75rem;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2c3e50;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .categories-dropdown:hover {
+    background-color: rgba(44, 62, 80, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .categories-dropdown:focus {
+    outline: none;
+    background-color: rgba(44, 62, 80, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .categories-dropdown option {
+    padding: 0.75rem;
+    color: #2c3e50;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  .categories-dropdown option:hover {
+    background-color: rgba(44, 62, 80, 0.1);
   }
 
   .featured-post__image {
@@ -202,15 +285,19 @@ const formatDate = (dateString: string) => {
 
   .featured-post__title {
     margin: 0 0 0.5rem 0;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     line-height: 1.3;
   }
 
   .featured-post__title a {
     color: var(--color-burgundy-deep);
     text-decoration: none;
-    font-family: var(--font-header-primary);
-    font-weight: 600;
+    font-family: var(--font-body);
+    font-weight: 500;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .featured-post__title a:hover {

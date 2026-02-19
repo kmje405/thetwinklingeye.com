@@ -135,7 +135,29 @@ const faviconUrl = dynamicSiteConfig.sanityData?.favicon?.asset
     left: 0;
     width: 100vw;
     height: 100vh;
-    object-fit: cover;
+    object-fit: none;
+    object-position: 0 0;
+    z-index: -1;
+    background-image: url("/background.jpg");
+    background-repeat: repeat;
+    background-size: auto;
+    opacity: 0;
+  }
+
+  .background-image[src] {
+    opacity: 0;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url("/background.jpg");
+    background-repeat: repeat;
+    background-size: 400px 400px;
     z-index: -1;
   }
 
