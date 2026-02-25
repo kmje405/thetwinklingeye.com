@@ -17,11 +17,11 @@ try {
     );
     latestInterview = interviews[0] || null;
 
-    // Fetch latest 2 blog posts
+    // Fetch latest 4 blog posts
     const blogPosts = await client.fetch<BlogPostPreview[]>(
       queries.allBlogPosts
     );
-    latestBlogPosts = blogPosts.slice(0, 2);
+    latestBlogPosts = blogPosts.slice(0, 4);
   }
 } catch (error) {
   console.error("Error fetching content:", error);
@@ -100,8 +100,8 @@ try {
         <NewsSidebar />
       </div>
 
-      <!-- Column 2: Latest Deep Dives Section + First Post -->
-      <div class="home__column-2">
+      <!-- Cards Grid Container -->
+      <div class="home__cards-container">
         <div
           class="home__section-title-with-link home__section-title-with-link--desktop"
         >
@@ -109,62 +109,51 @@ try {
           <a href="/categories" class="categories-link">Browse Categories</a>
         </div>
 
-        {
-          latestBlogPosts[0] ? (
-            <div class="home__item">
-              <h2 class="home__section-title home__section-title--mobile">
-                Give these posts a try!
-              </h2>
-              <Card
-                type="blog"
-                title={latestBlogPosts[0].title}
-                excerpt={latestBlogPosts[0].excerpt || ""}
-                publishedAt={latestBlogPosts[0].publishedAt}
-                slug={latestBlogPosts[0].slug.current}
-                featuredImage={latestBlogPosts[0].featuredImage}
-                author={latestBlogPosts[0].author}
-                categories={latestBlogPosts[0].categories || []}
-                variant={latestBlogPosts[0].cardVariant || "editorial"}
-                homepage={true}
-              />
-            </div>
-          ) : (
-            <div class="home__item">
-              <h2 class="home__section-title home__section-title--mobile" />
-              <div class="placeholder-card">
-                <p>No blog posts available yet</p>
-              </div>
-            </div>
-          )
-        }
-      </div>
+        <h2 class="home__section-title home__section-title--mobile">
+          Give these posts a try!
+        </h2>
 
-      <!-- Column 3: Second Post -->
-      <div class="home__column-3">
-        {
-          latestBlogPosts[1] ? (
-            <div class="home__item">
-              <Card
-                type="blog"
-                title={latestBlogPosts[1].title}
-                excerpt={latestBlogPosts[1].excerpt || ""}
-                publishedAt={latestBlogPosts[1].publishedAt}
-                slug={latestBlogPosts[1].slug.current}
-                featuredImage={latestBlogPosts[1].featuredImage}
-                author={latestBlogPosts[1].author}
-                categories={latestBlogPosts[1].categories || []}
-                variant={latestBlogPosts[1].cardVariant || "editorial"}
-                homepage={true}
-              />
-            </div>
-          ) : (
-            <div class="home__item">
-              <div class="placeholder-card">
-                <p>No blog posts available yet</p>
-              </div>
-            </div>
-          )
-        }
+        <div class="home__cards-grid">
+          {
+            latestBlogPosts.slice(0, 4).map((post, index) =>
+              post ? (
+                <div class="home__card-item">
+                  <Card
+                    type="blog"
+                    title={post.title}
+                    excerpt={post.excerpt || ""}
+                    publishedAt={post.publishedAt}
+                    slug={post.slug.current}
+                    featuredImage={post.featuredImage}
+                    author={post.author}
+                    categories={post.categories || []}
+                    variant={post.cardVariant || "editorial"}
+                    homepage={true}
+                  />
+                </div>
+              ) : (
+                <div class="home__card-item">
+                  <div class="placeholder-card">
+                    <p>No blog post available</p>
+                  </div>
+                </div>
+              )
+            )
+          }
+
+          {/* Fill remaining slots if we have fewer than 4 posts */}
+          {
+            Array.from({ length: Math.max(0, 4 - latestBlogPosts.length) }).map(
+              (_, index) => (
+                <div class="home__card-item">
+                  <div class="placeholder-card">
+                    <p>No blog post available</p>
+                  </div>
+                </div>
+              )
+            )
+          }
+        </div>
       </div>
 
       <!-- Sidebar for Mobile/Tablet (appears after posts) -->
@@ -197,7 +186,7 @@ try {
   /* New layout with sidebar */
   .home__layout {
     display: grid;
-    grid-template-columns: 300px 1fr 1fr;
+    grid-template-columns: 300px 1fr;
     gap: 2rem;
     align-items: start;
     max-width: 1200px;
@@ -213,14 +202,28 @@ try {
     display: none;
   }
 
-  .home__column-2,
-  .home__column-3 {
+  /* Cards container and grid */
+  .home__cards-container {
     display: flex;
     flex-direction: column;
   }
 
-  .home__column-3 {
-    margin-top: 6.7rem;
+  .home__cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: min-content min-content;
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+
+  .home__card-item {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .home__card-item > :global(*) {
+    flex: 1;
   }
 
   .home__section-title-with-link--desktop {
@@ -341,13 +344,21 @@ try {
       width: 100%;
     }
 
-    .home__column-2,
-    .home__column-3 {
+    /* Center cards container on mobile */
+    .home__cards-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       width: 100%;
     }
 
-    .home__column-3 {
-      margin-top: 0;
+    /* Mobile cards grid - single column */
+    .home__cards-grid {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+      gap: 1.5rem;
+      max-width: 600px;
+      width: 100%;
     }
 
     .home__section-title-with-link--desktop {
