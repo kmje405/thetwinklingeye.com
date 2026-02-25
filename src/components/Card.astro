@@ -117,7 +117,7 @@ const hasImage =
     variant === "text-only" && (
       <div class="card__content card__content--text-only">
         <div class="card__header">
-          <CardMeta publishedAt={publishedAt} categories={categories} />
+          <CardMeta categories={categories} />
           <CardTitle title={title} type={type} guest={guest} />
         </div>
 
@@ -144,7 +144,6 @@ const hasImage =
       box-shadow 0.2s ease;
     position: relative;
     height: auto;
-    min-height: fit-content;
     margin: 0.5rem;
     padding: 0.75rem;
   }
@@ -285,7 +284,7 @@ const hasImage =
     }
 
     .card--homepage {
-      height: 250px !important;
+      /* height: 250px !important; */
     }
   }
 

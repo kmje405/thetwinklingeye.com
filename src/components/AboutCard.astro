@@ -35,17 +35,15 @@ const bioText =
 
 <article class="about__card">
   <div class="about__card__container">
-    <div class="about__card__left">
-      <div class="about__card__avatar">
-        <img
-          src={avatarUrl}
-          alt={image?.alt || `${name} profile photo`}
-          loading="lazy"
-        />
-      </div>
+    <div class="about__card__avatar">
+      <img
+        src={avatarUrl}
+        alt={image?.alt || `${name} profile photo`}
+        loading="lazy"
+      />
     </div>
 
-    <div class="about__card__right">
+    <div class="about__card__content">
       <div class="about__card__row about__card__row--name">
         <h1 class="about__card__name">{name}</h1>
       </div>
@@ -89,28 +87,24 @@ const bioText =
   }
 
   .about__card__container {
-    display: grid;
-    grid-template-columns: auto 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
     padding: 2rem;
-    min-height: 400px;
-  }
-
-  .about__card__left {
-    display: flex;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
   }
 
   .about__card__avatar {
     border-radius: 8px;
     overflow: hidden;
     max-width: 400px;
+    width: 100%;
   }
 
   .about__card__avatar img {
-    width: auto;
+    width: 100%;
     height: auto;
-    max-width: 100%;
     display: block;
     transition: transform 0.2s ease;
   }
@@ -119,11 +113,12 @@ const bioText =
     transform: scale(1.05);
   }
 
-  .about__card__right {
-    display: grid;
-    grid-template-rows: auto auto 1fr;
+  .about__card__content {
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
-    align-content: start;
+    width: 100%;
+    max-width: 600px;
   }
 
   .about__card__row {
@@ -166,27 +161,12 @@ const bioText =
     }
 
     .about__card__container {
-      grid-template-columns: 3fr;
-      grid-template-rows: 250px auto;
       gap: 1.5rem;
       padding: 1.5rem;
-      min-height: auto;
-    }
-
-    .about__card__left {
-      justify-content: center;
     }
 
     .about__card__avatar {
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      margin: 0 auto;
-    }
-
-    .about__card__right {
-      text-align: center;
-      gap: 1rem;
+      max-width: 300px;
     }
 
     .about__card__name {
@@ -205,11 +185,11 @@ const bioText =
   @media (max-width: 480px) {
     .about__card__container {
       padding: 1rem;
+      gap: 1rem;
     }
 
     .about__card__avatar {
-      width: 150px;
-      height: 150px;
+      max-width: 250px;
     }
 
     .about__card__name {

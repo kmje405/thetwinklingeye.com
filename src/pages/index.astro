@@ -190,7 +190,7 @@ try {
     gap: 2rem;
     align-items: start;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0;
   }
 
   /* Show desktop sidebar, hide mobile sidebar on desktop */
@@ -212,14 +212,13 @@ try {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: min-content min-content;
-    gap: 1.5rem;
-    align-items: stretch;
   }
 
   .home__card-item {
     display: flex;
     flex-direction: column;
     height: 100%;
+    max-width: 500px;
   }
 
   .home__card-item > :global(*) {
