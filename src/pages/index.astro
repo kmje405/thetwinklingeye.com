@@ -95,15 +95,17 @@ try {
     </header>
 
     <div class="home__layout">
-      <!-- Column 1: Sidebar -->
-      <NewsSidebar />
+      <!-- Column 1: Sidebar (Desktop only) -->
+      <div class="home__sidebar-desktop">
+        <NewsSidebar />
+      </div>
 
       <!-- Column 2: Latest Deep Dives Section + First Post -->
       <div class="home__column-2">
         <div
           class="home__section-title-with-link home__section-title-with-link--desktop"
         >
-          <h2 class="home__section-title">Latest Deep Dives</h2>
+          <h2 class="home__section-title">Try these!</h2>
           <a href="/categories" class="categories-link">Browse Categories</a>
         </div>
 
@@ -111,13 +113,8 @@ try {
           latestBlogPosts[0] ? (
             <div class="home__item">
               <h2 class="home__section-title home__section-title--mobile">
-                Latest Deep Dives
+                Give these posts a try!
               </h2>
-              <div class="home__section-title-with-link home__section-title-with-link--mobile">
-                <a href="/categories" class="categories-link">
-                  Browse Categories
-                </a>
-              </div>
               <Card
                 type="blog"
                 title={latestBlogPosts[0].title}
@@ -133,14 +130,7 @@ try {
             </div>
           ) : (
             <div class="home__item">
-              <h2 class="home__section-title home__section-title--mobile">
-                Latest Deep Dives
-              </h2>
-              <div class="home__section-title-with-link home__section-title-with-link--mobile">
-                <a href="/categories" class="categories-link">
-                  Browse Categories
-                </a>
-              </div>
+              <h2 class="home__section-title home__section-title--mobile" />
               <div class="placeholder-card">
                 <p>No blog posts available yet</p>
               </div>
@@ -176,6 +166,11 @@ try {
           )
         }
       </div>
+
+      <!-- Sidebar for Mobile/Tablet (appears after posts) -->
+      <div class="home__sidebar-mobile">
+        <NewsSidebar />
+      </div>
     </div>
   </div>
 </Layout>
@@ -207,6 +202,15 @@ try {
     align-items: start;
     max-width: 1200px;
     margin: 0 auto;
+  }
+
+  /* Show desktop sidebar, hide mobile sidebar on desktop */
+  .home__sidebar-desktop {
+    display: block;
+  }
+
+  .home__sidebar-mobile {
+    display: none;
   }
 
   .home__column-2,
@@ -318,6 +322,23 @@ try {
       display: flex;
       flex-direction: column;
       gap: 2rem;
+    }
+
+    /* Hide desktop sidebar, show mobile sidebar */
+    .home__sidebar-desktop {
+      display: none;
+    }
+
+    .home__sidebar-mobile {
+      display: block;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .home__sidebar-mobile .news-sidebar {
+      max-width: 600px;
+      width: 100%;
     }
 
     .home__column-2,

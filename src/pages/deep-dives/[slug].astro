@@ -160,7 +160,6 @@ const bodyHtml = post.body
           <!-- Byline beneath photo and caption -->
           <div class="post__byline">
             <p>By {post.author?.name || 'Unknown Author'}</p>
-            <p>{formattedDate}</p>
             {
               post.categories && post.categories.length > 0 && (
                 <div class="post__byline-categories">
