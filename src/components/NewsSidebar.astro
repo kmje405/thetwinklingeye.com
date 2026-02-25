@@ -3,6 +3,14 @@ import { client, queries } from "../lib/sanity";
 import { urlFor } from "../lib/sanity";
 import type { BlogPost } from "../types/sanity";
 
+// Accept a prop to make IDs unique
+export interface Props {
+  variant?: "desktop" | "mobile";
+}
+
+const { variant = "desktop" } = Astro.props;
+const idSuffix = variant === "mobile" ? "-mobile" : "";
+
 // Fetch all featured posts, categories, and daily reflections
 let featuredPosts: BlogPost[] = [];
 let categories: any[] = [];
@@ -74,13 +82,13 @@ try {
   {
     categories.length > 0 && (
       <section class="sidebar-section">
-        <h3 class="sidebar-title" id="categories-label">
+        <h3 class="sidebar-title" id={`categories-label${idSuffix}`}>
           Browse by Category
         </h3>
         <select
           class="categories-dropdown"
-          id="categories-dropdown"
-          aria-labelledby="categories-label"
+          id={`categories-dropdown${idSuffix}`}
+          aria-labelledby={`categories-label${idSuffix}`}
         >
           <option value="">Select a category...</option>
           {categories.map((category) => (
