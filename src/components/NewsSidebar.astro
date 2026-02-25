@@ -74,8 +74,14 @@ try {
   {
     categories.length > 0 && (
       <section class="sidebar-section">
-        <h3 class="sidebar-title">Browse by Category</h3>
-        <select class="categories-dropdown" id="categories-dropdown">
+        <h3 class="sidebar-title" id="categories-label">
+          Browse by Category
+        </h3>
+        <select
+          class="categories-dropdown"
+          id="categories-dropdown"
+          aria-labelledby="categories-label"
+        >
           <option value="">Select a category...</option>
           {categories.map((category) => (
             <option value={`/categories/${category.slug.current}`}>
