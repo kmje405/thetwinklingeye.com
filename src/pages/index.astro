@@ -7,7 +7,7 @@ import type { BlogPostPreview, InterviewPreview } from "../types/sanity";
 
 // Fetch latest content from Sanity
 let latestInterview: InterviewPreview | null = null;
-let latestBlogPosts: BlogPostPreview[] = [];
+let featuredBlogPosts: BlogPostPreview[] = [];
 
 try {
   if (import.meta.env.PUBLIC_SANITY_PROJECT_ID) {
@@ -17,11 +17,89 @@ try {
     );
     latestInterview = interviews[0] || null;
 
-    // Fetch latest 4 blog posts
-    const blogPosts = await client.fetch<BlogPostPreview[]>(
-      queries.allBlogPosts
-    );
-    latestBlogPosts = blogPosts.slice(0, 4);
+    // Fetch featured blog posts (up to 4)
+    featuredBlogPosts = await client.fetch<BlogPostPreview[]>(`
+      *[_type == "blogPost" && featured == true && defined(slug.current)] | order(publishedAt desc) [0...4] {
+        _id,
+        title,
+        slug,
+        excerpt,
+        publishedAt,
+        cardVariant,
+        featuredImage {
+          asset->{
+            _id,
+            url,
+            metadata {
+              dimensions {
+                width,
+                height
+              }
+            }
+          },
+          alt,
+          caption
+        },
+        author->{
+          name,
+          image {
+            asset->{
+              _id,
+              url
+            },
+            alt
+          }
+        },
+        categories[]->{
+          title,
+          slug
+        }
+      }
+    `);
+
+    // If we don't have enough featured posts, fill with latest posts
+    if (featuredBlogPosts.length < 4) {
+      const remainingCount = 4 - featuredBlogPosts.length;
+      const latestPosts = await client.fetch<BlogPostPreview[]>(`
+        *[_type == "blogPost" && featured != true && defined(slug.current)] | order(publishedAt desc) [0...${remainingCount}] {
+          _id,
+          title,
+          slug,
+          excerpt,
+          publishedAt,
+          cardVariant,
+          featuredImage {
+            asset->{
+              _id,
+              url,
+              metadata {
+                dimensions {
+                  width,
+                  height
+                }
+              }
+            },
+            alt,
+            caption
+          },
+          author->{
+            name,
+            image {
+              asset->{
+                _id,
+                url
+              },
+              alt
+            }
+          },
+          categories[]->{
+            title,
+            slug
+          }
+        }
+      `);
+      featuredBlogPosts = [...featuredBlogPosts, ...latestPosts];
+    }
   }
 } catch (error) {
   console.error("Error fetching content:", error);
@@ -59,7 +137,7 @@ try {
                 },
               ]
             : []),
-          ...latestBlogPosts.map((post, index) => ({
+          ...featuredBlogPosts.map((post, index) => ({
             "@type": "ListItem",
             position: (latestInterview ? 2 : 1) + index,
             item: {
@@ -105,17 +183,17 @@ try {
         <div
           class="home__section-title-with-link home__section-title-with-link--desktop"
         >
-          <h2 class="home__section-title">Try these!</h2>
+          <h2 class="home__section-title">Featured Posts</h2>
           <a href="/categories" class="categories-link">Browse Categories</a>
         </div>
 
         <h2 class="home__section-title home__section-title--mobile">
-          Give these posts a try!
+          Featured Posts
         </h2>
 
         <div class="home__cards-grid">
           {
-            latestBlogPosts.slice(0, 4).map((post, index) =>
+            featuredBlogPosts.slice(0, 4).map((post, index) =>
               post ? (
                 <div class="home__card-item">
                   <Card
@@ -143,15 +221,15 @@ try {
 
           {/* Fill remaining slots if we have fewer than 4 posts */}
           {
-            Array.from({ length: Math.max(0, 4 - latestBlogPosts.length) }).map(
-              (_, index) => (
-                <div class="home__card-item">
-                  <div class="placeholder-card">
-                    <p>No blog post available</p>
-                  </div>
+            Array.from({
+              length: Math.max(0, 4 - featuredBlogPosts.length),
+            }).map((_, index) => (
+              <div class="home__card-item">
+                <div class="placeholder-card">
+                  <p>No blog post available</p>
                 </div>
-              )
-            )
+              </div>
+            ))
           }
         </div>
       </div>

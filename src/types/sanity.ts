@@ -115,6 +115,7 @@ export interface BlogPost extends SanityDocument {
   publishedAt: string;
   cardVariant?: "editorial" | "full-image" | "text-only";
   featuredImage?: SanityImageWithMetadata;
+  featured?: boolean;
   body: PortableText;
   author: Person;
   categories?: Category[];
@@ -144,6 +145,7 @@ export interface BlogPostPreview {
   publishedAt: string;
   cardVariant?: "editorial" | "full-image" | "text-only";
   featuredImage?: SanityImageWithMetadata;
+  featured?: boolean;
   author: {
     name: string;
     image?: SanityImageWithMetadata;

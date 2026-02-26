@@ -136,6 +136,13 @@ export default defineType({
       initialValue: 'editorial',
       description: 'Choose how this post appears in blog feeds and listings',
     }),
+    defineField({
+      name: 'featured',
+      title: 'Featured Post',
+      type: 'boolean',
+      description: 'Mark this post as featured to display it in the sidebar',
+      initialValue: false,
+    }),
   ],
   preview: {
     select: {

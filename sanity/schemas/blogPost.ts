@@ -138,6 +138,13 @@ export const blogPostSchema = {
       initialValue: "editorial",
       description: "Choose how this post appears in blog feeds and listings",
     },
+    {
+      name: "featured",
+      title: "Featured Post",
+      type: "boolean",
+      description: "Mark this post as featured to display it in the sidebar",
+      initialValue: false,
+    },
   ],
   preview: {
     select: {
